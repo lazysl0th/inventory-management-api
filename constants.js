@@ -1,18 +1,11 @@
-export default {
+import { Role } from '@prisma/client';
+
+export const response = {
   OK: {
     statusCode: 200,
   },
-  
-  /*RESET_PASSWORD: {
-    statusCode: 200,
-    text: 'Message for change password has been send'
-  },
   CREATED: {
     statusCode: 201,
-  },
-  PASSWORD_CHANGE: {
-    statusCode: 204,
-    text: 'Password change'
   },
   BAD_REQUEST: {
     statusCode: 400,
@@ -21,11 +14,31 @@ export default {
   UNAUTHORIZED: {
     statusCode: 401,
     text: 'Incorrect email or password'
-    
   },
   FORBIDDEN: {
     statusCode: 403,
     text: 'Authorization required',
+  },
+  INSUFFICIENT_PERMISSION: {
+    statusCode: 403,
+    text: 'Insufficient permission',
+  },
+  CONFLICT: {
+    statusCode: 409,
+    text: 'A user with this email already exists.',
+  },
+  INTERNAL_SERVER_ERROR: {
+    statusCode: 500,
+    text: 'An error occurred on the server',
+  },
+  /*RESET_PASSWORD: {
+    statusCode: 200,
+    text: 'Message for change password has been send'
+  },
+
+  PASSWORD_CHANGE: {
+    statusCode: 204,
+    text: 'Password change'
   },
   BLOCKED: {
     statusCode: 403,
@@ -38,13 +51,7 @@ export default {
   NOT_FOUND_RECORDS: {
     statusCode: 404,
     text: 'Not found records for delete',
-  },
-  CONFLICT: {
-    statusCode: 409,
-    text: 'A user with this email already exists.',
-  },
-  INTERNAL_SERVER_ERROR: {
-    statusCode: 500,
-    text: 'An error occurred on the server',
   },*/
 };
+
+export const roles = Role;
