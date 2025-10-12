@@ -15,6 +15,9 @@ export const response = {
     statusCode: 401,
     text: 'Incorrect email or password'
   },
+  NO_AUTH_TOKEN: {
+    text: 'No auth token',
+  },
   FORBIDDEN: {
     statusCode: 403,
     text: 'Authorization required',
@@ -22,6 +25,10 @@ export const response = {
   INSUFFICIENT_PERMISSION: {
     statusCode: 403,
     text: 'Insufficient permission',
+  },
+  NOT_FOUND: {
+    statusCode: 404,
+    text: 'Not found',
   },
   CONFLICT: {
     statusCode: 409,
@@ -43,10 +50,6 @@ export const response = {
   BLOCKED: {
     statusCode: 403,
     text: 'Your account has been blocked. Please contact support'
-  },
-  NOT_FOUND: {
-    statusCode: 404,
-    text: 'Not found',
   },
   NOT_FOUND_RECORDS: {
     statusCode: 404,
