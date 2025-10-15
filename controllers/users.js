@@ -1,32 +1,58 @@
-//import { createUser, findUserByCredentials  } from '../models/user.js';
-//import Conflict from '../errors/conflict.js';
-//import Unauthorized from '../errors/unauthorized.js';
-//import { response } from '../constants.js'
-//import config from '../config.js';
-//import jwt from 'jsonwebtoken';
+import { findUserByParam, selectAllUsers, updateStatusByIds, deleteUsersByIds } from '../models/user.js';
+import { updateUsersRolesById } from '../models/userRole.js';
+import NotFound from '../errors/notFound.js';
+import BadRequest from '../errors/badRequest.js'
+import { response } from '../constants.js'
 
+const { NOT_FOUND, OK, BAD_REQUEST } = response;
 
-//const { CREATED, CONFLICT, OK, UNAUTHORIZED } = response;
-//const { JWT_SECRET } = config;
-
-export const getUser = async (req, res, next) => {
-    console.log('User');
-}
-
-/*
-export const register = async (req, res, next) => {
-    try{
-        const user = await createUser(req.body.name, req.body.email, req.body.password);
-        return res.status(CREATED.statusCode).send({ user });
+export const getUserProfile = async (req, res, next) => {
+    try {
+        const user = await findUserByParam('id', req.user.id);
+        if (!user) throw new NotFound(NOT_FOUND.text);
+        return res.status(OK.statusCode).send(user);
     } catch (e) {
-        console.log(e)
-        if (e.code == 'P2002') return next(new Conflict(CONFLICT.text));
+        if (e.code === 'P2023' || e.code === 'P2000' || e.code === 'P2003' || e.code === 'P2011') return next(new BadRequest(BAD_REQUEST.text));
         return next(e);
     }
-}*/
+};
 
-/*
-const createToken = (remember, id) => {
-    if (remember) return jwt.sign({ id: id }, JWT_SECRET, { expiresIn: '7d' });
-    return jwt.sign({ id: id }, JWT_SECRET, { expiresIn: '2h' });
-}*/
+export const getUsers = async (req, res, next) => {
+    try {
+        const users = await selectAllUsers();
+        res.status(OK.statusCode).send(users)
+    } catch (e) {
+        console.log(e);
+        next(e);
+    }
+};
+
+export const deleteUsers = async (req, res, next) => {
+  try {
+    return res.status(OK.statusCode).send(await deleteUsersByIds(req.body.usersId));
+  } catch (e) {
+    console.log(e)
+    if (e.code === 'P2023' || e.code === 'P2000' || e.code === 'P2003' || e.code === 'P2011') return next(new BadRequest(BAD_REQUEST.text));
+    return next(e)
+  }
+}
+
+export const updateUsersStatus = async (req, res, next) => {
+  try {
+    return res.status(OK.statusCode).send(await updateStatusByIds(req.body.ids, req.body.status));
+  } catch (e) {
+    console.log(e)
+    if (e.code === 'P2023' || e.code === 'P2000' || e.code === 'P2003' || e.code === 'P2011') return next(new BadRequest(BAD_REQUEST.text));
+    return next(e)
+  }
+}
+
+export const updateUsersRoles = async (req, res, next) => {
+  try {
+    return res.status(OK.statusCode).send(await updateUsersRolesById(req.body.usersId, req.body.rolesId));
+  } catch (e) {
+    console.log(e);
+    if (e.code === 'P2023' || e.code === 'P2000' || e.code === 'P2003' || e.code === 'P2011') return next(new BadRequest(BAD_REQUEST.text));
+    return next(e)
+  }
+}

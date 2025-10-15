@@ -10,8 +10,6 @@ const { NOT_FOUND } = response;
 
 const router = express.Router();
 
-//router.use(auth);
-
 router.use(authRoutes);
 
 router.use('/users', usersRoutes);

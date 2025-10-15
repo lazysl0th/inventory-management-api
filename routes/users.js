@@ -1,32 +1,26 @@
 import express from 'express';
 const router = express.Router();
 import { passportAuth } from '../middlewares/passport.js'
+import { roles } from '../constants.js'
 
 import {
-  getUser,
-} from '../controllers/users.js';
-/*
-import {
+  getUserProfile,
   getUsers,
-  getUser,
-  deleteUserByCredentials,
-//  deleteUnverifiedUser,
-  updateBlockStatus,
-  updateActiveStatus,
-} from '../controllers/users.js';*/
+  deleteUsers,
+  updateUsersStatus,
+  updateUsersRoles
+} from '../controllers/users.js';
 
-router.get('/me', passportAuth('jwt'), getUser);
-/*
-router.use(authRoles(roles.ADMIN));
+router.get('/me', passportAuth('jwt'), getUserProfile);
+
+router.use(passportAuth('jwt', [roles.ADMIN]));
 
 router.get('/', getUsers);
 
-//router.delete('/', deleteUserByCredentials);
+router.delete('/', deleteUsers);
 
-//router.delete('/status/unverified', deleteUnverifiedUser);
+router.patch('/status', updateUsersStatus);
 
-router.patch('/status/blocked', updateBlockStatus);
+router.patch('/roles', updateUsersRoles);
 
-router.patch('/status/unblocked', updateActiveStatus);
-*/
 export default router;

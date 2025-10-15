@@ -10,9 +10,9 @@ export const register = async ({ name, email, password, provider, socialId }) =>
     return createUser({ name, email, hash, provider, socialId });
 }
 
-const createToken = (id, remember) => {
+const createToken = (id, role, remember) => {
     const expiresIn = remember ? '7d' : '2h';
-    return jwt.sign({ id }, JWT_SECRET, { expiresIn});
+    return jwt.sign({ id, role }, JWT_SECRET, { expiresIn });
 }
 
 export const login = ({ email, password, remember, provider, socialId, name }) => {
@@ -21,7 +21,7 @@ export const login = ({ email, password, remember, provider, socialId, name }) =
 }
 
 export const loginByEmail = async (email, password, remember) => {
-    const user = await findUserByParam('email', email);
+    const user = await findUserByParam('email', email, 1);
     if (!user) return null;
     const matched = bcrypt.compare(password, user.password);
     if (!matched) return null

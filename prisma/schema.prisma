@@ -14,7 +14,8 @@ model User {
   password String?
   googleId String? @unique
   facebookId String? @unique
-  role Role @default(USER)
+  roles UserRole[]
+  status Status @default(Active)
   createdAt DateTime @default(now())
   inventories Inventory[]
   comments Comment[]
@@ -80,9 +81,28 @@ model Tag {
   inventories Inventory[] @relation("InventoryTags")
 }
 
-enum Role {
-  USER
-  ADMIN
+model Role {
+  id Int @id @default(autoincrement())
+  name RoleName @unique
+  users UserRole[]
+}
+
+model UserRole {
+  userId Int
+  roleId Int
+  user User @relation(fields: [userId], references: [id])
+  role Role @relation(fields: [roleId], references: [id])
+  @@id([userId, roleId])
+}
+
+enum RoleName {
+  User
+  Admin
+}
+
+enum Status {
+  Active
+  Blocked
 }
 
 enum FieldType {

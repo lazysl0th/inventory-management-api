@@ -6,7 +6,7 @@ const { CREATED, CONFLICT, OK } = response;
 
 export const registerUser = async (req, res, next) => {
     try{
-        const user = await register(req.body.name, req.body.email, req.body.password);
+        const user = await register(req.body);
         return res.status(CREATED.statusCode).send({ user });
     } catch (e) {
         console.log(e)

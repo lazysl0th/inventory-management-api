@@ -1,4 +1,4 @@
-import response from '../constants.js';
+import { response } from '../constants.js';
 const { BAD_REQUEST } = response;
 
 export default class BadRequest extends Error {

@@ -1,5 +1,3 @@
-import { Role } from '@prisma/client';
-
 export const response = {
   OK: {
     statusCode: 200,
@@ -17,6 +15,9 @@ export const response = {
   },
   NO_AUTH_TOKEN: {
     text: 'No auth token',
+  },
+  JWT_EXPIRED: {
+    text: 'jwt expired'
   },
   FORBIDDEN: {
     statusCode: 403,
@@ -57,4 +58,7 @@ export const response = {
   },*/
 };
 
-export const roles = Role;
+export const roles = {
+  USER: 'User',
+  ADMIN: 'Admin'
+}
