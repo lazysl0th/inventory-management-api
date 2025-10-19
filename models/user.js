@@ -1,8 +1,7 @@
-import prisma from '../services/prisma.js';
-import { deleteUserRolesByUsersId } from '../models/userRole.js';
+import selectClient from '../services/prisma.js';
 
 export const createUser = ({ name, email, hash, provider, socialId }) => {
-    return prisma.user.create({
+    return selectClient().user.create({
         data: {
             name,
             email,
@@ -14,22 +13,14 @@ export const createUser = ({ name, email, hash, provider, socialId }) => {
             id: true,
             name: true,
             email: true,
-            roles: {
-                select: {
-                    role: {
-                    select: {
-                        name: true
-                    }
-                    }
-                },
-            },
+            roles: { select: { role: { select: { name: true } } }, },
             ...(provider ? { [provider]: true } : {})
         },
     });
 }
 
 export const findUserByParam = (field, value, withPassword) => {
-    return prisma.user.findUnique({ 
+    return selectClient().user.findUnique({ 
         where: { [field]: value },
         select: {
             id: true,
@@ -38,20 +29,20 @@ export const findUserByParam = (field, value, withPassword) => {
             password: withPassword ? true : false,
             googleId: true,
             facebookId: true,
-            roles: { select: { role: { select: { name: true } } } },
+            roles: { select: { role: { select: { name: true } } }, },
         },
     });
 }
 
 export const updateUserData = (fieldWhere, valueWhere, fieldData, valueData) => {
-    return prisma.user.update({
+    return selectClient().user.update({
         where: { [fieldWhere]: valueWhere },
         data: { [fieldData]: valueData },
     });
 }
 
 export const selectAllUsers = () => {
-    return prisma.user.findMany({
+    return selectClient().user.findMany({
         select: {
             id: true,
             name: true,
@@ -59,24 +50,22 @@ export const selectAllUsers = () => {
             googleId: true,
             facebookId: true,
             status: true,
-            roles: { select: { role: { select: { name: true } } } }
+            roles: { select: { role: { select: { name: true } } }, }
         }
     });
 }
 
 export const deleteUsersByIds = async (usersId) => {
-    return await prisma.$transaction(async (tx) => {
+    return await selectClient().$transaction(async (tx) => {
         const needDeleteUsers = await tx.user.findMany({
             where: { id: { in: usersId } },
             select: { id: true },
         });
-        const deleteUsersRoles = await deleteUserRolesByUsersId(tx, usersId);
         const deletedUsers = await tx.user.deleteMany({
             where: { id: { in: usersId } },
         });
         return {
             needDeleteUsersCount: needDeleteUsers.length,
-            deleteUsersRolesCount: deleteUsersRoles.count,
             deletedUsersCount: deletedUsers.count,
             requestUpdateUsersCount: usersId.length,
             needDeleteUsers
@@ -84,18 +73,18 @@ export const deleteUsersByIds = async (usersId) => {
     });
 }
 
-export const updateStatusByIds = async (ids, status) => {
-    return await prisma.$transaction(async (tx) => {
+export const updateStatusByIds = async (usersId, status) => {
+    return await selectClient().$transaction(async (tx) => {
         const needUpdateStatusUser = await tx.user.findMany({
-            where: { id: { in: ids }, NOT: { status: status } },
+            where: { id: { in: usersId }, NOT: { status: status } },
             select: { id: true, status: true },
         })
         const updatedUsersStatusResult = await tx.user.updateMany({
-            where: { id: { in: ids }, NOT: { status: status } },
+            where: { id: { in: usersId }, NOT: { status: status } },
             data: { status },
         })
         const requestUpdateStatusUsers = await tx.user.findMany({
-            where: { id: { in: ids } },
+            where: { id: { in: usersId } },
             select: { id: true, status: true },
         })
         return {

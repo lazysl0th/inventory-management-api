@@ -12,15 +12,25 @@ import router from './routes/index.js';
 const { PORT } = config;
 
 const app = express();
+
 app.use(helmet());
+
 app.use(cors);
+
 app.use(limiter);
+
 app.use(express.json());
-//app.use(express.urlencoded({ extended: true }));
+
+app.use(express.urlencoded({ extended: true }));
+
 app.use(morgan('dev'));
+
 app.use(passport.initialize());
+
 app.use(router);
+
 app.use(errors());
+
 app.use(error);
 
 app.listen(PORT);

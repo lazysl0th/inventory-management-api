@@ -20,7 +20,7 @@ export const login = ({ email, password, remember, provider, socialId, name }) =
     return loginBySocial(provider, socialId, email, name);
 }
 
-export const loginByEmail = async (email, password, remember) => {
+const loginByEmail = async (email, password, remember) => {
     const user = await findUserByParam('email', email, 1);
     if (!user) return null;
     const matched = bcrypt.compare(password, user.password);
@@ -29,17 +29,12 @@ export const loginByEmail = async (email, password, remember) => {
     return { user, token };
 }
 
-export const loginBySocial = async (provider, socialId, email, name) => {
+const loginBySocial = async (provider, socialId, email, name) => {
 
     let user = await findUserByParam('email', email);
-    console.log(user);
     if (!user || user[provider] != socialId) {
-        if (user) {
-            updateUserData('email', email, provider, socialId);
-        }
-        else {
-            user = await register({ name, email, provider, socialId });
-        }
+        if (user) updateUserData('email', email, provider, socialId);
+        else user = await register({ name, email, provider, socialId });
     }
     const token = createToken(user.id);
     return { user, token};

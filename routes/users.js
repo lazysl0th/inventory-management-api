@@ -13,7 +13,7 @@ import {
 
 router.get('/me', passportAuth('jwt'), getUserProfile);
 
-router.use(passportAuth('jwt', [roles.ADMIN]));
+//router.use(passportAuth('jwt', [roles.ADMIN]));
 
 router.get('/', getUsers);
 

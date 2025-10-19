@@ -1,114 +1,157 @@
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url = env("DATABASE_URL")
+    provider = "postgresql"
+    url = env("DATABASE_URL")
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  name String
-  email String @unique
-  password String?
-  googleId String? @unique
-  facebookId String? @unique
-  roles UserRole[]
-  status Status @default(Active)
-  createdAt DateTime @default(now())
-  inventories Inventory[]
-  comments Comment[]
-}
+    id Int @id @default(autoincrement())
+    name String
+    email String @unique
+    password String?
+    googleId String? @unique
+    facebookId String? @unique
+    roles UserRole[]
+    status Status @default(Active)
+    createdAt DateTime @default(now())
+    ownedInventories Inventory[] @relation("UserOwnedInventories")
+    ownedItems Item[] @relation("UserOwnedItems")
+    allowedInventories Inventory[] @relation("UserAllowedInventories")
+    comments Comment[]
+    likes Like[]
 
-model Inventory {
-  id Int @id @default(autoincrement())
-  title String
-  description String?
-  category String
-  isPublic Boolean @default(false)
-  ownerId Int
-  owner User @relation(fields: [ownerId], references: [id])
-  fields InventoryField[]
-  items Item[]
-  tags Tag[] @relation("InventoryTags")
-  comments Comment[]
-  createdAt DateTime @default(now())
-}
-
-model InventoryField {
-  id Int @id @default(autoincrement())
-  inventory Inventory @relation(fields: [inventoryId], references: [id])
-  inventoryId Int
-  title String
-  type FieldType
-  description String?
-  showInTable Boolean @default(true)
-  order Int
-}
-
-model Item {
-  id Int @id @default(autoincrement())
-  inventory Inventory @relation(fields: [inventoryId], references: [id])
-  inventoryId Int
-  customId String
-  createdBy Int
-  createdAt DateTime @default(now())
-  values ItemValue[]
-}
-
-model ItemValue {
-  id Int @id @default(autoincrement())
-  item Item @relation(fields: [itemId], references: [id])
-  itemId Int
-  fieldId Int
-  value String
-}
-
-model Comment {
-  id Int @id @default(autoincrement())
-  content String
-  user User @relation(fields: [userId], references: [id])
-  userId Int
-  inventory Inventory @relation(fields: [inventoryId], references: [id])
-  inventoryId Int
-  createdAt DateTime @default(now())
-}
-
-model Tag {
-  id Int @id @default(autoincrement())
-  name String @unique
-  inventories Inventory[] @relation("InventoryTags")
+  @@index([email])
 }
 
 model Role {
-  id Int @id @default(autoincrement())
-  name RoleName @unique
-  users UserRole[]
+    id Int @id @default(autoincrement())
+    name RoleName @unique
+    users UserRole[]
 }
 
 model UserRole {
-  userId Int
-  roleId Int
-  user User @relation(fields: [userId], references: [id])
-  role Role @relation(fields: [roleId], references: [id])
-  @@id([userId, roleId])
+    userId Int
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    roleId Int
+    role Role @relation(fields: [roleId], references: [id])
+    @@id([userId, roleId])
 }
 
 enum RoleName {
-  User
-  Admin
+    User
+    Admin
 }
 
 enum Status {
-  Active
-  Blocked
+    Active
+    Blocked
+}
+
+model Inventory {
+    id Int @id @default(autoincrement())
+    title String
+    description String?
+    category Category
+    tags Tag[] @relation("InventoryTags")
+    image String?
+    ownerId Int
+    owner User @relation("UserOwnedInventories", fields: [ownerId], references: [id])
+    isPublic Boolean @default(false)
+    allowedUsers User[] @relation("UserAllowedInventories")
+    customIdFormat Json
+    version Int @default(1)
+    fields InventoryField[]
+    items Item[]
+    comments Comment[]
+    itemsCount Int @default(0)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    searchVector Unsupported("tsvector")?
+    @@index([searchVector], type: Gin)
+}
+
+model InventoryField {
+    id Int @id @default(autoincrement())
+    inventoryId Int
+    inventory Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+    title String
+    type FieldType
+    description String?
+    showInTable Boolean @default(true)
+    isDeleted Boolean @default(false)
+    order Int
+    @@unique([inventoryId, title])
 }
 
 enum FieldType {
-  TEXT
-  LONGTEXT
-  NUMBER
-  FILE
-  BOOLEAN
+    TEXT
+    LONGTEXT
+    NUMBER
+    FILE
+    BOOLEAN
+}
+
+enum Category {
+    Equipment
+    Furniture
+    Book
+    Other
+}
+
+model Item {
+    id Int @id @default(autoincrement())
+    inventoryId Int
+    inventory Inventory @relation(fields: [inventoryId], references: [id])
+    customId String
+    ownerId Int
+    owner User @relation("UserOwnedItems", fields: [ownerId], references: [id])
+    values ItemValue[]
+    likes Like[]
+    version Int @default(1)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    comments Comment[]
+
+    @@unique([inventoryId, customId])
+}
+
+model ItemValue {
+    id Int @id @default(autoincrement())
+    itemId Int
+    item Item @relation(fields: [itemId], references: [id])
+    fieldId Int
+    value String
+}
+
+model Comment {
+    id Int @id @default(autoincrement())
+    content String
+    userId Int
+    user User @relation(fields: [userId], references: [id])
+    inventoryId Int?
+    inventory Inventory? @relation(fields: [inventoryId], references: [id])
+    itemId Int?
+    item Item? @relation(fields: [itemId], references: [id])
+    createdAt DateTime @default(now())
+}
+
+model Like {
+    id Int @id @default(autoincrement())
+    userId Int
+    user User @relation(fields: [userId], references: [id])
+    itemId Int
+    item Item @relation(fields: [itemId], references: [id])
+    createdAt DateTime @default(now())
+
+    @@unique([userId, itemId])
+}
+
+model Tag {
+    id Int @id @default(autoincrement())
+    name String @unique
+    inventories Inventory[] @relation("InventoryTags")
 }

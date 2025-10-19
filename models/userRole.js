@@ -1,8 +1,8 @@
 import prisma from '../services/prisma.js';
 import { roles } from '../constants.js';
 
-const deleteUsersRoles = (tx, usersId, rolesId) => {
-    return tx.userRole.deleteMany({
+const deleteUsersRoles = (client, usersId, rolesId) => {
+    return client.userRole.deleteMany({
         where: {
             userId: { in: usersId },
             roleId: { notIn: rolesId },
@@ -11,18 +11,12 @@ const deleteUsersRoles = (tx, usersId, rolesId) => {
     })
 }
 
-const upsertUserRole = (tx, userId, roleId) => {
-    return tx.userRole.upsert({
+const upsertUserRole = (client, userId, roleId) => {
+    return client.userRole.upsert({
         where: { userId_roleId: { userId, roleId } },
         update: {},
         create: { userId, roleId },
     })
-}
-
-export const deleteUserRolesByUsersId = (tx, usersIds) => {
-    return tx.userRole.deleteMany({
-        where: { userId: { in: usersIds } },
-    });
 }
 
 export const updateUsersRolesById = (usersId, rolesId) => {
