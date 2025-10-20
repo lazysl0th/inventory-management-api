@@ -93,6 +93,8 @@ type Item {
     inventoryId: Int!
     values: [ItemValue!]!
     likes: [Like!]!
+    likesCount: Int!
+    likedByMe: Boolean!
     comments: [Comment!]!
     version: Int!
     createdAt: String!
@@ -114,7 +116,9 @@ type Comment {
     id: Int!
     content: String!
     user: User!
+    inventory: Inventory
     inventoryId: Int
+    item: Item
     itemId: Int
     createdAt: String!
 }
@@ -177,6 +181,10 @@ type Mutation {
     createItem(input: CreateItemInput!): Item! @auth
     updateItem(id: Int!, input: CreateItemInput!): Item! @auth(modelName: "${modelName.ITEM}", roles: ["${roles.ADMIN}"])
     deleteItem(ids: [Int!]!): [Item!]! @auth(modelName: "${modelName.ITEM}", roles: ["${roles.ADMIN}"])
+    toggleLikeItem(id: Int!): Item! @auth
+    createComment(input: CreateCommentInput!): Comment! @auth
+    grantInventoryAccess(id: Int!, userIds: [Int!]!): Inventory! @auth(modelName: "${modelName.INVENTORY}", roles: ["${roles.ADMIN}"])
+    revokeInventoryAccess(id: Int!, userIds: [Int!]!): Inventory! @auth(modelName: "${modelName.INVENTORY}", roles: ["${roles.ADMIN}"])
 }
 `;
 

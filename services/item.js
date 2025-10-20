@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { selectInventoryById } from '../models/inventory.js'
 import { selectLastItem, createItem, selectItemById, updateItem, deleteItem} from '../models/item.js'
+import { toggleLike, getLikesCount } from '../services/like.js'
 import NotFound from '../errors/notFound.js';
 import { response, modelName } from '../constants.js';
 
@@ -69,8 +70,7 @@ const generateCustomId = async (inventory) => {
     return id;
 }
 
-export const create = async (input, context) => {
-    const { user } = context;
+export const create = async (input, user) => {
     const { inventoryId, values } = input;
     const inventory = await selectInventoryById(inventoryId);
     if (!inventory) throw new NotFound(NOT_FOUND_RECORDS.text(modelName.INVENTORY));
@@ -94,4 +94,15 @@ export const update = async (itemId, input) => {
 
 export const del = async (itemIds) => {
     return deleteItem(itemIds);
+}
+
+export const like = async (itemId, user) => {
+    const { isLiked } = await toggleLike(user.id, itemId);
+    const likesCount = await getLikesCount(itemId);
+    const item = await selectItemById(itemId);
+    return {
+        ...item,
+        likesCount,
+        likedByMe: isLiked,
+    };
 }

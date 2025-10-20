@@ -92,3 +92,29 @@ export const updateInventory = async (tagsNames, existingTagsId, fields, invento
         })
     })
 }
+
+export const addAllowUsers = (inventoryId, userIds, client) => {
+    return selectClient(client).inventory.update({
+        where: { id: inventoryId },
+        data: { allowedUsers: { connect: userIds.map(id => ({ id })) } },
+        include: {
+            allowedUsers: true,
+            owner: true,
+            tags: true,
+            fields: true,
+        },
+    });
+}
+
+export const deleteAllowUsers = (inventoryId, userIds, client) => {
+    return selectClient(client).inventory.update({
+        where: { id: inventoryId },
+        data: { allowedUsers: { disconnect: userIds.map(id => ({ id })) } },
+        include: {
+            allowedUsers: true,
+            owner: true,
+            tags: true,
+            fields: true,
+        },
+    });
+}

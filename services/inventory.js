@@ -13,7 +13,7 @@ const createCustomIdFormatJSON = (customIdFormat) => {
     }
 }
 
-export const selectInventory = async (inventoryId) => {
+export const select = async (inventoryId) => {
     const inventory = await selectInventoryById(inventoryId); 
     const isOwner = currentUser && currentUser.id === inv.ownerId;
     const isAdmin = user.roles.some((userRole) => userRole.includes(roles.ADMIN));
@@ -77,4 +77,12 @@ export const update = async (inventoryId, input) => {
         updatedAt: new Date(),
         };
     return updateInventory(tagsNames, existingTagsId, fields, inventoryId, updateData);
+}
+
+export const grantAccess = () => {
+
+}
+
+export const revokeAccess = () => {
+
 }
