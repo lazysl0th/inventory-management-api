@@ -19,16 +19,17 @@ export const createUser = ({ name, email, hash, provider, socialId }) => {
     });
 }
 
-export const findUserByParam = (field, value, withPassword) => {
+export const findUserByParam = (field, value) => {
     return selectClient().user.findUnique({ 
         where: { [field]: value },
         select: {
             id: true,
             name: true,
             email: true,
-            password: withPassword ? true : false,
+            password: true,
             googleId: true,
             facebookId: true,
+            status: true,
             roles: { select: { role: { select: { name: true } } }, },
         },
     });
@@ -73,18 +74,18 @@ export const deleteUsersByIds = async (usersId) => {
     });
 }
 
-export const updateStatusByIds = async (usersId, status) => {
+export const updateStatusByIds = async (userIds, status) => {
     return await selectClient().$transaction(async (tx) => {
         const needUpdateStatusUser = await tx.user.findMany({
-            where: { id: { in: usersId }, NOT: { status: status } },
+            where: { id: { in: userIds }, NOT: { status: status } },
             select: { id: true, status: true },
         })
         const updatedUsersStatusResult = await tx.user.updateMany({
-            where: { id: { in: usersId }, NOT: { status: status } },
+            where: { id: { in: userIds }, NOT: { status: status } },
             data: { status },
         })
         const requestUpdateStatusUsers = await tx.user.findMany({
-            where: { id: { in: usersId } },
+            where: { id: { in: userIds } },
             select: { id: true, status: true },
         })
         return {

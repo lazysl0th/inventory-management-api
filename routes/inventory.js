@@ -6,6 +6,10 @@ import authDirectiveTransformer from '../graphql/directives/auth.js';
 import typeDefs from '../graphql/schema.js';
 import resolvers from '../graphql/resolvers.js';
 import createContext from '../graphql/context.js'
+import BadRequest from '../errors/badRequest.js';
+import { response } from '../constants.js';
+
+const { BAD_REQUEST } = response
 
 const router = express.Router();
 
@@ -17,7 +21,12 @@ const apolloServer = new ApolloServer({
     introspection: true,
     plugins: [],
     landingPage: false,
-});
+    formatError: (e) => {
+        console.log(e);
+        if (e.extensions.code === 'BAD_USER_INPUT') throw new BadRequest(BAD_REQUEST.text);
+        return e;
+    }
+})
 
 await apolloServer.start();
 

@@ -1,9 +1,10 @@
 import { gql } from 'graphql-tag';
 import { roles } from '../constants.js'
+import { modelName } from '../constants.js'
 
 const typeDefs = gql`
 
-directive @auth(owner: Boolean, roles: [String!]) on FIELD_DEFINITION
+directive @auth(modelName: String, roles: [String!]) on FIELD_DEFINITION
 
 enum Category {
     Equipment
@@ -84,6 +85,40 @@ type Tag {
 
 scalar JSON
 
+type Item {
+    id: Int!
+    customId: String!
+    owner: User!
+    ownerId: Int!
+    inventoryId: Int!
+    values: [ItemValue!]!
+    likes: [Like!]!
+    comments: [Comment!]!
+    version: Int!
+    createdAt: String!
+    updatedAt: String!
+}
+
+type ItemValue {
+    id: Int!
+    field: InventoryField!
+    value: String!
+}
+
+type Like {
+    id: Int!
+    userId: Int!
+}
+
+type Comment {
+    id: Int!
+    content: String!
+    user: User!
+    inventoryId: Int
+    itemId: Int
+    createdAt: String!
+}
+
 input InventoryFieldInput {
     id: Int
     title: String!
@@ -91,7 +126,7 @@ input InventoryFieldInput {
     description: String
     showInTable: Boolean
     order: Int
-    isDeleted: Boolean!
+    isDeleted: Boolean
 }
 
 input CreateInventoryInput {
@@ -103,7 +138,6 @@ input CreateInventoryInput {
     tagsNames: [String!]
     fields: [InventoryFieldInput!]
     customIdFormat: [CustomIdPartInput!]
-    ownerId: Int!
 }
 
 input CustomIdPartInput {
@@ -113,15 +147,36 @@ input CustomIdPartInput {
     digits: Int
 }
 
+input ItemValueInput {
+    fieldId: Int!
+    value: String!
+}
+
+input CreateItemInput {
+    inventoryId: Int!
+    values: [ItemValueInput!]!
+}
+
+input CreateCommentInput {
+    inventoryId: Int
+    itemId: Int
+    content: String!
+}
+
 type Query {
     inventories: [Inventory!]!
     inventory(id: Int!): Inventory
+    items(inventoryId: Int!): [Item!]!
+    item(id: Int!): Item
 }
 
 type Mutation {
     createInventory(input: CreateInventoryInput!): Inventory! @auth
-    updateInventory(id: Int!, input: CreateInventoryInput!): Inventory! @auth(owner: true, roles: ["${roles.ADMIN}"])
-    deleteInventory(ids: [Int!]!): [Inventory!]! @auth(owner: true, roles: ["${roles.ADMIN}"])
+    updateInventory(id: Int!, input: CreateInventoryInput!): Inventory! @auth(modelName: "${modelName.INVENTORY}", roles: ["${roles.ADMIN}"])
+    deleteInventory(ids: [Int!]!): [Inventory!]! @auth(modelName: "${modelName.INVENTORY}", roles: ["${roles.ADMIN}"])
+    createItem(input: CreateItemInput!): Item! @auth
+    updateItem(id: Int!, input: CreateItemInput!): Item! @auth(modelName: "${modelName.ITEM}", roles: ["${roles.ADMIN}"])
+    deleteItem(ids: [Int!]!): [Item!]! @auth(modelName: "${modelName.ITEM}", roles: ["${roles.ADMIN}"])
 }
 `;
 

@@ -23,6 +23,10 @@ export const response = {
         statusCode: 403,
         text: 'Authorization required',
     },
+    BLOCKED: {
+        statusCode: 403,
+        text: 'Your account has been blocked. Please contact support'
+    },
     INSUFFICIENT_PERMISSION: {
         statusCode: 403,
         text: 'Insufficient permission',
@@ -33,11 +37,18 @@ export const response = {
     },
     NOT_FOUND_RECORDS: {
         statusCode: 404,
-        text: 'Record(s) not found',
+        text: (modelName) => `Record(s) ${modelName} not found`,
     },
     CONFLICT: {
         statusCode: 409,
-        text: 'A user with this email already exists.',
+        text: (model) => {
+            switch(model) {
+                case modelName.USER:
+                    return 'A user with this email already exists.'
+                case modelName.INVENTORY_FIELD:
+                    return 'A field with this title already exists in inventory.'
+            }
+        },
     },
     INTERNAL_SERVER_ERROR: {
         statusCode: 500,
@@ -62,4 +73,11 @@ export const response = {
 export const roles = {
   USER: 'User',
   ADMIN: 'Admin'
+}
+
+export const modelName = {
+    INVENTORY: 'Inventory',
+    ITEM: 'Item',
+    USER: 'User',
+    INVENTORY_FIELD: 'InventoryField'
 }

@@ -1,15 +1,15 @@
+import crypto from 'crypto';
 import { createInventory, deleteInventory, selectInventoryById, updateInventory } from "../models/inventory.js";
 import NotFound from '../errors/notFound.js';
-import { response } from '../constants.js';
+import Conflict from '../errors/conflict.js';
+import { response, modelName } from '../constants.js';
 
-const { NOT_FOUND_RECORDS } = response
+const { NOT_FOUND_RECORDS, CONFLICT } = response
 
-
-
-const createCustomIdFormat = (inventory) => {
+const createCustomIdFormatJSON = (customIdFormat) => {
     return {
-        parts: inventory.customIdFormat.parts || [],
-        summary: (inventory.customIdFormat.parts || []).map((part) => part.type || '').join(' + ') || 'Default',
+        parts: customIdFormat || [],
+        summary: (customIdFormat || []).map((part) => part.type || '').join(' + ') || 'Default',
     }
 }
 
@@ -43,10 +43,16 @@ export const selectInventory = async (inventoryId) => {
     if (result.updatedAt instanceof Date) result.updatedAt = result.updatedAt.toISOString();
 }
 
-export const create = async (input) => {
+export const create = async (input, context) => {
+    const { user } = context;
     const { tagsNames, fields, customIdFormat, ...data} = input;
-    const inventory = await createInventory(tagsNames, fields, customIdFormat, data);
-    return { ...inventory, customIdFormat: createCustomIdFormat(inventory) }
+    const customIdFormatJSON = createCustomIdFormatJSON(customIdFormat);
+    try {
+        const inventory = await createInventory(tagsNames, fields, customIdFormatJSON, data, user);
+        return inventory;
+    } catch (e) {
+        if (e.code === 'P2002') throw new Conflict(CONFLICT.text(modelName.INVENTORY_FIELD));
+    }
 }
 
 export const del = (inventoryIds) => {
@@ -65,14 +71,10 @@ export const update = async (inventoryId, input) => {
         image: image ?? inventory.image,
         isPublic: isPublic ?? inventory.isPublic,
         customIdFormat: customIdFormat
-            ? { parts: customIdFormat }
+            ? createCustomIdFormatJSON(customIdFormat)
             : inventory.customIdFormat,
         version: { increment: 1 },
         updatedAt: new Date(),
         };
-    const updatedInventory = await updateInventory(tagsNames, existingTagsId, fields, inventoryId, updateData);
-    return {
-        ...updatedInventory,
-        customIdFormat: createCustomIdFormat(updatedInventory),
-    };
+    return updateInventory(tagsNames, existingTagsId, fields, inventoryId, updateData);
 }

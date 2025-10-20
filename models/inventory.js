@@ -8,6 +8,7 @@ export const selectAllInventories = (client) => {
             owner: { include: { roles: { include: { role: true, }, }, }, },
             fields: true,
             tags: true,
+            allowedUsers: { select: { id: true, name: true, email: true } },
         },
         orderBy: { createdAt: 'desc' }
     });
@@ -19,7 +20,7 @@ export const selectInventoryById = (inventoryId, client) => {
         include: {
           owner: { select: { id: true, name: true, email: true } },
           tags: true,
-          fields: { orderBy: { order: 'asc' } },
+          fields: true,
           allowedUsers: { select: { id: true, name: true, email: true } },
         },
       });
@@ -37,10 +38,6 @@ export const selectInventoriesById = (inventoriesId, client) => {
     });
 }
 
-export const deleteInventoriesById = (inventoriesId, client) => {
-    return selectClient(client).inventory.deleteMany({ where: { id: { in: inventoriesId } }, });
-}
-
 const createTags = (tagsNames, client) => {
     return Promise.all(
         tagsNames.map(async(tagName) => {
@@ -56,15 +53,15 @@ export const insertInventory = (data, client) => {
         include: {
             owner: { select: { id: true, name: true } },
             tags: true,
-            fields: true,
+            fields: { select: { type: true, title: true, order: true }},
         },
     })
 }
 
-export const createInventory = (tagsNames, fields, customIdFormat, data) => {
+export const createInventory = (tagsNames, fields, customIdFormatJSON, data, user) => {
     return selectClient().$transaction(async (tx) => {
         const tags = await createTags(tagsNames, tx);
-        const inventory = await insertInventory({ ...data, tags: { connect: tags }, customIdFormat: { parts: customIdFormat }}, tx);
+        const inventory = await insertInventory({ ...data, tags: { connect: tags }, customIdFormat: customIdFormatJSON, ownerId: user.id }, tx);
         await createInventoryFields(inventory.id, fields, tx);
         return selectInventoryById(inventory.id, tx);
     })

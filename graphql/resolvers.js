@@ -1,17 +1,10 @@
-import { selectAllInventories } from '../models/inventory.js';
-import { create, del, update, selectInventory } from '../services/inventory.js';
-import { roles } from '../constants.js'
+import { mergeResolvers } from '@graphql-tools/merge';
+import inventoryResolvers from './resolvers/inventory.js'
+import itemResolvers from './resolvers/item.js'
 
-const resolvers = {
-    Query: {
-        inventories: async (_, __, {}) => { return await selectAllInventories(); },
-        inventory: async(_, __, {id}) => selectInventory(id),
-    },
-    Mutation: {
-        createInventory: async (_, { input }, {}) => create(input),
-        deleteInventory: async (_, { ids }) => del(ids),
-        updateInventory: async (_, { id, input }, {}) => update(id, input)
-    },
-};
+const resolvers = mergeResolvers([
+    inventoryResolvers,
+    itemResolvers,
+]);
 
 export default resolvers;
