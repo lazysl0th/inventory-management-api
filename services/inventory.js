@@ -1,5 +1,11 @@
-import crypto from 'crypto';
-import { createInventory, deleteInventory, selectInventoryById, updateInventory } from "../models/inventory.js";
+import { 
+    createInventory,
+    deleteInventory,
+    selectInventoryById,
+    updateInventory,
+    selectInventoriesByCondition,
+    selectInventoriesOrderByItemCounts
+} from "../models/inventory.js";
 import NotFound from '../errors/notFound.js';
 import Conflict from '../errors/conflict.js';
 import { response, modelName } from '../constants.js';
@@ -13,55 +19,24 @@ const createCustomIdFormatJSON = (customIdFormat) => {
     }
 }
 
-export const select = async (inventoryId) => {
-    const inventory = await selectInventoryById(inventoryId); 
-    const isOwner = currentUser && currentUser.id === inv.ownerId;
-    const isAdmin = user.roles.some((userRole) => userRole.includes(roles.ADMIN));
-    const result = { ...inventory };
-
-    if (!isOwner && !isAdmin) {
-        result.allowedUsers = [];
-
-        if (inv.customIdFormat?.parts) {
-            const parts = inv.customIdFormat.parts.map((p) => p.type || '?');
-            result.customIdFormat = { summary: parts.join(' + '), parts: null, };
-        } else {
-            result.customIdFormat = { summary: 'Default', parts: null };
-        }
-    } else {
-        if (inv.customIdFormat?.parts) {
-            const parts = inv.customIdFormat.parts;
-            result.customIdFormat = {
-                parts,
-                summary: parts.map((p) => p.type || '?').join(' + '),
-        };
-        } else {
-            result.customIdFormat = { summary: 'Default', parts: [] };
-        }
-    }
-    if (result.createdAt instanceof Date) result.createdAt = result.createdAt.toISOString();
-    if (result.updatedAt instanceof Date) result.updatedAt = result.updatedAt.toISOString();
-}
-
-export const create = async (input, context) => {
-    const { user } = context;
+export const create = async (input, user, client) => {
     const { tagsNames, fields, customIdFormat, ...data} = input;
     const customIdFormatJSON = createCustomIdFormatJSON(customIdFormat);
     try {
-        const inventory = await createInventory(tagsNames, fields, customIdFormatJSON, data, user);
+        const inventory = await createInventory(tagsNames, fields, customIdFormatJSON, data, user, client);
         return inventory;
     } catch (e) {
         if (e.code === 'P2002') throw new Conflict(CONFLICT.text(modelName.INVENTORY_FIELD));
     }
 }
 
-export const del = (inventoryIds) => {
-    return deleteInventory(inventoryIds);
+export const del = (inventoryIds, prisma) => {
+    return deleteInventory(inventoryIds, prisma);
 }
 
-export const update = async (inventoryId, input) => {
+export const update = async (inventoryId, input, prisma) => {
     const { tagsNames, fields, title, description, category, image, isPublic, customIdFormat } = input;
-    const inventory = await selectInventoryById(inventoryId);
+    const inventory = await selectInventoryById(inventoryId, prisma);
     if (!inventory) throw new NotFound(NOT_FOUND_RECORDS.text);
     const existingTagsId = inventory.tags.map((tag) => tag.id);
     const updateData = {
@@ -76,7 +51,7 @@ export const update = async (inventoryId, input) => {
         version: { increment: 1 },
         updatedAt: new Date(),
         };
-    return updateInventory(tagsNames, existingTagsId, fields, inventoryId, updateData);
+    return updateInventory(tagsNames, existingTagsId, fields, inventoryId, updateData, prisma);
 }
 
 export const grantAccess = () => {
@@ -85,4 +60,28 @@ export const grantAccess = () => {
 
 export const revokeAccess = () => {
 
+}
+
+export const selectInventories = async (condition, client) => {
+    const { where = {}, orderBy = {}, take, skip } = condition;
+        
+    const prismaWhere = {};
+    
+    if (where.ownerId) prismaWhere.ownerId = where.ownerId;
+    if (where.isPublic !== undefined) prismaWhere.isPublic = where.isPublic;
+    if (where.search) {
+      prismaWhere.OR = [
+        { title: { contains: where.search, mode: 'insensitive' } },
+        { description: { contains: where.search, mode: 'insensitive' } },
+      ];
+    }
+
+    if (orderBy.itemsCount) return selectInventoriesOrderByItemCounts(where.ownerId, where.isPublic, orderBy.itemsCount, take, client);
+
+    const inventories = await selectInventoriesByCondition(prismaWhere, orderBy, take, skip, client);
+
+    return inventories.map((inventory) => ({
+      ...inventory,
+      itemsCount: inventory._count.items,
+    }));
 }

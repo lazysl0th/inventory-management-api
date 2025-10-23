@@ -33,10 +33,10 @@ const config = {
   FACEBOOK_APP_ID: FACEBOOK_APP_ID ? FACEBOOK_APP_ID : '',
   FACEBOOK_APP_SECRET: FACEBOOK_APP_SECRET ? FACEBOOK_APP_SECRET : '',
   FACEBOOK_CALLBACK_URL: NODE_ENV === 'production' && FACEBOOK_CALLBACK_URL ? FACEBOOK_CALLBACK_URL : 'http://localhost:3000/signin/facebook/callback',
+  FRONTEND: NODE_ENV === 'production' && FRONTEND ? FRONTEND : 'http://localhost:5173'
   /*EMAIL_USER: NODE_ENV === 'production' && EMAIL_USER ? EMAIL_USER : '',
   EMAIL_NAME: NODE_ENV === 'production' && EMAIL_NAME ? EMAIL_NAME : 'User manager',
-  BACKEND: NODE_ENV === 'production' && BACKEND ? BACKEND : 'http://localhost:3001',
-  FRONTEND: NODE_ENV === 'production' && FRONTEND ? FRONTEND : 'http://localhost:5174',*/
+  BACKEND: NODE_ENV === 'production' && BACKEND ? BACKEND : 'http://localhost:3001',*/
 };
 
 export default config

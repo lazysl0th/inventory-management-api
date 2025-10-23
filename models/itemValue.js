@@ -1,4 +1,4 @@
-import selectClient from '../services/prisma.js'
+import selectClient from '../infrastructure/prisma.js'
 
 const prepareFieldsValue = (values, itemId) => {
     return values.map((value) => Object.fromEntries(Object.entries({ ...value, itemId }).filter(([_, value]) => value !== undefined)));

@@ -1,7 +1,7 @@
-import selectClient from '../services/prisma.js';
+import { getPrismaClient } from '../infrastructure/prisma.js';
 
 export const createUser = ({ name, email, hash, provider, socialId }) => {
-    return selectClient().user.create({
+    return getPrismaClient().user.create({
         data: {
             name,
             email,
@@ -20,30 +20,21 @@ export const createUser = ({ name, email, hash, provider, socialId }) => {
 }
 
 export const findUserByParam = (field, value) => {
-    return selectClient().user.findUnique({ 
+    return getPrismaClient().user.findUnique({ 
         where: { [field]: value },
-        select: {
-            id: true,
-            name: true,
-            email: true,
-            password: true,
-            googleId: true,
-            facebookId: true,
-            status: true,
-            roles: { select: { role: { select: { name: true } } }, },
-        },
+        include: { roles: { include: { role: true, }, }, },
     });
 }
 
 export const updateUserData = (fieldWhere, valueWhere, fieldData, valueData) => {
-    return selectClient().user.update({
+    return getPrismaClient().user.update({
         where: { [fieldWhere]: valueWhere },
         data: { [fieldData]: valueData },
     });
 }
 
 export const selectAllUsers = () => {
-    return selectClient().user.findMany({
+    return getPrismaClient().user.findMany({
         select: {
             id: true,
             name: true,
@@ -57,7 +48,7 @@ export const selectAllUsers = () => {
 }
 
 export const deleteUsersByIds = async (usersId) => {
-    return await selectClient().$transaction(async (tx) => {
+    return await getPrismaClient().$transaction(async (tx) => {
         const needDeleteUsers = await tx.user.findMany({
             where: { id: { in: usersId } },
             select: { id: true },
@@ -75,7 +66,7 @@ export const deleteUsersByIds = async (usersId) => {
 }
 
 export const updateStatusByIds = async (userIds, status) => {
-    return await selectClient().$transaction(async (tx) => {
+    return await getPrismaClient().$transaction(async (tx) => {
         const needUpdateStatusUser = await tx.user.findMany({
             where: { id: { in: userIds }, NOT: { status: status } },
             select: { id: true, status: true },

@@ -1,17 +1,17 @@
-import { selectAllInventories, addAllowUsers, deleteAllowUsers } from '../../models/inventory.js';
-import { create, del, update, select } from '../../services/inventory.js';
+import { selectInventoryById, addAllowUsers, deleteAllowUsers } from '../../models/inventory.js';
+import { create, del, update, selectInventories } from '../../services/inventory.js';
 
 const inventoryResolvers = {
     Query: {
-        inventories: async (_, __, {}) => { return await selectAllInventories(); },
-        inventory: async(_, __, {id}) => select(id),
+        selectInventories: async (_, args, { prisma }) => await selectInventories(args, prisma),
+        selectInventory: async (_, { id }, { prisma }) => await selectInventoryById(id, prisma),
     },
     Mutation: {
-        createInventory: async (_, { input }, context) => create(input, context),
-        deleteInventory: async (_, { ids }) => del(ids),
-        updateInventory: async (_, { id, input }) => await update(id, input),
-        grantInventoryAccess: async (_, { id, userIds }) => await addAllowUsers(id, userIds),
-        revokeInventoryAccess: async (_, { id, userIds }) => await deleteAllowUsers(id, userIds),
+        createInventory: async (_, { input }, { user, prisma }) => create(input, user, prisma),
+        deleteInventory: async (_, { ids }, { prisma }) => del(ids, prisma),
+        updateInventory: async (_, { id, input }, { prisma }) => await update(id, input, prisma),
+        grantInventoryAccess: async (_, { id, userIds }, { prisma }) => await addAllowUsers(id, userIds, prisma),
+        revokeInventoryAccess: async (_, { id, userIds }, { prisma }) => await deleteAllowUsers(id, userIds, prisma),
     },
 };
 

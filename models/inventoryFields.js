@@ -1,5 +1,3 @@
-import selectClient from '../services/prisma.js';
-
 const prepareFieldsData = (fields, inventoryId) => {
     return fields.map((field) => {
         const { id, ...rest } = field;
@@ -12,14 +10,14 @@ const prepareFieldsData = (fields, inventoryId) => {
 
 export const createInventoryFields = (inventoryId, fields, client) => {
     const fieldsData = prepareFieldsData(fields, inventoryId);
-    return selectClient(client).inventoryField.createMany({ data: fieldsData });
+    return client.inventoryField.createMany({ data: fieldsData });
 };
 
 export const updateInventoryFields = (fields, client) => {
     const fieldsData = prepareFieldsData(fields);
     return Promise.all(
         fieldsData.map(field =>
-            selectClient(client).inventoryField.update({
+            client.inventoryField.update({
                 where: { id: field.id },
                 data: field.data
             })
@@ -28,7 +26,7 @@ export const updateInventoryFields = (fields, client) => {
 }
 
 export const deleteInventoryFields = (inventoryId, fieldsTitles, client) => {
-    return selectClient(client).inventoryField.updateMany({
+    return client.inventoryField.updateMany({
         where: {
             inventoryId: inventoryId,
             title: { notIn: fieldsTitles },

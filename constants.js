@@ -75,6 +75,10 @@ export const roles = {
   ADMIN: 'Admin'
 }
 
+export const userStatus = {
+    BLOCKED: 'Blocked'
+}
+
 export const modelName = {
     INVENTORY: 'Inventory',
     ITEM: 'Item',

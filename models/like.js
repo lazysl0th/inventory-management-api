@@ -1,4 +1,4 @@
-import selectClient from '../services/prisma.js'
+import selectClient from '../infrastructure/prisma.js'
 
 export const checkLike = async(userId, entityId, client) => {
     return await selectClient(client).like.findUnique({

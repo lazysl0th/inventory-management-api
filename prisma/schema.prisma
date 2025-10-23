@@ -67,7 +67,6 @@ model Inventory {
   fields         InventoryField[]
   items          Item[]
   comments       Comment[]
-  itemsCount     Int              @default(0)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
 

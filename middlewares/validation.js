@@ -8,14 +8,14 @@ export const emailSigninValidation = celebrate({
   }),
 });
 
-export const socialSigninValidation = celebrate({
+/*export const socialSigninValidation = celebrate({
   body: Joi.object().keys({
     provider: Joi.string().required(),
     socialId: Joi.string().required(),
     email: Joi.string().required().email(),
     name: Joi.string()
   }),
-});
+});*/
 
 export const signupValidation = celebrate({
   body: Joi.object().keys({

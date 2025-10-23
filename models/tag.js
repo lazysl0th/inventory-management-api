@@ -1,7 +1,5 @@
-import selectClient from '../services/prisma.js';
-
 const deleteTags = (tagsName, exitingsTagsId, client) => {
-    return selectClient(client).tag.deleteMany({
+    return client.tag.deleteMany({
         where: {
             name: { in: tagsName },
             id: { notIn: exitingsTagsId },
@@ -10,7 +8,7 @@ const deleteTags = (tagsName, exitingsTagsId, client) => {
 }
 
 export const upsertTag = (name, client) => {
-    return selectClient(client).tag.upsert({
+    return client.tag.upsert({
         where: { name },
         update: {},
         create: { name },
@@ -26,4 +24,11 @@ export const updateTags = async (tagsName, existingTagsId, client) => {
         addUsersRoles: updateTags.length,
         updateTags
     };
+}
+
+export const selectTags = (client) => {
+    return client.tag.findMany({
+        include: { _count: { select: { inventories: true } } },
+        orderBy: { inventories: { _count: 'desc' } },
+    });
 }

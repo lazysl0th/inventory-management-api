@@ -6,10 +6,7 @@ import passport from 'passport';
 import cors from './middlewares/cors.js';
 import limiter from './middlewares/limiter.js';
 import error from './middlewares/error.js';
-import config from './config.js';
 import router from './routes/index.js';
-
-const { PORT } = config;
 
 const app = express();
 
@@ -33,4 +30,4 @@ app.use(errors());
 
 app.use(error);
 
-app.listen(PORT);
+export default app;

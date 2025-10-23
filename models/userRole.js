@@ -1,4 +1,4 @@
-import prisma from '../services/prisma.js';
+import prisma from '../infrastructure/prisma.js';
 import { roles } from '../constants.js';
 
 const deleteUsersRoles = (client, usersId, rolesId) => {

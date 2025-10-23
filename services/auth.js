@@ -25,17 +25,21 @@ const loginByEmail = async (email, userPassword, remember) => {
     if (!user) return null;
     const matched = bcrypt.compare(userPassword, password);
     if (!matched) return null;
-    const token = createToken(user.id, remember);
+    const token = createToken(user.id, user.roles, remember);
     return { user, token };
 }
 
 const loginBySocial = async (provider, socialId, email, name) => {
-    let { password, ...user } = await findUserByParam('email', email);
+    try {
+    let user = await findUserByParam('email', email);
     if (!user || user[provider] != socialId) {
         if (user) updateUserData('email', email, provider, socialId);
         else user = await register({ name, email, provider, socialId });
     }
     const token = createToken(user.id);
-    return { user, token};
+    return { user, token };
+    } catch (e) {
+        console.log(e)
+    }
 }
 

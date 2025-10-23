@@ -1,4 +1,4 @@
-import selectClient from '../services/prisma.js'
+import selectClient from '../infrastructure/prisma.js'
 
 export const createComment = (content, userId, inventoryId, itemId, client) => {
     return selectClient(client).comment.create({
