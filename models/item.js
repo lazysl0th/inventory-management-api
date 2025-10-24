@@ -1,5 +1,5 @@
 import selectClient from '../infrastructure/prisma.js';
-import { createItemValue, deleteItemValue } from '../models/itemValue.js'
+import { createItemValue, deleteItemValue } from './itemValue.js'
 
 export const selectAllItems = (inventoryId) => {
     return selectClient(client).item.findMany({

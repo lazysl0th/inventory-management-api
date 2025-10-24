@@ -147,3 +147,36 @@ export const deleteAllowUsers = (inventoryId, userIds, client) => {
         },
     });
 }
+
+export const searchInventory = (searchQuery, orderBy, client) => {
+
+    const safeOrder = orderBy.toUpperCase() === 'ASC' ? Prisma.sql`ASC` : Prisma.sql`DESC`
+
+    return client.$queryRaw(
+        Prisma.sql`
+            SELECT
+                i.id,
+                i.title,
+                i.description,
+                i.image,
+                json_build_object('id', u.id, 'name', u.name) AS "owner",
+                ts_rank("searchVector", plainto_tsquery('english', ${searchQuery})) AS rank,
+                ts_headline(
+                'english',
+                i.title,
+                plainto_tsquery('english', ${searchQuery}),
+                'StartSel=<mark>, StopSel=</mark>'
+                ) AS "highlightedTitle",
+                ts_headline(
+                'english',
+                i.description,
+                plainto_tsquery('english', ${searchQuery}),
+                'StartSel=<mark>, StopSel=</mark>'
+                ) AS "highlightedDescription"
+            FROM "Inventory" i
+            JOIN "User" u ON u.id = i."ownerId"
+            WHERE "searchVector" @@ plainto_tsquery('english', ${searchQuery})
+            ORDER BY rank ${safeOrder};
+        `
+    )
+}

@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { selectInventoryById } from '../models/inventory.js'
 import { selectLastItem, createItem, selectItemById, updateItem, deleteItem} from '../models/item.js'
-import { toggleLike, getLikesCount } from '../services/like.js'
+import { toggleLike, getLikesCount } from './like.js'
 import NotFound from '../errors/notFound.js';
 import { response, modelName } from '../constants.js';
 

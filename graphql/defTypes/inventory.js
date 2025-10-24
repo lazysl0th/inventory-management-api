@@ -103,9 +103,18 @@ input InventoryFieldInput {
     isDeleted: Boolean
 }
 
+type InventorySearchResult {
+    id: Int!
+    image: String
+    owner: User!
+    highlightedTitle: String
+    highlightedDescription: String
+}
+
 extend type Query {
     selectInventories(orderBy: InventoryByConditialInput, skip: Int, take: Int): [Inventory!]!
     selectInventory(id: Int!): Inventory
+    searchInventories(searchQuery: String!, orderBy: String!): [InventorySearchResult!]!
 }
 
 extend type Mutation {
