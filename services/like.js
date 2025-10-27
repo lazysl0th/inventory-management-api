@@ -6,10 +6,10 @@ export const toggleLike = async (userId, entityId) => {
     else return addLike(userId, entityId);
 }
 
-export const getLikesCount = async (entityId) => {
-    return await countLike(entityId);
+export const getLikesCount = async (entityId, client) => {
+    return await countLike(entityId, client);
 }
 
-export const isLikedByUser = async (userId, entityId) => {
-    return !!(await LikeByUser(userId, entityId));
+export const isLikedByUser = async (userId, entityId, client) => {
+    return !!(await LikeByUser(userId, entityId, client));
 }

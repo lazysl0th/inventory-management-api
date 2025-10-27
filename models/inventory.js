@@ -19,6 +19,7 @@ export const selectInventoryById = (inventoryId, client) => {
         where: { id: inventoryId },
         include: {
           owner: { select: { id: true, name: true, email: true } },
+          items: true,
           tags: true,
           fields: true,
           allowedUsers: { select: { id: true, name: true, email: true } },
@@ -38,13 +39,11 @@ export const selectInventoriesById = (inventoriesId, client) => {
     });
 }
 
-export const selectInventoriesByCondition = (where, orderBy, take, skip, client) => {
+export const selectInventoriesByCondition = (orderBy, take, skip, client) => {
     return client.inventory.findMany({
         include: {
             owner: { select: { id: true, name: true } },
-            _count: { select: { items: true } },
-        },
-        where,
+            _count: { select: { items: true } } },
         orderBy,
         take,
         skip,
@@ -179,4 +178,5 @@ export const searchInventory = (searchQuery, orderBy, client) => {
             ORDER BY rank ${safeOrder};
         `
     )
-}
+};
+

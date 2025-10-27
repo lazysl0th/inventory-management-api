@@ -14,8 +14,8 @@ const itemResolvers = {
         toggleLikeItem: async (_, { id }, { user }) => like(id, user),
     },
     Item: {
-        likesCount: async (parent, _,) => await getLikesCount(parent.id),
-        likedByMe: async (parent, _, { user }) => await isLikedByUser(user.id, parent.id),
+        likesCount: async (parent, _, { prisma }) => await getLikesCount(parent.id, prisma),
+        likedByMe: async (parent, _, { user, prisma }) => await isLikedByUser(user.id, parent.id, prisma),
     },
 };
 

@@ -20,9 +20,9 @@ export const deleteLike = async(likeId, client) => {
 }
 
 export const countLike = (entityId, client) => {
-    return selectClient(client).like.count({ where: { itemId: entityId }, });
+    return client.like.count({ where: { itemId: entityId }, });
 }
 
 export const LikeByUser = (userId, entityId, client) => {
-    return selectClient(client).like.findUnique({ where: { userId_itemId: { userId, itemId: entityId, } }, });
+    return client.like.findUnique({ where: { userId_itemId: { userId, itemId: entityId, } }, });
 }

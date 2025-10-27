@@ -6,7 +6,7 @@ import { select } from '../services/tag.js'
 
 const commomResolvers = {
     Query: {
-        selectTags: async (_, __, { prisma }) => await select(prisma),
+        tags: async (_, __, { prisma }) => await select(prisma),
     },
     Mutation: {
 

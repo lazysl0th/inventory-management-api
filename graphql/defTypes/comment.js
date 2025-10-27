@@ -19,6 +19,10 @@ input CreateCommentInput {
     content: String!
 }
 
+extend type Query {
+    comments(inventoryId: Int, itemId: Int): [Comment!]!
+}
+
 extend type Mutation {
     createComment(input: CreateCommentInput!): Comment! @auth
 }

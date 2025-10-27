@@ -85,3 +85,13 @@ export const modelName = {
     USER: 'User',
     INVENTORY_FIELD: 'InventoryField'
 }
+
+export const orderMapping = {
+    countItems: (order) => ({ items: { _count: order } }),
+    createdBy: (order) => ({ createdAt: order })
+}
+
+export const typeId = {
+    INVENTORY: 'inventoryId',
+    ITEM: 'itemId',
+}

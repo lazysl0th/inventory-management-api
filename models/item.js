@@ -1,8 +1,8 @@
 import selectClient from '../infrastructure/prisma.js';
-import { createItemValue, deleteItemValue } from './itemValue.js'
+import { createItemValue, deleteItemValue } from '../models/itemValue.js'
 
-export const selectAllItems = (inventoryId) => {
-    return selectClient(client).item.findMany({
+export const selectAllItems = (inventoryId, client) => {
+    return client.item.findMany({
         where: { inventoryId },
         include: { values: { include: { field: true } } },
         orderBy: { createdAt: 'desc' }
@@ -64,4 +64,10 @@ export const deleteItem = async (itemIds) => {
         await selectClient(tx).item.deleteMany({ where: { id: { in: itemIds } }, });
         return deletedItems;
     })
+}
+
+export const itemsCount = (inventoryId, client) => {
+    return client.item.count({
+        where: { inventoryId },
+    });
 }

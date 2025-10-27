@@ -4,11 +4,12 @@ import {
     selectInventoryById,
     updateInventory,
     selectInventoriesByCondition,
-    selectInventoriesOrderByItemCounts
 } from "../models/inventory.js";
+import { itemsCount, selectAllItems } from '../models/item.js'
+import { calculateFieldStats } from './stats.js'
 import NotFound from '../errors/notFound.js';
 import Conflict from '../errors/conflict.js';
-import { response, modelName } from '../constants.js';
+import { response, modelName, orderMapping, } from '../constants.js';
 
 const { NOT_FOUND_RECORDS, CONFLICT } = response
 
@@ -62,26 +63,23 @@ export const revokeAccess = () => {
 
 }
 
-export const selectInventories = async (condition, client) => {
-    const { where = {}, orderBy = {}, take, skip } = condition;
-        
-    const prismaWhere = {};
-    
-    if (where.ownerId) prismaWhere.ownerId = where.ownerId;
-    if (where.isPublic !== undefined) prismaWhere.isPublic = where.isPublic;
-    if (where.search) {
-      prismaWhere.OR = [
-        { title: { contains: where.search, mode: 'insensitive' } },
-        { description: { contains: where.search, mode: 'insensitive' } },
-      ];
-    }
+export const selectInventories = (sortName, order, skip, take, client) => {
+    const orderBy = orderMapping[sortName]?.(order)
+    return selectInventoriesByCondition(orderBy, take, skip, client)
+}
 
-    if (orderBy.itemsCount) return selectInventoriesOrderByItemCounts(where.ownerId, where.isPublic, orderBy.itemsCount, take, client);
+export const getItemsCount = (parent, client) => {
+    if (parent._count?.items !== undefined) return parent._count.items;
+    return itemsCount(parent.id, client);
+}
 
-    const inventories = await selectInventoriesByCondition(prismaWhere, orderBy, take, skip, client);
+const groupFieldsByType = (fields) => fields.reduce((acc, field) => {
+    (acc[field.type] ??= []).push(field);
+    return acc;
+}, {});
 
-    return inventories.map((inventory) => ({
-      ...inventory,
-      itemsCount: inventory._count.items,
-    }));
+export const getStats = async (parent, client) => {
+    const items = await selectAllItems(parent.id, client);
+    const fieldsByType = groupFieldsByType(parent.fields);
+    return calculateFieldStats(fieldsByType, items);
 }
