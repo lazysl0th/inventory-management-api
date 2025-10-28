@@ -13,6 +13,7 @@ export const createUser = ({ name, email, hash, provider, socialId }) => {
             id: true,
             name: true,
             email: true,
+            password: true,
             roles: { select: { role: { select: { name: true } } }, },
             ...(provider ? { [provider]: true } : {})
         },

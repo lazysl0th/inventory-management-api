@@ -42,4 +42,3 @@ const loginBySocial = async (provider, socialId, email, name) => {
         console.log(e)
     }
 }
-

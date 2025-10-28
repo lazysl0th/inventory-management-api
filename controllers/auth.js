@@ -19,6 +19,7 @@ export const registerUser = async (req, res, next) => {
 
 export const loginUser = (req, res, next) => {
     try {
+        if (req.headers['content-type']?.includes('application/json')) return res.status(200).json(req.user);
         return res.redirect(`${FRONTEND}/?token=${req.user.token}`);
     } catch (e) {
         console.log(e);
