@@ -23,7 +23,13 @@ export const createUser = ({ name, email, hash, provider, socialId }) => {
 export const findUserByParam = (field, value) => {
     return getPrismaClient().user.findUnique({ 
         where: { [field]: value },
-        include: { roles: { include: { role: true, }, }, },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            password: true,
+            roles: { select: { role: { select: { name: true } } } }
+        }
     });
 }
 
