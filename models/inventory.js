@@ -39,14 +39,15 @@ export const selectInventoriesById = (inventoriesId, client) => {
     });
 }
 
-export const selectInventoriesByCondition = (orderBy, take, skip, client) => {
+export const selectInventoriesByCondition = (query, client) => {
     return client.inventory.findMany({
         include: {
             owner: { select: { id: true, name: true } },
-            _count: { select: { items: true } } },
-        orderBy,
-        take,
-        skip,
+            _count: { select: { items: true } },
+            allowedUsers: { select: { id: true, name: true } },
+        },
+        
+        ...query
     });
 }
 

@@ -86,10 +86,15 @@ export const modelName = {
     INVENTORY_FIELD: 'InventoryField'
 }
 
-export const orderMapping = {
-    countItems: (order) => ({ items: { _count: order } }),
-    createdBy: (order) => ({ createdAt: order })
-}
+export const conditions = {
+    ownerId: (v) => ({ where: { ownerId: v } }),
+    isPublic: (v) => ({ where: { isPublic: v } }),
+    take: (v) => ({ take: v }),
+    sortName: (v, o = 'desc') => 
+        (v === 'countItems') ? ({ orderBy: { items: { _count: o.toLowerCase() } } }) : ({ orderBy: { [v]: o.toLowerCase() } }),
+    allowedUser: (v) => ({ where: { allowedUsers: { some: { id: v } } },
+  })
+};
 
 export const typeId = {
     INVENTORY: 'inventoryId',

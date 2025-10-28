@@ -3,13 +3,13 @@ import {
     deleteInventory,
     selectInventoryById,
     updateInventory,
-    selectInventoriesByCondition,
+    selectInventoriesByCondition
 } from "../models/inventory.js";
 import { itemsCount, selectAllItems } from '../models/item.js'
 import { calculateFieldStats } from './stats.js'
 import NotFound from '../errors/notFound.js';
 import Conflict from '../errors/conflict.js';
-import { response, modelName, orderMapping, } from '../constants.js';
+import { response, modelName, conditions } from '../constants.js';
 
 const { NOT_FOUND_RECORDS, CONFLICT } = response
 
@@ -63,9 +63,46 @@ export const revokeAccess = () => {
 
 }
 
-export const selectInventories = (sortName, order, skip, take, client) => {
-    const orderBy = orderMapping[sortName]?.(order)
-    return selectInventoriesByCondition(orderBy, take, skip, client)
+const buildConditionPart = (key, value, params) => {
+    if (!conditions[key]) return {};
+    const fn = conditions[key];
+    const part = key === 'sortName' ? fn(value, params.order || 'desc') : fn(value);
+    return part;
+}
+
+const mergeQuerySections = (query, part) => {
+    Object.entries(part).forEach(([section, obj]) => {
+        if (obj !== Object(obj)) query[section] = obj;
+        else query[section] = { ...(query[section] || {}), ...obj };
+    });
+    return query;
+}
+
+const collectQueryParts = (whereParts, params) => {
+    return Object.entries(params).reduce((query, [key, value]) => {
+        const part = buildConditionPart(key, value, params);
+        if (part.where) whereParts.push(part.where);
+        return mergeQuerySections(query, part);
+    }, {});
+}
+
+const combineWhereConditions = (whereParts, logic ) => {
+    if (whereParts.length) {
+        return logic === 'OR' && whereParts.length > 1 ? { OR: whereParts } : Object.assign({}, ...whereParts);
+    }
+}
+
+const buildQuery = (params) => {
+    const whereParts = [];
+    const query = collectQueryParts(whereParts, params);
+    query.where = combineWhereConditions(whereParts, params.logic)
+    return query;
+}
+
+export async function selectInventories(params, prisma) {
+    const query = buildQuery(params);
+    console.log(query);
+    return selectInventoriesByCondition(query, prisma)
 }
 
 export const getItemsCount = (parent, client) => {

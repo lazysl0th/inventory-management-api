@@ -1,10 +1,10 @@
 import { selectInventoryById, addAllowUsers, deleteAllowUsers, searchInventory } from '../../models/inventory.js';
-import { create, del, update, selectInventories, getItemsCount, getStats } from '../../services/inventory.js';
+import { create, del, update, selectInventories, getItemsCount, getStats, } from '../../services/inventory.js';
 
 
 const inventoryResolvers = {
     Query: {
-        inventories: async (_, { sortName, order, skip, take }, { prisma }) => await selectInventories(sortName, order, skip, take, prisma),
+        inventories: async (_, params, { prisma }) => await selectInventories(params, prisma),
         inventory: async (_, { id }, { prisma }) => await selectInventoryById(id, prisma),
         searchInventories: async (_, { searchQuery, orderBy }, { prisma }) => await searchInventory(searchQuery, orderBy, prisma),
     },

@@ -17,7 +17,7 @@ const inventoryTypeDefs = gql`
         items(take: Int, skip: Int): [Item!]!
         tags: [Tag!]
         isPublic: Boolean!
-        allowedUsers: [User!]!
+        allowedUsers: [User!]
         version: Int!
         itemsCount: Int!
     }
@@ -107,7 +107,16 @@ const inventoryTypeDefs = gql`
     }
 
     extend type Query {
-        inventories(sortName: String, order: SortOrder, skip: Int, take: Int): [Inventory!]!
+        inventories(
+            sortName: String,
+            order: SortOrder,
+            skip: Int,
+            take: Int,
+            ownerId: Int,
+            isPublic: Boolean,
+            allowedUser: Int,
+            logic: String
+        ): [Inventory!]!
         inventory(id: Int!): Inventory
         searchInventories(searchQuery: String!, orderBy: String!): [InventorySearchResult!]!
     }
