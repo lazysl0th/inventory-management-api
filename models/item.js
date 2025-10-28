@@ -10,9 +10,12 @@ export const selectAllItems = (inventoryId, client) => {
 }
 
 export const selectItemById = (itemId, client) => {
-    return selectClient(client).item.findUnique({
+    return client.item.findUnique({
         where: { id: itemId },
-        include: { values: { include: { field: true } }, inventory: true }
+        include: { 
+            values: { include: { field: true } }, 
+            inventory: true, 
+            owner: { select: { id: true, name: true, email: true } } }
     })
 }
 

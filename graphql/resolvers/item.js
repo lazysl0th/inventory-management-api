@@ -5,7 +5,7 @@ import { getLikesCount, isLikedByUser } from '../../services/like.js';
 const itemResolvers = {
     Query: {
         items: async (_, { inventoryId }, { prisma }) => selectAllItems(inventoryId, prisma),
-        item: async (_, { id }) => selectItemById(id),
+        item: async (_, { id }, { prisma }) => selectItemById(id, prisma),
     },
     Mutation: {
         createItem: async (_, { input }, { user }) => create(input, user),

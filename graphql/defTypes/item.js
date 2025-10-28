@@ -51,7 +51,6 @@ extend type Mutation {
     deleteItem(ids: [Int!]!): [Item!]! @auth(modelName: "${modelName.ITEM}", roles: ["${roles.ADMIN}"])
     toggleLikeItem(id: Int!): Item! @auth
 }
-
 `;
 
 export default itemTypeDefs;
