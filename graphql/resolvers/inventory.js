@@ -14,7 +14,7 @@ const inventoryResolvers = {
     },
     Mutation: {
         createInventory: async (_, { input }, { user, prisma }) => create(input, user, prisma),
-        deleteInventory: async (_, { ids }, { prisma }) => del(ids, prisma),
+        deleteInventories: async (_, { ids }, { prisma }) => del(ids, prisma),
         updateInventory: async (_, { id, input }, { prisma }) => await update(id, input, prisma),
         grantInventoryAccess: async (_, { id, userIds }, { prisma }) => await addAllowUsers(id, userIds, prisma),
         revokeInventoryAccess: async (_, { id, userIds }, { prisma }) => await deleteAllowUsers(id, userIds, prisma),

@@ -31,8 +31,8 @@ export const create = async (input, user, client) => {
     }
 }
 
-export const del = (inventoryIds, prisma) => {
-    return deleteInventory(inventoryIds, prisma);
+export const del = (inventoryIds, client) => {
+    return deleteInventory(inventoryIds, client);
 }
 
 export const update = async (inventoryId, input, prisma) => {
@@ -95,13 +95,13 @@ const combineWhereConditions = (whereParts, logic ) => {
 const buildQuery = (params) => {
     const whereParts = [];
     const query = collectQueryParts(whereParts, params);
-    query.where = combineWhereConditions(whereParts, params.logic)
+    const where = combineWhereConditions(whereParts, params.logic)
+    if (where) query.where = where;
     return query;
 }
 
 export async function selectInventories(params, prisma) {
     const query = buildQuery(params);
-    console.log(query);
     return selectInventoriesByCondition(query, prisma)
 }
 

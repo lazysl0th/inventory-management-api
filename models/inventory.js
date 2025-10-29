@@ -46,7 +46,6 @@ export const selectInventoriesByCondition = (query, client) => {
             _count: { select: { items: true } },
             allowedUsers: { select: { id: true, name: true } },
         },
-        
         ...query
     });
 }

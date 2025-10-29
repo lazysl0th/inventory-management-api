@@ -124,7 +124,7 @@ const inventoryTypeDefs = gql`
     extend type Mutation {
         createInventory(input: CreateInventoryInput!): Inventory! @auth
         updateInventory(id: Int!, input: CreateInventoryInput!): Inventory! @auth(modelName: "${modelName.INVENTORY}", roles: ["${roles.ADMIN}"])
-        deleteInventory(ids: [Int!]!): [Inventory!]! @auth(modelName: "${modelName.INVENTORY}", roles: ["${roles.ADMIN}"])
+        deleteInventories(ids: [Int!]!): [Inventory!]! @auth(modelName: "${modelName.INVENTORY}", roles: ["${roles.ADMIN}"])
         grantInventoryAccess(id: Int!, userIds: [Int!]!): Inventory! @auth(modelName: "${modelName.INVENTORY}", roles: ["${roles.ADMIN}"])
         revokeInventoryAccess(id: Int!, userIds: [Int!]!): Inventory! @auth(modelName: "${modelName.INVENTORY}", roles: ["${roles.ADMIN}"])
     }

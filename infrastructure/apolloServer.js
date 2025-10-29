@@ -19,8 +19,6 @@ const apolloServer = new ApolloServer({
     formatError: apolloError
 })
 
-
-
 await apolloServer.start();
 
 export default apolloServer;

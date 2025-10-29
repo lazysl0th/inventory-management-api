@@ -11,16 +11,16 @@ const checkAuth = (user) => {
     if (user.status == userStatus.BLOCKED) throw new Forbidden(BLOCKED.text);
 }
 
-const checkModel = async (modelName, args, requiredRoles, user) => {
+const checkModel = async (modelName, args, requiredRoles, user, client) => {
   const checker = modelCheckers[modelName];
   if (!checker) return;
-  await checker(args, user, requiredRoles);
+  await checker(args, user, requiredRoles, client);
 };
 
 const resolverWithCheckUser = (resolve, modelName, requiredRoles) => {
     return async (parent, args, context, info) => {
         checkAuth(context.user);
-        await checkModel(modelName, args, requiredRoles, context.user);
+        await checkModel(modelName, args, requiredRoles, context.user, context.prisma);
         return resolve(parent, args, context, info);
     };
 }
@@ -31,7 +31,7 @@ const handleDirective = (schema, directiveName) => {
         if (!directive) return fieldConfig;
         const { modelName, roles: requiredRoles } = directive;
         const originalResolve = fieldConfig.resolve || defaultFieldResolver;
-        fieldConfig.resolve = resolverWithCheckUser(originalResolve, modelName, requiredRoles,);
+        fieldConfig.resolve = resolverWithCheckUser(originalResolve, modelName, requiredRoles);
         return fieldConfig;
     };
 }
