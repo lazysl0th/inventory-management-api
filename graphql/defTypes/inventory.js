@@ -3,23 +3,25 @@ import { roles, modelName } from '../../constants.js'
 
 const inventoryTypeDefs = gql`
     type Inventory {
-        id: Int!
-        title: String!
+        id: Int
+        title: String
         description: String
         category: Category!
         image: String
-        owner: User!
-        ownerId: Int!
-        createdAt: String!
-        updatedAt: String!
+        owner: User
+        ownerId: Int
+        createdAt: String
+        updatedAt: String
         customIdFormat: CustomIdFormat
-        fields: [InventoryField!]!
-        items(take: Int, skip: Int): [Item!]!
+        fields: [InventoryField!]
+        items(take: Int, skip: Int): [Item!]
         tags: [Tag!]
-        isPublic: Boolean!
+        isPublic: Boolean
         allowedUsers: [User!]
-        version: Int!
-        itemsCount: Int!
+        version: Int
+        itemsCount: Int
+        highlightedTitle: String
+        highlightedDescription: String
     }
 
     enum Category {
@@ -40,9 +42,12 @@ const inventoryTypeDefs = gql`
     }
 
     type CustomIdPart {
-        type: String
+        guid: String!
+        type: String!
         value: String
         format: String
+        position: String
+        order: Int
         digits: Int
     }
 
@@ -67,33 +72,93 @@ const inventoryTypeDefs = gql`
     type Tag {
         id: Int!
         name: String!
+        inventories: [Inventory!]!
         inventoriesCount: Int
     }
 
     type InventorySearchResult {
         id: Int!
-        image: String
+        title: String
+        description: String
+        category: Category
         owner: User!
         highlightedTitle: String
         highlightedDescription: String
     }
 
-    input CreateInventoryInput {
-        title: String!
+    type InventoryDelta {
+        id: Int!
+        changedFields: [InventoryFieldDelta!]
+        changedTags: [TagDelta!]
+        changedCustomParts: [CustomIdPartDelta!]
+        changedAllowedUsers: [UserDelta!]
+        changedMeta: InventoryMetaDelta
+    }
+
+    type InventoryFieldDelta {
+        id: Int
+        title: String
+        type: FieldType
+        order: Int
+        isDeleted: Boolean
+    }
+
+    type TagDelta {
+        id: Int
+        name: String
+    }
+
+    type CustomIdPartDelta {
+        guid: String
+        type: String
+        value: String
+        order: Int
+    }
+
+    type UserDelta {
+        id: Int!
+        name: String
+        email: String
+    }
+
+    type InventoryMetaDelta {
+        title: String
         description: String
-        category: Category!
+        updatedAt: String
+    }
+
+    input CreateInventoryInput {
+        id: Int
+        title: String
+        description: String
+        category: Category
         image: String
         isPublic: Boolean
-        tagsNames: [String!]
-        fields: [InventoryFieldInput!]
-        customIdFormat: [CustomIdPartInput!]
+        tagsNames: [String]
+        customIdFormat: CustomIdFormatInput
+        fields: [InventoryFieldInput]
+        owner: UserIdInput
+        tags: [TagInput]
+        allowedUsers: [UserIdInput]
+        version: Int
+        updatedAt: String
+        createdAt: String
+        itemsCount: Int
+    }
+
+    input CustomIdFormatInput {
+        parts: [CustomIdPartInput!]
+        summary: String
     }
 
     input CustomIdPartInput {
+        guid: String!
         type: String!
         value: String
         format: String
         digits: Int
+        order: Int
+        position: String
     }
 
     input InventoryFieldInput {
@@ -104,6 +169,17 @@ const inventoryTypeDefs = gql`
         showInTable: Boolean
         order: Int
         isDeleted: Boolean
+    }
+
+    input UserIdInput {
+        id: Int!
+        name: String
+        email: String
+    }
+
+    input TagInput {
+        id: Int
+        name: String
     }
 
     extend type Query {
@@ -118,12 +194,12 @@ const inventoryTypeDefs = gql`
             logic: String
         ): [Inventory!]!
         inventory(id: Int!): Inventory
-        searchInventories(searchQuery: String!, orderBy: String!): [InventorySearchResult!]!
+        searchInventories(searchQuery: String!, orderBy: String!): [Inventory]
     }
 
     extend type Mutation {
         createInventory(input: CreateInventoryInput!): Inventory! @auth
-        updateInventory(id: Int!, input: CreateInventoryInput!): Inventory! @auth(modelName: "${modelName.INVENTORY}", roles: ["${roles.ADMIN}"])
+        updateInventory(id: Int!, input: CreateInventoryInput!, expectedVersion: Int!): Inventory! @auth(modelName: "${modelName.INVENTORY}", roles: ["${roles.ADMIN}"])
         deleteInventories(ids: [Int!]!): [Inventory!]! @auth(modelName: "${modelName.INVENTORY}", roles: ["${roles.ADMIN}"])
         grantInventoryAccess(id: Int!, userIds: [Int!]!): Inventory! @auth(modelName: "${modelName.INVENTORY}", roles: ["${roles.ADMIN}"])
         revokeInventoryAccess(id: Int!, userIds: [Int!]!): Inventory! @auth(modelName: "${modelName.INVENTORY}", roles: ["${roles.ADMIN}"])

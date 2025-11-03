@@ -3,7 +3,8 @@ import {
     deleteInventory,
     selectInventoryById,
     updateInventory,
-    selectInventoriesByCondition
+    selectInventoriesByCondition,
+    updateNewInventoryService
 } from "../models/inventory.js";
 import { itemsCount, selectAllItems } from '../models/item.js'
 import { calculateFieldStats } from './stats.js'
@@ -14,18 +15,22 @@ import { response, modelName, conditions } from '../constants.js';
 const { NOT_FOUND_RECORDS, CONFLICT } = response
 
 const createCustomIdFormatJSON = (customIdFormat) => {
+    console.log(customIdFormat);
     return {
-        parts: customIdFormat || [],
-        summary: (customIdFormat || []).map((part) => part.type || '').join(' + ') || 'Default',
+        parts: (customIdFormat || []).map((part) => part.type || '').join(' + ') || 'Default',
+        summary: (customIdFormat || [])
     }
 }
 
-export const create = async (input, user, client) => {
-    const { tagsNames, fields, customIdFormat, ...data} = input;
-    const customIdFormatJSON = createCustomIdFormatJSON(customIdFormat);
+export const create = async (input, client) => {
+    console.log(input);
+    //const customIdFormatJSON = customIdFormat;
+    const { tags, fields, owner, allowedUsers, ...inventoryBase } = input;
     try {
-        const inventory = await createInventory(tagsNames, fields, customIdFormatJSON, data, user, client);
-        return inventory;
+        return createInventory(tags, fields, owner, allowedUsers, inventoryBase, client);
+    //console.log(inventory);
+        
+        //return inventory;
     } catch (e) {
         if (e.code === 'P2002') throw new Conflict(CONFLICT.text(modelName.INVENTORY_FIELD));
     }
@@ -52,8 +57,71 @@ export const update = async (inventoryId, input, prisma) => {
         version: { increment: 1 },
         updatedAt: new Date(),
         };
-    return updateInventory(tagsNames, existingTagsId, fields, inventoryId, updateData, prisma);
+    
+    const updated = updateInventory(tagsNames, existingTagsId, fields, inventoryId, updateData, prisma);
+    return updated;
 }
+
+export const newUpd = async (inventoryId, input, expectedVersion, prisma) => {
+  const { tags, fields, owner, allowedUsers, ...inventoryBase } = input;
+  console.log(allowedUsers);
+
+  const inventory = await selectInventoryById(inventoryId, prisma);
+  if (!inventory) throw new Error("NOT_FOUND");
+
+  if (inventory.version !== expectedVersion) {
+    const err = new Error("VERSION_CONFLICT");
+    err.code = "VERSION_CONFLICT";
+    err.meta = {
+      currentVersion: inventory.version,
+      expectedVersion,
+    };
+    throw err;
+  }
+
+  const inventoryFields = new Map(
+    inventory.fields.map((field) => [field.title, field.id])
+  );
+
+  const newInventoryFields = fields
+    .filter((f) => !inventoryFields.has(f.title))
+    .map((field) => ({
+      inventoryId,
+      title: field.title,
+      type: field.type,
+      description: field.description ?? null,
+      showInTable: field.showInTable ?? false,
+      order: typeof field.order === "number" ? field.order : 0,
+      isDeleted: !!field.isDeleted,
+    }));
+
+  const updatedInventoryFields = fields.filter((f) =>
+    inventoryFields.has(f.title)
+  );
+
+  try {
+    return await updateNewInventoryService(
+      inventoryId,
+      tags,
+      inventoryFields,
+      newInventoryFields,
+      updatedInventoryFields,
+      allowedUsers,
+      inventoryBase,
+      prisma
+    );
+  } catch (e) {
+    if (e.code === "VERSION_CONFLICT") {
+      throw new Error(
+        `Version conflict: current=${e.meta.currentVersion}, expected=${e.meta.expectedVersion}`
+      );
+    }
+    if (e.message === "NOT_FOUND") throw new Error("Inventory not found");
+    throw e;
+  }
+};
+
+
 
 export const grantAccess = () => {
 

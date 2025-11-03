@@ -18,6 +18,14 @@ type Role {
     name: String!
 }
 
+enum SearchBy {
+    NAME
+    EMAIL
+}
+
+extend type Query {
+    searchUsers(searchQuery: String!, by: SearchBy!): [User!]!
+}
 `;
 
 export default userTypeDefs;

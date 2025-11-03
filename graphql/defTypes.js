@@ -11,6 +11,7 @@ directive @auth(modelName: String, roles: [String!]) on FIELD_DEFINITION
 
 type Query {
     tags: [Tag]!
+    searchTags(searchQuery: String!): [Tag!]
 }
 
 type Mutation
@@ -23,7 +24,7 @@ const typeDefs = [
   inventoryStatsTypeDefs,
   itemTypeDefs,
   commentTypeDefs,
-  commonTypeDefs
+  commonTypeDefs,
 ];
 
 export default typeDefs;

@@ -66,7 +66,8 @@ export const selectInventoriesOrderByItemCounts = (ownerId, isPublic, itemsCount
       `;
 }
 
-const createTags = (tagsNames, client) => {
+const createTags = (tags, client) => {
+    console.log(tags);
     return Promise.all(
         tagsNames.map(async (tagName) => {
             const tag = await upsertTag(tagName, client);
@@ -76,6 +77,7 @@ const createTags = (tagsNames, client) => {
 }
 
 export const insertInventory = (data, client) => {
+    console.log(data);
     return client.inventory.create({
         data: data,
         include: {
@@ -86,12 +88,35 @@ export const insertInventory = (data, client) => {
     })
 }
 
-export const createInventory = (tagsNames, fields, customIdFormatJSON, data, user, client) => {
-    return client.$transaction(async (tx) => {
-        const tags = await createTags(tagsNames, tx);
-        const inventory = await insertInventory({ ...data, tags: { connect: tags }, customIdFormat: customIdFormatJSON, ownerId: user.id }, tx);
-        await createInventoryFields(inventory.id, fields, tx);
-        return selectInventoryById(inventory.id, tx);
+export const createInventory = async (tags, fields, owner, allowedUsers, inventoryBase, client) => {
+    return client.inventory.create({
+        data: {
+            ...inventoryBase,
+            owner: { connect: { id: owner.id } },
+            tags: {
+                connectOrCreate: tags.map((tag) => ({
+                    where: { name: tag.name },
+                    create: { name: tag.name },
+                })),
+            },
+            fields: {
+                create: fields.map((field) => ({
+                    title: field.title,
+                    type: field.type,
+                    description: field.description,
+                    showInTable: field.showInTable,
+                    order: field.order,
+                    isDeleted: field.isDeleted
+                })),
+            },
+            allowedUsers: { connect: allowedUsers.map((user) => ({ id: user.id })) },
+        },
+        include: {
+            tags: true,
+            fields: true,
+            allowedUsers: { select: { id: true, name: true, email: true }},
+            owner: { select: { id: true, name: true }},
+        },
     })
 }
 
@@ -121,6 +146,90 @@ export const updateInventory = async (tagsNames, existingTagsId, fields, invento
     })
 }
 
+
+export async function updateNewInventoryService(
+  inventoryId,
+  tags,
+  fields,
+  newFields,
+  updatedFields,
+  allowedUsers,
+  input,
+  prisma,
+) {
+    console.log(allowedUsers);
+  return prisma.$transaction(async (tx) => {
+    const { title, description, category, image, isPublic, customIdFormat } = input;
+
+    // ✅ Теги без N+1
+    if (tags.length > 0) {
+      await tx.tag.createMany({
+        data: tags.map((tag) => ({ name: tag.name })),
+        skipDuplicates: true,
+      });
+    }
+
+    const newTags = tags.length
+      ? await tx.tag.findMany({
+          where: { name: { in: tags.map((tag) => (tag.name)) } },
+          select: { id: true },
+        })
+      : [];
+
+    // ✅ Поля
+    await tx.inventoryField.deleteMany({
+      where: {
+        inventoryId,
+        title: { notIn: Array.from(fields.keys()) },
+      },
+    });
+
+    if (newFields.length > 0) {
+      await tx.inventoryField.createMany({ data: newFields });
+    }
+
+    for (const field of updatedFields) {
+      const id = fields.get(field.title);
+      await tx.inventoryField.update({
+        where: { id },
+        data: {
+          type: field.type,
+          description: field.description ?? null,
+          showInTable: field.showInTable ?? false,
+          order: typeof field.order === "number" ? field.order : 0,
+          isDeleted: !!field.isDeleted,
+        },
+      });
+    }
+
+    // ✅ Обновление Inventory
+    const updated = await tx.inventory.update({
+      where: { id: inventoryId },
+      data: {
+        title: title ?? undefined,
+        description: description ?? undefined,
+        category: category ?? undefined,
+        image: image ?? undefined,
+        isPublic: isPublic ?? undefined,
+        customIdFormat: customIdFormat ?? undefined,
+        version: { increment: 1 },
+        tags: { set: newTags.map((t) => ({ id: t.id })), },
+        allowedUsers: { set: allowedUsers },
+      },
+      include: {
+        owner: { select: { id: true, name: true } },
+        tags: true,
+        fields: { orderBy: { order: "asc" } },
+        allowedUsers: { select: { id: true, name: true } },
+      },
+    });
+
+    return updated;
+  });
+}
+
+
+
 export const addAllowUsers = (inventoryId, userIds, client) => {
     return client.inventory.update({
         where: { id: inventoryId },
@@ -148,6 +257,7 @@ export const deleteAllowUsers = (inventoryId, userIds, client) => {
 }
 
 export const searchInventory = (searchQuery, orderBy, client) => {
+    console.log(searchQuery);
 
     const safeOrder = orderBy.toUpperCase() === 'ASC' ? Prisma.sql`ASC` : Prisma.sql`DESC`
 

@@ -89,3 +89,20 @@ export const updateStatusByIds = async (userIds, status) => {
         }
     });
 }
+
+export const searchUsers = (searchQuery, by, client) => {
+    const where = by === 'email' ? "EMAIL" : "USER"
+        ? { email: { contains: searchQuery, mode: "insensitive" } }
+        : { name: { contains: searchQuery, mode: "insensitive" } };
+
+    return client.user.findMany({
+        where,
+        select: {
+            id: true,
+            name: true,
+            email: true,
+        },
+        orderBy: { name: "asc" },
+        take: 10,
+    })
+};

@@ -8,7 +8,7 @@ const { NOT_FOUND, OK, BAD_REQUEST } = response;
 
 export const getUserProfile = async (req, res, next) => {
     try {
-        const user = await findUserByParam('id', req.user.id);
+        const {password, ...user} = await findUserByParam('id', req.user.id);
         if (!user) throw new NotFound(NOT_FOUND.text);
         return res.status(OK.statusCode).send(user);
     } catch (e) {

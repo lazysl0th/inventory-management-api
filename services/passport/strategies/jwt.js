@@ -13,7 +13,7 @@ const options = {
 
 const verifyToken = async (payload, done) => {
     try {
-        const user = await findUserByParam('id', payload.id);
+        const { password, ...user } = await findUserByParam('id', payload.id);
         if (!user) return done(null, false, { message: NOT_FOUND.text });
         return done(null, user);
     } catch (e) {

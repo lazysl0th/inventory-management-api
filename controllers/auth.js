@@ -1,3 +1,9 @@
+import { Liveblocks } from "@liveblocks/node";
+
+const liveblocks = new Liveblocks({
+  secret: process.env.LIVEBLOCKS_SECRET_KEY  // должно быть sk_…
+});
+
 import { register } from '../services/auth.js';
 import { response, modelName } from '../constants.js';
 import Conflict from '../errors/conflict.js';
@@ -25,4 +31,21 @@ export const loginUser = (req, res, next) => {
         console.log(e);
         return next(e);
     }
+}
+
+export const loginLiveblocks = async (req, res) => {
+    try {
+        const { room } = req.body;
+        if (!room) return res.status(400).json({ error: "Room not provided" });
+        const session = liveblocks.prepareSession(
+            req.user?.id?.toString() || "guest",
+            { userInfo: { name: req.user?.name || "Guest" } }
+        );
+        session.allow(room, session.FULL_ACCESS);
+        const { body, status } = await session.authorize();
+        res.status(status).send(body);
+  } catch (err) {
+        res.status(403).send({ error: err.message });
+  }
+  
 }

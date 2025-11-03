@@ -4,6 +4,6 @@ import config from './config.js';
 
 const { PORT } = config;
 
-const server = http.createServer(app);
+export const httpServer = http.createServer(app);
 
-server.listen(PORT);
+httpServer.listen(PORT);

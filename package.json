@@ -18,6 +18,7 @@
   "dependencies": {
     "@apollo/server": "^5.0.0",
     "@as-integrations/express5": "^1.1.2",
+    "@liveblocks/node": "^3.9.2",
     "@prisma/client": "^6.17.1",
     "bcryptjs": "^3.0.2",
     "celebrate": "^15.0.3",
@@ -25,7 +26,9 @@
     "express": "^5.1.0",
     "express-rate-limit": "^8.1.0",
     "graphql": "^16.11.0",
+    "graphql-subscriptions": "^3.0.0",
     "graphql-tag": "^2.12.6",
+    "graphql-ws": "^6.0.6",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.1",
