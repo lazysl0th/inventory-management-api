@@ -15,7 +15,6 @@ import { response, modelName, conditions } from '../constants.js';
 const { NOT_FOUND_RECORDS, CONFLICT } = response
 
 const createCustomIdFormatJSON = (customIdFormat) => {
-    console.log(customIdFormat);
     return {
         parts: (customIdFormat || []).map((part) => part.type || '').join(' + ') || 'Default',
         summary: (customIdFormat || [])
@@ -59,7 +58,6 @@ export const update = async (inventoryId, input, prisma) => {
 
 export const newUpd = async (inventoryId, input, expectedVersion, prisma) => {
   const { tags, fields, owner, allowedUsers, ...inventoryBase } = input;
-  console.log(allowedUsers);
 
   const inventory = await selectInventoryById(inventoryId, prisma);
   if (!inventory) throw new Error("NOT_FOUND");

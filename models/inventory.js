@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { createInventoryFields, updateInventoryFields, deleteInventoryFields } from './inventoryFields.js';
-import { upsertTag, updateTags } from './tag.js';
+import { updateTags } from './tag.js';
 
 export const selectAllInventories = (client) => {
     return client.inventory.findMany({
@@ -66,18 +66,7 @@ export const selectInventoriesOrderByItemCounts = (ownerId, isPublic, itemsCount
       `;
 }
 
-const createTags = (tags, client) => {
-    console.log(tags);
-    return Promise.all(
-        tagsNames.map(async (tagName) => {
-            const tag = await upsertTag(tagName, client);
-            return { id: tag.id }
-        })
-    )
-}
-
 export const insertInventory = (data, client) => {
-    console.log(data);
     return client.inventory.create({
         data: data,
         include: {
@@ -157,7 +146,6 @@ export async function updateNewInventoryService(
   input,
   prisma,
 ) {
-    console.log(allowedUsers);
   return prisma.$transaction(async (tx) => {
     const { title, description, category, image, isPublic, customIdFormat } = input;
 
@@ -257,7 +245,6 @@ export const deleteAllowUsers = (inventoryId, userIds, client) => {
 }
 
 export const searchInventory = (searchQuery, orderBy, client) => {
-    console.log(searchQuery);
 
     const safeOrder = orderBy.toUpperCase() === 'ASC' ? Prisma.sql`ASC` : Prisma.sql`DESC`
 
