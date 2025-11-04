@@ -8,12 +8,13 @@ const { UNAUTHORIZED, NO_AUTH_TOKEN, JWT_EXPIRED, FORBIDDEN, NOT_FOUND, INSUFFIC
 
 export const passportAuth = (strategy, requiredRoles) => {
   return (req, res, next) => {
-    passport.authenticate(strategy, { session: false }, (e, user, info) => {
+    return passport.authenticate(strategy, { session: false }, (e, user, info) => {
         if (e) return next(e);
         if (!user) {
             if (info.message == UNAUTHORIZED.text) return next(new Unauthorized(UNAUTHORIZED.text));
             if ([NO_AUTH_TOKEN.text, JWT_EXPIRED.text].includes(info.message)) return next(new Forbidden(FORBIDDEN.text));
             if (info.message == NOT_FOUND.text) return next(new NotFound(NOT_FOUND.text));
+            return next(new Unauthorized(info.message || UNAUTHORIZED.text));
         }
         req.user = user;
         if (requiredRoles?.length > 0) {

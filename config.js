@@ -34,7 +34,7 @@ const config = {
   GOOGLE_CALLBACK_URL: NODE_ENV === 'production' && GOOGLE_CALLBACK_URL ? GOOGLE_CALLBACK_URL : 'http://localhost:3001/signin/google/callback',
   FACEBOOK_APP_ID: FACEBOOK_APP_ID ? FACEBOOK_APP_ID : '',
   FACEBOOK_APP_SECRET: FACEBOOK_APP_SECRET ? FACEBOOK_APP_SECRET : '',
-  FACEBOOK_CALLBACK_URL: NODE_ENV === 'production' && FACEBOOK_CALLBACK_URL ? FACEBOOK_CALLBACK_URL : 'http://localhost:3000/signin/facebook/callback',
+  FACEBOOK_CALLBACK_URL: NODE_ENV === 'production' && FACEBOOK_CALLBACK_URL ? FACEBOOK_CALLBACK_URL : 'http://localhost:3001/signin/facebook/callback',
   FRONTEND: NODE_ENV === 'production' && FRONTEND ? FRONTEND : 'http://localhost:5173',
   CORS_ORIGIN: NODE_ENV === 'production' && CORS_ORIGIN ? CORS_ORIGIN : 'http://localhost:5173',
   DEFAULT_ALLOWED_METHODS: NODE_ENV === 'production' && DEFAULT_ALLOWED_METHODS ? DEFAULT_ALLOWED_METHODS : 'GET,HEAD,PUT,PATCH,POST,DELETE'

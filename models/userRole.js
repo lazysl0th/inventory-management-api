@@ -1,33 +1,29 @@
-import prisma from '../infrastructure/prisma.js';
+import prisma, { getPrismaClient } from '../infrastructure/prisma.js';
 import { roles } from '../constants.js';
 
-const deleteUsersRoles = (client, usersId, rolesId) => {
-    return client.userRole.deleteMany({
-        where: {
-            userId: { in: usersId },
-            roleId: { notIn: rolesId },
-            NOT: { role: { name: roles.USER } },
-        },
-    })
-}
-
-const upsertUserRole = (client, userId, roleId) => {
-    return client.userRole.upsert({
-        where: { userId_roleId: { userId, roleId } },
-        update: {},
-        create: { userId, roleId },
-    })
-}
-
-export const updateUsersRolesById = (usersId, rolesId) => {
+export const updateUsersRolesById = async (usersIds, rolesIds, newUsersRoles) => {
+    console.log(usersIds, rolesIds);
     return prisma.$transaction(async (tx) => {
-        const deleteUsersRolesResult = await deleteUsersRoles(tx, usersId, rolesId);
-        const upsertUsersRolesPromises = usersId.flatMap((userId) => rolesId.map((roleId) => upsertUserRole(tx, userId, roleId)));
-        const updateUsersRoles = await Promise.all(upsertUsersRolesPromises);
+        await getPrismaClient(tx).userRole.deleteMany({
+            where: {
+                userId: { in: usersIds },
+                roleId: { notIn: rolesIds },
+                NOT: { role: { name: roles.USER } },
+            },
+        });
+        if (newUsersRoles.length > 0) {
+            await getPrismaClient(tx).userRole.createMany({
+                data: newUsersRoles,
+                skipDuplicates: true,
+            });
+        }
+        const userRoles = await getPrismaClient(tx).userRole.findMany({
+            where: { userId: { in: usersIds } },
+            select: { userId: true, roleId: true, role: { select: { name: true } } },
+        });
         return {
-            deleteUsersRolesCount: deleteUsersRolesResult.count,
-            addUsersRoles: updateUsersRoles.length,
-            updateUsersRoles
+            userRoles,
+            added: newUsersRoles.length,
         };
     });
-}
+};

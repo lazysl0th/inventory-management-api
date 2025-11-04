@@ -48,47 +48,46 @@ export const selectAllUsers = () => {
     });
 }
 
-export const deleteUsersByIds = async (usersId) => {
+export const deleteUsersByIds = async (usersIds) => {
     return await getPrismaClient().$transaction(async (tx) => {
-        const needDeleteUsers = await tx.user.findMany({
-            where: { id: { in: usersId } },
+        const deletedUsers = await getPrismaClient(tx).user.findMany({
+            where: { id: { in: usersIds } },
             select: { id: true },
         });
-        const deletedUsers = await tx.user.deleteMany({
-            where: { id: { in: usersId } },
+
+        const { count } = await getPrismaClient(tx).user.deleteMany({
+            where: { id: { in: usersIds } },
         });
+
         return {
-            needDeleteUsersCount: needDeleteUsers.length,
-            deletedUsersCount: deletedUsers.count,
-            requestUpdateUsersCount: usersId.length,
-            needDeleteUsers
-        }
+            deletedUsersCount: count,
+            requestDeleteUsersCount: usersIds.length,
+            deletedUsers,
+        };
     });
 }
 
-export const updateStatusByIds = async (userIds, status) => {
+export const updateStatusByIds = async (usersIds, status) => {
     return await getPrismaClient().$transaction(async (tx) => {
-        const needUpdateStatusUser = await tx.user.findMany({
-            where: { id: { in: userIds }, NOT: { status: status } },
-            select: { id: true, status: true },
-        })
-        const updatedUsersStatusResult = await tx.user.updateMany({
-            where: { id: { in: userIds }, NOT: { status: status } },
+        const { count } = await getPrismaClient(tx).user.updateMany({
+            where: {
+                id: { in: usersIds },
+                NOT: { status },
+            },
             data: { status },
-        })
-        const requestUpdateStatusUsers = await tx.user.findMany({
-            where: { id: { in: userIds } },
+        });
+        const updatedUsers = await getPrismaClient(tx).user.findMany({
+            where: { id: { in: usersIds } },
             select: { id: true, status: true },
-        })
+        });
         return {
-            needUpdateStatusUserCount: needUpdateStatusUser.length,
-            updatedUsersStatusCount: updatedUsersStatusResult.count,
-            requestUpdateStatusUsersCount: requestUpdateStatusUsers.length,
-            needUpdateStatusUser,
-            requestUpdateStatusUsers,
-        }
+            updatedUsersStatusCount: count,
+            requestUpdateStatusUsersCount: updatedUsers.length,
+            requestUpdateStatusUsers: updatedUsers,
+        };
     });
 }
+
 
 export const searchUsers = (searchQuery, by, client) => {
     const where = by === 'email' ? "EMAIL" : "USER"

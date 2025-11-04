@@ -23,14 +23,9 @@ const createCustomIdFormatJSON = (customIdFormat) => {
 }
 
 export const create = async (input, client) => {
-    console.log(input);
-    //const customIdFormatJSON = customIdFormat;
     const { tags, fields, owner, allowedUsers, ...inventoryBase } = input;
     try {
         return createInventory(tags, fields, owner, allowedUsers, inventoryBase, client);
-    //console.log(inventory);
-        
-        //return inventory;
     } catch (e) {
         if (e.code === 'P2002') throw new Conflict(CONFLICT.text(modelName.INVENTORY_FIELD));
     }
