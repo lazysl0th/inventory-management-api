@@ -10,13 +10,13 @@ type Item {
     ownerId: Int!
     inventoryId: Int!
     values: [ItemValue!]!
-    likes: [Like!]!
-    likesCount: Int!
-    likedByMe: Boolean!
-    comments: [Comment!]!
+    likes: [Like!]
+    likesCount: Int
+    likedByMe: Boolean
+    comments: [Comment!]
     version: Int!
-    createdAt: String!
-    updatedAt: String!
+    createdAt: String
+    updatedAt: String
 }
 
 type ItemValue {
@@ -31,13 +31,17 @@ type Like {
 }
 
 input CreateItemInput {
-    inventoryId: Int!
+    id: Int
+    inventoryId: Int
+    owner: UserIdInput!
+    version: Int
     values: [ItemValueInput!]!
+    customId: String
 }
 
 input ItemValueInput {
     fieldId: Int!
-    value: String!
+    value: JSON!
 }
 
 extend type Query {
@@ -47,8 +51,8 @@ extend type Query {
 
 extend type Mutation {
     createItem(input: CreateItemInput!): Item! @auth
-    updateItem(id: Int!, input: CreateItemInput!): Item! @auth(modelName: "${modelName.ITEM}", roles: ["${roles.ADMIN}"])
-    deleteItem(ids: [Int!]!): [Item!]! @auth(modelName: "${modelName.ITEM}", roles: ["${roles.ADMIN}"])
+    updateItem(id: Int!, input: CreateItemInput!, expectedVersion: Int!): Item! @auth(modelName: "${modelName.ITEM}", roles: ["${roles.ADMIN}"])
+    deleteItems(ids: [Int!]!): [Item!]! @auth(modelName: "${modelName.ITEM}", roles: ["${roles.ADMIN}"])
     toggleLikeItem(id: Int!): Item! @auth
 }
 `;

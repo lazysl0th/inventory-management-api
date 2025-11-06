@@ -8,9 +8,9 @@ const itemResolvers = {
         item: async (_, { id }, { prisma }) => selectItemById(id, prisma),
     },
     Mutation: {
-        createItem: async (_, { input }, { user }) => create(input, user),
-        deleteItem: async (_, { ids }) => del(ids),
-        updateItem: async (_, { id, input }) => update(id, input),
+        createItem: async (_, { input }, { user, prisma }) => create(input, user, prisma),
+        deleteItems: async (_, { ids }, { prisma }) => del(ids, prisma),
+        updateItem: async (_, { id, input, expectedVersion }, { prisma }) => update(id, input, expectedVersion, prisma),
         toggleLikeItem: async (_, { id }, { user }) => like(id, user),
     },
     Item: {

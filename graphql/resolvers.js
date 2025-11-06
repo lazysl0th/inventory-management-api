@@ -1,3 +1,4 @@
+import GraphQLJSON from 'graphql-type-json';
 import { mergeResolvers } from '@graphql-tools/merge';
 import inventoryResolvers from './resolvers/inventory.js'
 import itemResolvers from './resolvers/item.js'
@@ -16,12 +17,17 @@ const commomResolvers = {
     },
 };
 
-const resolvers = mergeResolvers([
+const merged = mergeResolvers([
     inventoryResolvers,
     itemResolvers,
     commentResolvers,
     commomResolvers,
-    userResolvers
+    userResolvers,
 ]);
+
+const resolvers = {
+  JSON: GraphQLJSON,
+  ...merged,
+};
 
 export default resolvers;

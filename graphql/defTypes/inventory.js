@@ -12,7 +12,7 @@ const inventoryTypeDefs = gql`
         ownerId: Int
         createdAt: String
         updatedAt: String
-        customIdFormat: CustomIdFormat
+        customIdFormat: JSON
         fields: [InventoryField!]
         items(take: Int, skip: Int): [Item!]
         tags: [Tag!]
@@ -45,10 +45,11 @@ const inventoryTypeDefs = gql`
         guid: String!
         type: String!
         value: String
+        separator: String
         format: String
         position: String
         order: Int
-        digits: Int
+        currentSequence: String
     }
 
     type InventoryField {
@@ -135,7 +136,7 @@ const inventoryTypeDefs = gql`
         image: String
         isPublic: Boolean
         tagsNames: [String]
-        customIdFormat: CustomIdFormatInput
+        customIdFormat: JSON
         fields: [InventoryFieldInput]
         owner: UserIdInput
         tags: [TagInput]
@@ -155,10 +156,12 @@ const inventoryTypeDefs = gql`
         guid: String!
         type: String!
         value: String
+        separator: String
         format: String
         digits: Int
         order: Int
         position: String
+        currentSequence: String
     }
 
     input InventoryFieldInput {

@@ -136,85 +136,89 @@ export const updateInventory = async (tagsNames, existingTagsId, fields, invento
 }
 
 
-export async function updateNewInventoryService(
-  inventoryId,
-  tags,
-  fields,
-  newFields,
-  updatedFields,
-  allowedUsers,
-  input,
-  prisma,
-) {
-  return prisma.$transaction(async (tx) => {
-    const { title, description, category, image, isPublic, customIdFormat } = input;
-
-    // ✅ Теги без N+1
-    if (tags.length > 0) {
-      await tx.tag.createMany({
-        data: tags.map((tag) => ({ name: tag.name })),
+const createTags = async (tags, client) => {
+    return await client.tag.createMany({
+        data: tags.map(tag => ({ name: tag.name })),
         skipDuplicates: true,
-      });
-    }
-
-    const newTags = tags.length
-      ? await tx.tag.findMany({
-          where: { name: { in: tags.map((tag) => (tag.name)) } },
-          select: { id: true },
-        })
-      : [];
-
-    // ✅ Поля
-    await tx.inventoryField.deleteMany({
-      where: {
-        inventoryId,
-        title: { notIn: Array.from(fields.keys()) },
-      },
     });
-
-    if (newFields.length > 0) {
-      await tx.inventoryField.createMany({ data: newFields });
-    }
-
-    for (const field of updatedFields) {
-      const id = fields.get(field.title);
-      await tx.inventoryField.update({
-        where: { id },
-        data: {
-          type: field.type,
-          description: field.description ?? null,
-          showInTable: field.showInTable ?? false,
-          order: typeof field.order === "number" ? field.order : 0,
-          isDeleted: !!field.isDeleted,
-        },
-      });
-    }
-
-    // ✅ Обновление Inventory
-    const updated = await tx.inventory.update({
-      where: { id: inventoryId },
-      data: {
-        title: title ?? undefined,
-        description: description ?? undefined,
-        category: category ?? undefined,
-        image: image ?? undefined,
-        isPublic: isPublic ?? undefined,
-        customIdFormat: customIdFormat ?? undefined,
-        version: { increment: 1 },
-        tags: { set: newTags.map((t) => ({ id: t.id })), },
-        allowedUsers: { set: allowedUsers },
-      },
-      include: {
-        owner: { select: { id: true, name: true } },
-        tags: true,
-        fields: { orderBy: { order: "asc" } },
-        allowedUsers: { select: { id: true, name: true } },
-      },
-    });
-
-    return updated;
-  });
 }
+
+const findTags = async (tags, client) => {
+    return await client.tag.findMany({
+        where: { name: { in: tags.map(tag => tag.name) } },
+        select: { id: true },
+    })
+}
+
+const deleteInventoryFieldsNew = async (inventoryId, newFields, updatedFields, client) => {
+    const titles = [...newFields.map(field => field.title), ...updatedFields.map(field => field.title)].filter(Boolean);
+    const where = titles.length > 0 ? { inventoryId, title: { notIn: titles } } : { inventoryId };
+    return await client.inventoryField.deleteMany({ where });
+};
+
+const createInventoryFieldsNew = async (newFields, client) => {
+    return await client.inventoryField.createMany({ data: newFields });
+}
+
+const updateInventoryFieldsNew = async (updatedFields, client) => {
+    return await Promise.all(
+        updatedFields.map(field =>
+            client.inventoryField.update({
+                where: { id: field.id },
+                data: {
+                    type: field.type,
+                    description: field.description ?? null,
+                    showInTable: !!field.showInTable,
+                    order: field.order ?? 0,
+                    isDeleted: !!field.isDeleted,
+                },
+            })
+        )
+    );
+}
+
+export async function updateNewInventoryService(
+    inventoryId,
+    tags,
+    newFields,
+    updatedFields,
+    allowedUsers,
+    input,
+    client
+) {
+    return client.$transaction(async tx => {
+        const { title, description, category, image, isPublic, customIdFormat } = input;
+        if (tags.length) await createTags(tags, tx)
+        const newTags = tags.length ? await findTags(tags, tx) : [];
+        await deleteInventoryFieldsNew(inventoryId, newFields, updatedFields, tx);
+        if (newFields.length) await createInventoryFieldsNew(newFields, tx)
+
+        if (updatedFields.length) await updateInventoryFieldsNew(updatedFields, tx)
+
+        const updated = await tx.inventory.update({
+            where: { id: inventoryId },
+            data: {
+                title,
+                description,
+                category,
+                image,
+                isPublic,
+                customIdFormat,
+                version: { increment: 1 },
+                tags: { set: newTags.map(t => ({ id: t.id })) },
+                allowedUsers: { set: allowedUsers },
+            },
+            include: {
+                owner: { select: { id: true, name: true } },
+                tags: true,
+                fields: { orderBy: { order: "asc" } },
+                allowedUsers: { select: { id: true, name: true } },
+            },
+        });
+        return updated
+    });
+}
+
 
 
 
@@ -277,3 +281,9 @@ export const searchInventory = (searchQuery, orderBy, client) => {
     )
 };
 
+export const updateSequencePart = (inventoryId, updatedFormat, client) => {
+    return client.inventory.update({
+        where: { id: inventoryId },
+        data: { customIdFormat: updatedFormat },
+    });
+}

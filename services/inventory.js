@@ -4,7 +4,7 @@ import {
     selectInventoryById,
     updateInventory,
     selectInventoriesByCondition,
-    updateNewInventoryService
+    updateNewInventoryService,
 } from "../models/inventory.js";
 import { itemsCount, selectAllItems } from '../models/item.js'
 import { calculateFieldStats } from './stats.js'
@@ -56,65 +56,46 @@ export const update = async (inventoryId, input, prisma) => {
     return updated;
 }
 
-export const newUpd = async (inventoryId, input, expectedVersion, prisma) => {
-  const { tags, fields, owner, allowedUsers, ...inventoryBase } = input;
+export const newUpd = async (inventoryId, input, expectedVersion, client) => {
+    const { tags = [], fields = [], allowedUsers = [], ...inventoryBase } = input;
 
-  const inventory = await selectInventoryById(inventoryId, prisma);
-  if (!inventory) throw new Error("NOT_FOUND");
+    const inventory = await selectInventoryById(inventoryId, client);
+    if (!inventory) throw new Error("NOT_FOUND");
 
-  if (inventory.version !== expectedVersion) {
-    const err = new Error("VERSION_CONFLICT");
-    err.code = "VERSION_CONFLICT";
-    err.meta = {
-      currentVersion: inventory.version,
-      expectedVersion,
-    };
-    throw err;
-  }
-
-  const inventoryFields = new Map(
-    inventory.fields.map((field) => [field.title, field.id])
-  );
-
-  const newInventoryFields = fields
-    .filter((f) => !inventoryFields.has(f.title))
-    .map((field) => ({
-      inventoryId,
-      title: field.title,
-      type: field.type,
-      description: field.description ?? null,
-      showInTable: field.showInTable ?? false,
-      order: typeof field.order === "number" ? field.order : 0,
-      isDeleted: !!field.isDeleted,
-    }));
-
-  const updatedInventoryFields = fields.filter((f) =>
-    inventoryFields.has(f.title)
-  );
-
-  try {
-    return await updateNewInventoryService(
-      inventoryId,
-      tags,
-      inventoryFields,
-      newInventoryFields,
-      updatedInventoryFields,
-      allowedUsers,
-      inventoryBase,
-      prisma
-    );
-  } catch (e) {
-    if (e.code === "VERSION_CONFLICT") {
-      throw new Error(
-        `Version conflict: current=${e.meta.currentVersion}, expected=${e.meta.expectedVersion}`
-      );
+    if (inventory.version !== expectedVersion) {
+        const e = new Error("VERSION_CONFLICT");
+        e.code = "VERSION_CONFLICT";
+        e.meta = { currentVersion: inventory.version, expectedVersion };
+        throw e;
     }
-    if (e.message === "NOT_FOUND") throw new Error("Inventory not found");
-    throw e;
-  }
+
+    const existingMap = Object.fromEntries(inventory.fields.map(field => [field.title, field.id]));
+
+    const { toCreate, toUpdate } = fields.reduce((acc, field) => {
+        const base = {
+            title: field.title,
+            type: field.type,
+            description: field.description ?? null,
+            showInTable: !!field.showInTable,
+            order: field.order,
+            isDeleted: !!field.isDeleted,
+        };
+        if (existingMap[field.title]) acc.toUpdate.push({ id: existingMap[field.title], ...base });
+        else acc.toCreate.push({ ...base, inventoryId });
+        return acc;
+    }, { toCreate: [], toUpdate: [] }
+    );
+
+    return updateNewInventoryService(
+        inventoryId,
+        tags,
+        toCreate,
+        toUpdate,
+        allowedUsers,
+        inventoryBase,
+        client
+    );
 };
-
-
 
 export const grantAccess = () => {
 

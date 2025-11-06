@@ -129,6 +129,8 @@ model ItemValue {
   fieldId Int
   field   InventoryField @relation("InventoryFieldToItemValue", fields: [fieldId], references: [id], onDelete: Cascade)
   value   String
+
+  @@unique([itemId, fieldId])
 }
 
 model Comment {

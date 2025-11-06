@@ -9,6 +9,10 @@ const commonTypeDefs = gql`
 
 directive @auth(modelName: String, roles: [String!]) on FIELD_DEFINITION
 
+
+scalar JSON
+
+
 type Query {
     tags: [Tag]!
     searchTags(searchQuery: String!): [Tag!]

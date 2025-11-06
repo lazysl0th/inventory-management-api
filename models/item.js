@@ -1,5 +1,6 @@
-import selectClient from '../infrastructure/prisma.js';
-import { createItemValue, deleteItemValue } from '../models/itemValue.js'
+import { getPrismaClient } from '../infrastructure/prisma.js';
+import { createItemValue, updateItemValue } from '../models/itemValue.js'
+import { generateCustomId } from '../services/item.js'
 
 export const selectAllItems = (inventoryId, client) => {
     return client.item.findMany({
@@ -20,36 +21,37 @@ export const selectItemById = (itemId, client) => {
 }
 
 export const selectItemsById = (itemIds, client) => {
-    return selectClient(client).item.findMany({
+    return client.item.findMany({
         where: { id: { in: itemIds } },
         include: { values: { include: { field: true } }, inventory: true }
     })
 }
 
-export const selectLastItem = (inventoryId, client) => {
-    return selectClient(client).item.findFirst({
+export const selectLastItem = async (inventoryId, client) => {
+    return await client.item.findFirst({
         where: { inventoryId: inventoryId },
         orderBy: { id: 'desc' },
-        select: { id: true }
+        select: { id: true, customId: true }
     });
 }
 
 const insertItem = (data, client) => {
-    return selectClient(client).item.create({ 
+    return client.item.create({ 
         data: data,
         include: { values: { include: { field: true } } }
     })
 }
 
-export const createItem = (data, values) => {
-    return selectClient().$transaction(async (tx) => {
-        const item = await insertItem(data, tx);
+export const createItem = (data, customIdFormat, values, client) => {
+    return client.$transaction(async (tx) => {
+        const customId = await generateCustomId(data.inventoryId, customIdFormat, tx);
+        const item = await insertItem({ ...data, customId }, tx);
         await createItemValue(item.id, values, tx);
         return selectItemById(item.id, tx);
     })
 }
 
-export const updateItem = (itemId, values) => {
+/*export const updateItem = (itemId, values) => {
     return selectClient().$transaction(async (tx) => {
         await deleteItemValue(itemId, tx);
         await createItemValue(itemId, values, tx)
@@ -59,12 +61,29 @@ export const updateItem = (itemId, values) => {
           include: { values: { include: { field: true } } }
         });
     })
+}*/
+
+
+
+const update = (itemId, client) => {
+    return client.item.update({
+        where: { id: itemId },
+        data: { version: { increment: 1 } },
+        include: { values: { include: { field: true } } },
+    });
 }
 
-export const deleteItem = async (itemIds) => {
-    return await selectClient().$transaction(async (tx) => {
+export const updateItem = async (itemId, values, client) => {
+    return client.$transaction(async (tx) => {
+        for (const value of values) await updateItemValue(itemId, value, tx);
+        return await update(itemId, tx);
+  });
+};
+
+export const deleteItem = async (itemIds, client) => {
+    return await client.$transaction(async (tx) => {
         const deletedItems = await selectItemsById(itemIds, tx);
-        await selectClient(tx).item.deleteMany({ where: { id: { in: itemIds } }, });
+        await getPrismaClient(tx).item.deleteMany({ where: { id: { in: itemIds } }, });
         return deletedItems;
     })
 }
