@@ -1,4 +1,3 @@
-import { getPrismaClient } from '../infrastructure/prisma.js';
 import { createItemValue, updateItemValue } from '../models/itemValue.js'
 import { generateCustomId } from '../services/item.js'
 
@@ -16,7 +15,9 @@ export const selectItemById = (itemId, client) => {
         include: { 
             values: { include: { field: true } }, 
             inventory: true, 
-            owner: { select: { id: true, name: true, email: true } } }
+            owner: { select: { id: true, name: true, email: true } },
+            _count: { select: { likes: true } },
+        }
     })
 }
 

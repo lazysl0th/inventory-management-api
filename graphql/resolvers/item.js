@@ -11,7 +11,7 @@ const itemResolvers = {
         createItem: async (_, { input }, { user, prisma }) => create(input, user, prisma),
         deleteItems: async (_, { ids }, { prisma }) => del(ids, prisma),
         updateItem: async (_, { id, input, expectedVersion }, { prisma }) => update(id, input, expectedVersion, prisma),
-        toggleLikeItem: async (_, { id }, { user }) => like(id, user),
+        toggleLikeItem: async (_, { id }, { user, prisma }) => like(id, user, prisma),
     },
     Item: {
         likesCount: async (parent, _, { prisma }) => await getLikesCount(parent.id, prisma),

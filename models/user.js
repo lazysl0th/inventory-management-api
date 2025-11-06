@@ -1,7 +1,7 @@
-import { getPrismaClient } from '../infrastructure/prisma.js';
+import prisma from '../infrastructure/prisma.js'
 
 export const createUser = ({ name, email, hash, provider, socialId }) => {
-    return getPrismaClient().user.create({
+    return prisma.user.create({
         data: {
             name,
             email,
@@ -21,21 +21,21 @@ export const createUser = ({ name, email, hash, provider, socialId }) => {
 }
 
 export const findUserByParam = (field, value) => {
-    return getPrismaClient().user.findUnique({ 
+    return prisma.user.findUnique({ 
         where: { [field]: value },
         include: { roles: { include: { role: true, }, }, },
     });
 }
 
 export const updateUserData = (fieldWhere, valueWhere, fieldData, valueData) => {
-    return getPrismaClient().user.update({
+    return prisma.user.update({
         where: { [fieldWhere]: valueWhere },
         data: { [fieldData]: valueData },
     });
 }
 
 export const selectAllUsers = () => {
-    return getPrismaClient().user.findMany({
+    return prisma.user.findMany({
         select: {
             id: true,
             name: true,
@@ -49,13 +49,13 @@ export const selectAllUsers = () => {
 }
 
 export const deleteUsersByIds = async (usersIds) => {
-    return await getPrismaClient().$transaction(async (tx) => {
-        const deletedUsers = await getPrismaClient(tx).user.findMany({
+    return await prisma.$transaction(async (tx) => {
+        const deletedUsers = await tx.user.findMany({
             where: { id: { in: usersIds } },
             select: { id: true },
         });
 
-        const { count } = await getPrismaClient(tx).user.deleteMany({
+        const { count } = await tx.user.deleteMany({
             where: { id: { in: usersIds } },
         });
 
@@ -68,15 +68,15 @@ export const deleteUsersByIds = async (usersIds) => {
 }
 
 export const updateStatusByIds = async (usersIds, status) => {
-    return await getPrismaClient().$transaction(async (tx) => {
-        const { count } = await getPrismaClient(tx).user.updateMany({
+    return await prisma.$transaction(async (tx) => {
+        const { count } = await tx.user.updateMany({
             where: {
                 id: { in: usersIds },
                 NOT: { status },
             },
             data: { status },
         });
-        const updatedUsers = await getPrismaClient(tx).user.findMany({
+        const updatedUsers = await tx.user.findMany({
             where: { id: { in: usersIds } },
             select: { id: true, status: true },
         });

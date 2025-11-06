@@ -28,6 +28,7 @@ type ItemValue {
 type Like {
     id: Int!
     userId: Int!
+    itemId: Int!
 }
 
 input CreateItemInput {

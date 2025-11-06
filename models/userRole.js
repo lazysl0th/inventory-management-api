@@ -1,4 +1,3 @@
-import prisma, { getPrismaClient } from '../infrastructure/prisma.js';
 import { roles } from '../constants.js';
 
 export const updateUsersRolesById = async (usersIds, rolesIds, newUsersRoles) => {

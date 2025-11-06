@@ -114,8 +114,6 @@ export const create = async (input, user, client) => {
 }
 
 export const update = async (itemId, input, expectedVersion, client) => {
-    console.log(expectedVersion);
-    console.log(input);
     const item = await selectItemById(itemId, client);
     if (!item) throw new NotFound(NOT_FOUND_RECORDS.text(modelName.ITEM));
     if (item.version !== expectedVersion) {
@@ -132,12 +130,11 @@ export const del = async (itemIds, client) => {
     return deleteItem(itemIds, client);
 }
 
-export const like = async (itemId, user) => {
-    const { isLiked } = await toggleLike(user.id, itemId);
-    const likesCount = await getLikesCount(itemId);
-    const item = await selectItemById(itemId);
+export const like = async (itemId, user, client) => {
+    const { isLiked } = await toggleLike(user.id, itemId, client);
+    const likesCount = await getLikesCount(itemId, client);
     return {
-        ...item,
+        id: itemId,
         likesCount,
         likedByMe: isLiked,
     };
