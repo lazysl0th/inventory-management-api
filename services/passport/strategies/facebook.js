@@ -3,7 +3,6 @@ import { login } from '../../auth.js';
 import config from '../../../config.js';
 
 const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, FACEBOOK_CALLBACK_URL } = config;
-console.log(FACEBOOK_APP_ID);
 
 const verifyFacebookUser = async (accessToken, refreshToken, profile, done) => {
     try {
