@@ -1,16 +1,13 @@
 import { Liveblocks } from "@liveblocks/node";
-
-const liveblocks = new Liveblocks({
-  secret: process.env.LIVEBLOCKS_SECRET_KEY  // должно быть sk_…
-});
-
 import { register } from '../services/auth.js';
 import { response, modelName } from '../constants.js';
 import Conflict from '../errors/conflict.js';
 import config from '../config.js';
 
 const { CREATED, CONFLICT, OK } = response;
-const { FRONTEND } = config;
+const { FRONTEND, LIVEBLOCKS_SECRET_KEY } = config;
+
+const liveblocks = new Liveblocks({ secret: LIVEBLOCKS_SECRET_KEY });
 
 export const registerUser = async (req, res, next) => {
     try{
