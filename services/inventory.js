@@ -4,7 +4,6 @@ import {
     selectInventoryById,
     updateInventory,
     selectInventoriesByCondition,
-    updateNewInventoryService,
 } from "../models/inventory.js";
 import { itemsCount, selectAllItems } from '../models/item.js'
 import { calculateFieldStats } from './stats.js'
@@ -24,9 +23,9 @@ const createCustomIdFormatJSON = (customIdFormat) => {
 export const create = async (input, client) => {
     const { tags, fields, owner, allowedUsers, ...inventoryBase } = input;
     try {
-        return createInventory(tags, fields, owner, allowedUsers, inventoryBase, client);
+        return await createInventory(tags, fields, owner, allowedUsers, inventoryBase, client);
     } catch (e) {
-        if (e.code === 'P2002') throw new Conflict(CONFLICT.text(modelName.INVENTORY_FIELD));
+        console.log(e)
     }
 }
 
@@ -34,68 +33,59 @@ export const del = (inventoryIds, client) => {
     return deleteInventory(inventoryIds, client);
 }
 
-export const update = async (inventoryId, input, prisma) => {
-    const { tagsNames, fields, title, description, category, image, isPublic, customIdFormat } = input;
-    const inventory = await selectInventoryById(inventoryId, prisma);
-    if (!inventory) throw new NotFound(NOT_FOUND_RECORDS.text);
-    const existingTagsId = inventory.tags.map((tag) => tag.id);
-    const updateData = {
-        title: title ?? inventory.title,
-        description: description ?? inventory.description,
-        category: category ?? inventory.category,
-        image: image ?? inventory.image,
-        isPublic: isPublic ?? inventory.isPublic,
-        customIdFormat: customIdFormat
-            ? createCustomIdFormatJSON(customIdFormat)
-            : inventory.customIdFormat,
-        version: { increment: 1 },
-        updatedAt: new Date(),
-        };
-    
-    const updated = updateInventory(tagsNames, existingTagsId, fields, inventoryId, updateData, prisma);
-    return updated;
-}
-
-export const newUpd = async (inventoryId, input, expectedVersion, client) => {
-    const { tags = [], fields = [], allowedUsers = [], ...inventoryBase } = input;
-
+export const update = async (inventoryId, input, expectedVersion, client) => {
+    const { tags, fields, allowedUsers, ...inventoryBase } = input;
     const inventory = await selectInventoryById(inventoryId, client);
     if (!inventory) throw new Error("NOT_FOUND");
 
     if (inventory.version !== expectedVersion) {
         const e = new Error("VERSION_CONFLICT");
         e.code = "VERSION_CONFLICT";
-        e.meta = { currentVersion: inventory.version, expectedVersion };
+        e.meta = {
+            currentVersion: inventory.version,
+            expectedVersion,
+        };
         throw e;
     }
 
-    const existingMap = Object.fromEntries(inventory.fields.map(field => [field.title, field.id]));
+    const existingIds = new Set(inventory.fields.map(f => f.id));
 
-    const { toCreate, toUpdate } = fields.reduce((acc, field) => {
+    const toCreate = [];
+    const toUpdate = [];
+    const incomingIds = new Set();
+
+    for (const field of fields) {
         const base = {
             title: field.title,
             type: field.type,
             description: field.description ?? null,
             showInTable: !!field.showInTable,
-            order: field.order,
+            order: field.order ?? 0,
             isDeleted: !!field.isDeleted,
         };
-        if (existingMap[field.title]) acc.toUpdate.push({ id: existingMap[field.title], ...base });
-        else acc.toCreate.push({ ...base, inventoryId });
-        return acc;
-    }, { toCreate: [], toUpdate: [] }
-    );
 
-    return updateNewInventoryService(
-        inventoryId,
-        tags,
-        toCreate,
-        toUpdate,
-        allowedUsers,
-        inventoryBase,
-        client
-    );
+        if (field.id && existingIds.has(field.id)) {
+            toUpdate.push({ id: field.id, ...base });
+            incomingIds.add(field.id);
+        } else {
+            toCreate.push({ ...base, inventoryId });
+        }
+    }
+
+  const toDeleteIds = inventory.fields.filter(field => !incomingIds.has(field.id)).map(field => field.id);
+
+  return updateInventory(
+    inventoryId,
+    tags,
+    toCreate,
+    toUpdate,
+    toDeleteIds,
+    allowedUsers,
+    inventoryBase,
+    client
+  );
 };
+
 
 export const grantAccess = () => {
 

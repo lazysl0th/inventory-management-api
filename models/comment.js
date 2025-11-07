@@ -1,18 +1,9 @@
 import selectClient from '../infrastructure/prisma.js'
 
-export const createComment = (content, userId, inventoryId, itemId, client) => {
-    return selectClient(client).comment.create({
-        data: {
-            content,
-            userId: userId,
-            inventoryId: inventoryId,
-            itemId: itemId,
-        },
-        include: {
-            user: true,
-            inventory: true,
-            item: true,
-        },
+export const createComment = async (content, inventoryId, userId, client) => {
+    return await client.comment.create({
+        data: { content, inventoryId, userId },
+        include: { user: true },
     });
 }
 
@@ -27,10 +18,10 @@ export const selectItemComments = (itemId, client) => {
     return selectClient(client).item.findUnique({ where: { id: itemId } });
 }
 
-export const selectComments = (typeId, id, client) => {
+export const selectComments = (inventoryId, client) => {
     return client.comment.findMany({
-        where: { [typeId]: id },
-        orderBy: { createdAt: "desc" },
+        where: { inventoryId },
+        orderBy: { createdAt: "asc" },
         include: { user: true },
     });
 }

@@ -140,8 +140,6 @@ model Comment {
   user        User       @relation(fields: [userId], references: [id])
   inventoryId Int?
   inventory   Inventory? @relation(fields: [inventoryId], references: [id])
-  itemId      Int?
-  item        Item?      @relation(fields: [itemId], references: [id])
   createdAt   DateTime   @default(now())
 }
 

@@ -19,6 +19,8 @@ type Query {
 
 type Mutation
 
+type Subscription
+
 `;
 
 const typeDefs = [

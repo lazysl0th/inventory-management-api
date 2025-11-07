@@ -1,7 +1,6 @@
 import { roles } from '../constants.js';
 
 export const updateUsersRolesById = async (usersIds, rolesIds, newUsersRoles) => {
-    console.log(usersIds, rolesIds);
     return prisma.$transaction(async (tx) => {
         await getPrismaClient(tx).userRole.deleteMany({
             where: {

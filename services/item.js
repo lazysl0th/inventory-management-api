@@ -21,7 +21,6 @@ const generateNBitRandomNumberBit = (bit) => {
         numBigInt = (numBigInt << 8n) | BigInt(buffer[i]);
     }
     const mask = (1n << BigInt(bit)) - 1n;
-    console.log(numBigInt & mask);
     return numBigInt & mask;
 }
 

@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { createInventoryFields, updateInventoryFields, deleteInventoryFields } from './inventoryFields.js';
+import { createInventoryField, updateInventoryField, deleteInventoryFields } from './inventoryFields.js';
 import { updateTags } from './tag.js';
 
 export const selectAllInventories = (client) => {
@@ -117,25 +117,6 @@ export const deleteInventory = async (inventoriesId, client) => {
     })
 }
 
-export const updateInventory = async (tagsNames, existingTagsId, fields, inventoryId, updateData, client) => {
-    return await client.$transaction(async (tx) => {
-        await updateTags(tagsNames, existingTagsId, tx);
-        await updateInventoryFields(fields.filter(field => field.id), tx);
-        await createInventoryFields(inventoryId, fields.filter(field => !field.id), tx);
-        await deleteInventoryFields(inventoryId, fields.map(field => field.title), tx);
-        return tx.inventory.update({
-            where: { id: inventoryId },
-            data: updateData,
-            include: {
-                owner: { select: { id: true, name: true } },
-                tags: true,
-                fields: { orderBy: { order: 'asc' } },
-            }
-        })
-    })
-}
-
-
 const createTags = async (tags, client) => {
     return await client.tag.createMany({
         data: tags.map(tag => ({ name: tag.name })),
@@ -150,52 +131,25 @@ const findTags = async (tags, client) => {
     })
 }
 
-const deleteInventoryFieldsNew = async (inventoryId, newFields, updatedFields, client) => {
-    const titles = [...newFields.map(field => field.title), ...updatedFields.map(field => field.title)].filter(Boolean);
-    const where = titles.length > 0 ? { inventoryId, title: { notIn: titles } } : { inventoryId };
-    return await client.inventoryField.deleteMany({ where });
-};
-
-const createInventoryFieldsNew = async (newFields, client) => {
-    return await client.inventoryField.createMany({ data: newFields });
-}
-
-const updateInventoryFieldsNew = async (updatedFields, client) => {
-    return await Promise.all(
-        updatedFields.map(field =>
-            client.inventoryField.update({
-                where: { id: field.id },
-                data: {
-                    type: field.type,
-                    description: field.description ?? null,
-                    showInTable: !!field.showInTable,
-                    order: field.order ?? 0,
-                    isDeleted: !!field.isDeleted,
-                },
-            })
-        )
-    );
-}
-
-export async function updateNewInventoryService(
+export async function updateInventory(
     inventoryId,
     tags,
-    newFields,
-    updatedFields,
+    toCreate,
+    toUpdate,
+    toDeleteIds,
     allowedUsers,
     input,
     client
 ) {
-    return client.$transaction(async tx => {
+    return client.$transaction(async (tx) => {
         const { title, description, category, image, isPublic, customIdFormat } = input;
-        if (tags.length) await createTags(tags, tx)
+        if (tags.length) await createTags(tags, tx);
         const newTags = tags.length ? await findTags(tags, tx) : [];
-        await deleteInventoryFieldsNew(inventoryId, newFields, updatedFields, tx);
-        if (newFields.length) await createInventoryFieldsNew(newFields, tx)
+        if (toDeleteIds.length) await deleteInventoryFields(toDeleteIds, tx);
+        for (const field of toUpdate) await updateInventoryField(field, tx);
+        for (const field of toCreate) await createInventoryField(inventoryId, field, tx)
 
-        if (updatedFields.length) await updateInventoryFieldsNew(updatedFields, tx)
-
-        const updated = await tx.inventory.update({
+        return await tx.inventory.update({
             where: { id: inventoryId },
             data: {
                 title,
@@ -205,7 +159,7 @@ export async function updateNewInventoryService(
                 isPublic,
                 customIdFormat,
                 version: { increment: 1 },
-                tags: { set: newTags.map(t => ({ id: t.id })) },
+                tags: { set: newTags.map((tag) => ({ id: tag.id })) },
                 allowedUsers: { set: allowedUsers },
             },
             include: {
@@ -215,9 +169,9 @@ export async function updateNewInventoryService(
                 allowedUsers: { select: { id: true, name: true } },
             },
         });
-        return updated
     });
 }
+
 
 
 
