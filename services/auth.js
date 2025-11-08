@@ -31,13 +31,13 @@ const loginByEmail = async (email, userPassword, remember) => {
 
 const loginBySocial = async (provider, socialId, email, name) => {
     try {
-    let user = await findUserByParam('email', email);
-    if (!user || user[provider] != socialId) {
-        if (user) updateUserData('email', email, provider, socialId);
-        else user = await register({ name, email, provider, socialId });
-    }
-    const token = createToken(user.id);
-    return { user, token };
+        let user = await findUserByParam('email', email);
+        if (!user || user[provider] != socialId) {
+            if (user) updateUserData('email', email, provider, socialId);
+            else user = await register({ name, email, provider, socialId });
+        }
+        const token = createToken(user.id);
+        return { user, token };
     } catch (e) {
         console.log(e)
     }

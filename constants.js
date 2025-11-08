@@ -43,10 +43,15 @@ export const response = {
         statusCode: 409,
         text: (model) => {
             switch(model) {
-                case modelName.USER:
+                case 'User':
                     return 'A user with this email already exists.'
-                case modelName.INVENTORY_FIELD:
+                case 'InventoryField':
                     return 'A field with this title already exists in inventory.'
+                case 'Item':
+                    return 'A item with this Custom ID already exists in inventory.'
+                case 'version':
+                    return 'Version conflict'
+
             }
         },
     },
@@ -83,7 +88,7 @@ export const modelName = {
     INVENTORY: 'Inventory',
     ITEM: 'Item',
     USER: 'User',
-    INVENTORY_FIELD: 'InventoryField'
+    INVENTORY_FIELD: 'InventoryField',
 }
 
 export const conditions = {

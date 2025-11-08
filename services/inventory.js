@@ -35,6 +35,7 @@ export const del = (inventoryIds, client) => {
 
 export const update = async (inventoryId, input, expectedVersion, client) => {
     const { tags, fields, allowedUsers, ...inventoryBase } = input;
+    console.log(input)
     const inventory = await selectInventoryById(inventoryId, client);
     if (!inventory) throw new Error("NOT_FOUND");
 

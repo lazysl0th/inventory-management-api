@@ -41,8 +41,8 @@ export const loginLiveblocks = async (req, res) => {
         session.allow(room, session.FULL_ACCESS);
         const { body, status } = await session.authorize();
         res.status(status).send(body);
-  } catch (err) {
-        res.status(403).send({ error: err.message });
+  } catch (e) {
+        res.status(403).send({ error: e.message });
   }
   
 }

@@ -1,6 +1,5 @@
 import { Prisma } from '@prisma/client';
 import { createInventoryField, updateInventoryField, deleteInventoryFields } from './inventoryFields.js';
-import { updateTags } from './tag.js';
 
 export const selectAllInventories = (client) => {
     return client.inventory.findMany({
@@ -236,6 +235,7 @@ export const searchInventory = (searchQuery, orderBy, client) => {
 };
 
 export const updateSequencePart = (inventoryId, updatedFormat, client) => {
+    console.log
     return client.inventory.update({
         where: { id: inventoryId },
         data: { customIdFormat: updatedFormat },

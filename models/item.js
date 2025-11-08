@@ -1,5 +1,5 @@
 import { createItemValue, updateItemValue } from '../models/itemValue.js'
-import { generateCustomId } from '../services/item.js'
+import { generateCustomId } from '../utils.js'
 
 export const selectAllItems = (inventoryId, client) => {
     return client.item.findMany({
@@ -45,39 +45,27 @@ const insertItem = (data, client) => {
 
 export const createItem = (data, customIdFormat, values, client) => {
     return client.$transaction(async (tx) => {
+        //console.log(customIdFormat);
         const customId = await generateCustomId(data.inventoryId, customIdFormat, tx);
+        console.log(customId);
         const item = await insertItem({ ...data, customId }, tx);
         await createItemValue(item.id, values, tx);
         return selectItemById(item.id, tx);
     })
 }
 
-/*export const updateItem = (itemId, values) => {
-    return selectClient().$transaction(async (tx) => {
-        await deleteItemValue(itemId, tx);
-        await createItemValue(itemId, values, tx)
-        return selectClient(tx).item.update({
-          where: { id: itemId },
-          data: { version: { increment: 1 } },
-          include: { values: { include: { field: true } } }
-        });
-    })
-}*/
-
-
-
-const update = (itemId, client) => {
+const update = (itemId, inventoryId, customId, client) => {
     return client.item.update({
         where: { id: itemId },
-        data: { version: { increment: 1 } },
+        data: { customId, version: { increment: 1 } },
         include: { values: { include: { field: true } } },
     });
 }
 
-export const updateItem = async (itemId, values, client) => {
+export const updateItem = async (itemId, input, client) => {
     return client.$transaction(async (tx) => {
-        for (const value of values) await updateItemValue(itemId, value, tx);
-        return await update(itemId, tx);
+        for (const value of input.values) await updateItemValue(itemId, value, tx);
+        return await update(itemId, input.inventoryId, input.customId, tx);
   });
 };
 
