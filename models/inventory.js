@@ -148,7 +148,7 @@ export async function updateInventory(
         for (const field of toUpdate) await updateInventoryField(field, tx);
         for (const field of toCreate) await createInventoryField(inventoryId, field, tx)
 
-        return await tx.inventory.update({
+        const u = await tx.inventory.update({
             where: { id: inventoryId },
             data: {
                 title,
@@ -168,6 +168,7 @@ export async function updateInventory(
                 allowedUsers: { select: { id: true, name: true } },
             },
         });
+        return u
     });
 }
 
@@ -235,7 +236,6 @@ export const searchInventory = (searchQuery, orderBy, client) => {
 };
 
 export const updateSequencePart = (inventoryId, updatedFormat, client) => {
-    console.log
     return client.inventory.update({
         where: { id: inventoryId },
         data: { customIdFormat: updatedFormat },

@@ -15,14 +15,14 @@ type Item {
     likedByMe: Boolean
     comments: [Comment!]
     version: Int!
-    createdAt: String
-    updatedAt: String
+    createdAt: String!
+    updatedAt: String!
 }
 
 type ItemValue {
     id: Int!
     field: InventoryField!
-    value: String!
+    value: JSON!
 }
 
 type Like {

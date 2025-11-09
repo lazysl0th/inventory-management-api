@@ -112,3 +112,34 @@ const buildMaskFromSummary = (summary) => {
         }).join("");
     return new RegExp(`^${pattern}$`, "u");
 };
+
+export const normalizeValue = (rawValue, fieldType) => {
+    if (rawValue === undefined || rawValue === null) return '';
+    switch (fieldType) {
+        case 'BOOLEAN':
+            return rawValue ? "true" : "false";
+        case 'NUMBER':
+            return String(Number(rawValue));
+        case 'FILE':
+        case 'TEXT':
+        case 'LONGTEXT':
+        default:
+            return String(rawValue);
+    }
+};
+
+export const parseValue = (storedValue, fieldType) => {
+    if (storedValue === null || storedValue === undefined) return null;
+    switch (fieldType) {
+        case "BOOLEAN":
+            return storedValue === "true";
+        case "NUMBER":
+        const num = Number(storedValue);
+        return isNaN(num) ? null : num;
+        case "FILE":
+        case "TEXT":
+        case "LONGTEXT":
+        default:
+            return storedValue;
+    }
+};

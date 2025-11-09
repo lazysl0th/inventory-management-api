@@ -39,7 +39,6 @@ export const deleteUsers = async (req, res, next) => {
 
 export const updateUsersStatus = async (req, res, next) => {
   try {
-    console.log(req.body);
     return res.status(OK.statusCode).send(await updateStatusByIds(req.body.usersIds, req.body.status));
   } catch (e) {
     console.log(e)

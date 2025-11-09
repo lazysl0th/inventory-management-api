@@ -1,11 +1,11 @@
-import { selectAllItems, selectItemById } from '../../models/item.js';
-import { create, update, del, like } from '../../services/item.js'
+import { selectAllItems } from '../../models/item.js';
+import { selectItem, create, update, del, like } from '../../services/item.js'
 import { getLikesCount, isLikedByUser } from '../../services/like.js';
 
 const itemResolvers = {
     Query: {
         items: async (_, { inventoryId }, { prisma }) => selectAllItems(inventoryId, prisma),
-        item: async (_, { id }, { prisma }) => selectItemById(id, prisma),
+        item: async (_, { id }, { prisma }) => await selectItem (id, prisma),
     },
     Mutation: {
         createItem: async (_, { input }, { user, prisma }) => create(input, user, prisma),

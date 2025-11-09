@@ -9,7 +9,7 @@ import { itemsCount, selectAllItems } from '../models/item.js'
 import { calculateFieldStats } from './stats.js'
 import NotFound from '../errors/notFound.js';
 import Conflict from '../errors/conflict.js';
-import { response, modelName, conditions } from '../constants.js';
+import { response, conditions } from '../constants.js';
 
 const { NOT_FOUND_RECORDS, CONFLICT } = response
 
@@ -35,19 +35,9 @@ export const del = (inventoryIds, client) => {
 
 export const update = async (inventoryId, input, expectedVersion, client) => {
     const { tags, fields, allowedUsers, ...inventoryBase } = input;
-    console.log(input)
     const inventory = await selectInventoryById(inventoryId, client);
-    if (!inventory) throw new Error("NOT_FOUND");
-
-    if (inventory.version !== expectedVersion) {
-        const e = new Error("VERSION_CONFLICT");
-        e.code = "VERSION_CONFLICT";
-        e.meta = {
-            currentVersion: inventory.version,
-            expectedVersion,
-        };
-        throw e;
-    }
+    if (!inventory) throw new NotFound(NOT_FOUND_RECORDS.text(modelName.INVENTORY));
+    if (inventory.version !== expectedVersion) throw new Conflict (CONFLICT.text('version'))
 
     const existingIds = new Set(inventory.fields.map(f => f.id));
 
