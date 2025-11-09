@@ -1,37 +1,33 @@
-const prepareFieldsData = (fields, inventoryId) => {
-    return fields.map((field) => {
-        const { id, ...rest } = field;
-        const data = Object.fromEntries(
-            Object.entries({ ...rest, inventoryId }).filter(([_, value]) => value !== undefined)
-        )
-        return id ? { id, data } :  data 
+export const deleteInventoryFields = (ids, client) => {
+    return client.inventoryField.deleteMany({
+        where: { id: { in: ids } },
     });
 }
 
-export const createInventoryFields = (inventoryId, fields, client) => {
-    const fieldsData = prepareFieldsData(fields, inventoryId);
-    return client.inventoryField.createMany({ data: fieldsData });
-};
-
-export const updateInventoryFields = (fields, client) => {
-    const fieldsData = prepareFieldsData(fields);
-    return Promise.all(
-        fieldsData.map(field =>
-            client.inventoryField.update({
-                where: { id: field.id },
-                data: field.data
-            })
-        )
-    );
+export const updateInventoryField = (field, client) => {
+    return client.inventoryField.update({
+        where: { id: field.id },
+        data: {
+            title: field.title,
+            type: field.type,
+            description: field.description,
+            showInTable: field.showInTable,
+            order: field.order,
+            isDeleted: field.isDeleted,
+        },
+    });
 }
 
-export const deleteInventoryFields = (inventoryId, fieldsTitles, client) => {
-    return client.inventoryField.updateMany({
-        where: {
-            inventoryId: inventoryId,
-            title: { notIn: fieldsTitles },
-            isDeleted: false,
+export const createInventoryField = (inventoryId, field, client) => {
+    return client.inventoryField.create({
+        data: {
+            inventoryId,
+            title: field.title,
+            type: field.type,
+            description: field.description,
+            showInTable: field.showInTable,
+            order: field.order,
+            isDeleted: field.isDeleted,
         },
-        data: { isDeleted: true },
     });
 }

@@ -1,5 +1,5 @@
-import selectClient from '../infrastructure/prisma.js';
-import { createItemValue, deleteItemValue } from '../models/itemValue.js'
+import { createItemValue, updateItemValue } from '../models/itemValue.js'
+import { generateCustomId, normalizeValue } from '../utils.js'
 
 export const selectAllItems = (inventoryId, client) => {
     return client.item.findMany({
@@ -14,57 +14,78 @@ export const selectItemById = (itemId, client) => {
         where: { id: itemId },
         include: { 
             values: { include: { field: true } }, 
-            inventory: true, 
-            owner: { select: { id: true, name: true, email: true } } }
+            //inventory: true, 
+            owner: { select: { id: true, name: true, email: true } },
+            _count: { select: { likes: true } },
+        }
     })
 }
 
 export const selectItemsById = (itemIds, client) => {
-    return selectClient(client).item.findMany({
+    return client.item.findMany({
         where: { id: { in: itemIds } },
         include: { values: { include: { field: true } }, inventory: true }
     })
 }
 
-export const selectLastItem = (inventoryId, client) => {
-    return selectClient(client).item.findFirst({
+export const selectLastItem = async (inventoryId, client) => {
+    return await client.item.findFirst({
         where: { inventoryId: inventoryId },
         orderBy: { id: 'desc' },
-        select: { id: true }
+        select: { id: true, customId: true }
     });
 }
 
 const insertItem = (data, client) => {
-    return selectClient(client).item.create({ 
+    return client.item.create({ 
         data: data,
         include: { values: { include: { field: true } } }
     })
 }
 
-export const createItem = (data, values) => {
-    return selectClient().$transaction(async (tx) => {
-        const item = await insertItem(data, tx);
-        await createItemValue(item.id, values, tx);
+const prepareFieldsValue = (values, itemId, inventoryFields) => {
+    const typeById = Object.fromEntries(inventoryFields.map(field => [field.id, field.type]));
+    return values
+        .filter(value => value.fieldId && value.value !== undefined && value.value !== null)
+        .map(value => ({
+            fieldId: value.fieldId,
+            itemId,
+            value: normalizeValue(value.value, typeById[value.fieldId]),
+        }));
+};
+
+export const createItem = (data, customIdFormat, values, fields, client) => {
+    return client.$transaction(async (tx) => {
+        const customId = await generateCustomId(data.inventoryId, customIdFormat, tx);
+        const item = await insertItem({ ...data, customId }, tx);
+        const fieldsValue = prepareFieldsValue(values, item.id, fields);
+        await createItemValue(fieldsValue, tx);
         return selectItemById(item.id, tx);
     })
 }
 
-export const updateItem = (itemId, values) => {
-    return selectClient().$transaction(async (tx) => {
-        await deleteItemValue(itemId, tx);
-        await createItemValue(itemId, values, tx)
-        return selectClient(tx).item.update({
-          where: { id: itemId },
-          data: { version: { increment: 1 } },
-          include: { values: { include: { field: true } } }
-        });
-    })
+const update = (itemId, customId, client) => {
+    return client.item.update({
+        where: { id: itemId },
+        data: { customId, version: { increment: 1 }, updatedAt: new Date(), },
+        include: { values: { include: { field: true } } },
+    });
 }
 
-export const deleteItem = async (itemIds) => {
-    return await selectClient().$transaction(async (tx) => {
+export const updateItem = async (itemId, customId, fields, values, client) => {
+    const fieldsValues = prepareFieldsValue(values, itemId, fields);
+    return client.$transaction(async (tx) => {
+        for (const value of fieldsValues) await updateItemValue(value, tx);
+        const u = await update(itemId, customId, tx);
+        console.log(u);
+        return u
+  });
+};
+
+export const deleteItem = async (itemIds, client) => {
+    return await client.$transaction(async (tx) => {
         const deletedItems = await selectItemsById(itemIds, tx);
-        await selectClient(tx).item.deleteMany({ where: { id: { in: itemIds } }, });
+        await tx.item.deleteMany({ where: { id: { in: itemIds } }, });
         return deletedItems;
     })
 }

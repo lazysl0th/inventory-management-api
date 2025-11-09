@@ -1,7 +1,7 @@
-import { getPrismaClient } from '../infrastructure/prisma.js';
+import prisma from '../infrastructure/prisma.js'
 
 export const createUser = ({ name, email, hash, provider, socialId }) => {
-    return getPrismaClient().user.create({
+    return prisma.user.create({
         data: {
             name,
             email,
@@ -21,7 +21,7 @@ export const createUser = ({ name, email, hash, provider, socialId }) => {
 }
 
 export const findUserByParam = (field, value) => {
-    return getPrismaClient().user.findUnique({ 
+    return prisma.user.findUnique({ 
         where: { [field]: value },
         select: {
             id: true,
@@ -34,14 +34,14 @@ export const findUserByParam = (field, value) => {
 }
 
 export const updateUserData = (fieldWhere, valueWhere, fieldData, valueData) => {
-    return getPrismaClient().user.update({
+    return prisma.user.update({
         where: { [fieldWhere]: valueWhere },
         data: { [fieldData]: valueData },
     });
 }
 
 export const selectAllUsers = () => {
-    return getPrismaClient().user.findMany({
+    return prisma.user.findMany({
         select: {
             id: true,
             name: true,
@@ -54,44 +54,60 @@ export const selectAllUsers = () => {
     });
 }
 
-export const deleteUsersByIds = async (usersId) => {
-    return await getPrismaClient().$transaction(async (tx) => {
-        const needDeleteUsers = await tx.user.findMany({
-            where: { id: { in: usersId } },
+export const deleteUsersByIds = async (usersIds) => {
+    return await prisma.$transaction(async (tx) => {
+        const deletedUsers = await tx.user.findMany({
+            where: { id: { in: usersIds } },
             select: { id: true },
         });
-        const deletedUsers = await tx.user.deleteMany({
-            where: { id: { in: usersId } },
+
+        const { count } = await tx.user.deleteMany({
+            where: { id: { in: usersIds } },
         });
+
         return {
-            needDeleteUsersCount: needDeleteUsers.length,
-            deletedUsersCount: deletedUsers.count,
-            requestUpdateUsersCount: usersId.length,
-            needDeleteUsers
-        }
+            deletedUsersCount: count,
+            requestDeleteUsersCount: usersIds.length,
+            deletedUsers,
+        };
     });
 }
 
-export const updateStatusByIds = async (userIds, status) => {
-    return await getPrismaClient().$transaction(async (tx) => {
-        const needUpdateStatusUser = await tx.user.findMany({
-            where: { id: { in: userIds }, NOT: { status: status } },
-            select: { id: true, status: true },
-        })
-        const updatedUsersStatusResult = await tx.user.updateMany({
-            where: { id: { in: userIds }, NOT: { status: status } },
+export const updateStatusByIds = async (usersIds, status) => {
+    return await prisma.$transaction(async (tx) => {
+        const { count } = await tx.user.updateMany({
+            where: {
+                id: { in: usersIds },
+                NOT: { status },
+            },
             data: { status },
-        })
-        const requestUpdateStatusUsers = await tx.user.findMany({
-            where: { id: { in: userIds } },
+        });
+        const updatedUsers = await tx.user.findMany({
+            where: { id: { in: usersIds } },
             select: { id: true, status: true },
-        })
+        });
         return {
-            needUpdateStatusUserCount: needUpdateStatusUser.length,
-            updatedUsersStatusCount: updatedUsersStatusResult.count,
-            requestUpdateStatusUsersCount: requestUpdateStatusUsers.length,
-            needUpdateStatusUser,
-            requestUpdateStatusUsers,
-        }
+            updatedUsersStatusCount: count,
+            requestUpdateStatusUsersCount: updatedUsers.length,
+            requestUpdateStatusUsers: updatedUsers,
+        };
     });
 }
+
+
+export const searchUsers = (searchQuery, by, client) => {
+    const where = by === 'email' ? "EMAIL" : "USER"
+        ? { email: { contains: searchQuery, mode: "insensitive" } }
+        : { name: { contains: searchQuery, mode: "insensitive" } };
+
+    return client.user.findMany({
+        where,
+        select: {
+            id: true,
+            name: true,
+            email: true,
+        },
+        orderBy: { name: "asc" },
+        take: 10,
+    })
+};

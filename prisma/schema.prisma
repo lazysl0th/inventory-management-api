@@ -36,7 +36,7 @@ model UserRole {
   userId Int
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   roleId Int
-  role   Role @relation(fields: [roleId], references: [id])
+  role   Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   @@id([userId, roleId])
 }
@@ -108,7 +108,7 @@ enum Category {
 model Item {
   id          Int         @id @default(autoincrement())
   inventoryId Int
-  inventory   Inventory   @relation(fields: [inventoryId], references: [id])
+  inventory   Inventory   @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
   customId    String
   ownerId     Int
   owner       User        @relation("UserOwnedItems", fields: [ownerId], references: [id])
@@ -117,7 +117,6 @@ model Item {
   version     Int         @default(1)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-  comments    Comment[]
 
   @@unique([inventoryId, customId])
 }
@@ -129,6 +128,8 @@ model ItemValue {
   fieldId Int
   field   InventoryField @relation("InventoryFieldToItemValue", fields: [fieldId], references: [id], onDelete: Cascade)
   value   String
+
+  @@unique([itemId, fieldId])
 }
 
 model Comment {
@@ -138,8 +139,6 @@ model Comment {
   user        User       @relation(fields: [userId], references: [id])
   inventoryId Int?
   inventory   Inventory? @relation(fields: [inventoryId], references: [id])
-  itemId      Int?
-  item        Item?      @relation(fields: [itemId], references: [id])
   createdAt   DateTime   @default(now())
 }
 
@@ -148,7 +147,7 @@ model Like {
   userId Int
   user   User @relation(fields: [userId], references: [id])
   itemId Int
-  item   Item @relation(fields: [itemId], references: [id])
+  item   Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
 
   @@unique([userId, itemId])
 }

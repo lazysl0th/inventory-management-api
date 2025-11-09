@@ -1,10 +1,13 @@
+import { Liveblocks } from "@liveblocks/node";
 import { register } from '../services/auth.js';
 import { response, modelName } from '../constants.js';
 import Conflict from '../errors/conflict.js';
 import config from '../config.js';
 
 const { CREATED, CONFLICT, OK } = response;
-const { FRONTEND } = config;
+const { FRONTEND, LIVEBLOCKS_SECRET_KEY } = config;
+
+const liveblocks = new Liveblocks({ secret: LIVEBLOCKS_SECRET_KEY });
 
 export const registerUser = async (req, res, next) => {
     try{
@@ -25,4 +28,21 @@ export const loginUser = (req, res, next) => {
         console.log(e);
         return next(e);
     }
+}
+
+export const loginLiveblocks = async (req, res) => {
+    try {
+        const { room } = req.body;
+        if (!room) return res.status(400).json({ error: "Room not provided" });
+        const session = liveblocks.prepareSession(
+            req.user?.id?.toString() || "guest",
+            { userInfo: { name: req.user?.name || "Guest" } }
+        );
+        session.allow(room, session.FULL_ACCESS);
+        const { body, status } = await session.authorize();
+        res.status(status).send(body);
+  } catch (e) {
+        res.status(403).send({ error: e.message });
+  }
+  
 }

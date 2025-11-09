@@ -1,17 +1,17 @@
-import { selectAllItems, selectItemById } from '../../models/item.js';
-import { create, update, del, like } from '../../services/item.js'
+import { selectAllItems } from '../../models/item.js';
+import { selectItem, create, update, del, like } from '../../services/item.js'
 import { getLikesCount, isLikedByUser } from '../../services/like.js';
 
 const itemResolvers = {
     Query: {
         items: async (_, { inventoryId }, { prisma }) => selectAllItems(inventoryId, prisma),
-        item: async (_, { id }, { prisma }) => selectItemById(id, prisma),
+        item: async (_, { id }, { prisma }) => await selectItem (id, prisma),
     },
     Mutation: {
-        createItem: async (_, { input }, { user }) => create(input, user),
-        deleteItem: async (_, { ids }) => del(ids),
-        updateItem: async (_, { id, input }) => update(id, input),
-        toggleLikeItem: async (_, { id }, { user }) => like(id, user),
+        createItem: async (_, { input }, { user, prisma }) => create(input, user, prisma),
+        deleteItems: async (_, { ids }, { prisma }) => del(ids, prisma),
+        updateItem: async (_, { id, input, expectedVersion }, { prisma }) => update(id, input, expectedVersion, prisma),
+        toggleLikeItem: async (_, { id }, { user, prisma }) => like(id, user, prisma),
     },
     Item: {
         likesCount: async (parent, _, { prisma }) => await getLikesCount(parent.id, prisma),

@@ -6,8 +6,8 @@ const inventoryStatsTypeDefs = gql`
     }
 
     type FieldsStats {
-        numStats: NumericFieldStat
-        textStats: TextFieldStat
+        numStats: [NumericFieldStat!]!
+        textStats: [TextFieldStat!]!
     }
 
     type NumericFieldStat {

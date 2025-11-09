@@ -28,7 +28,15 @@ export const updateTags = async (tagsName, existingTagsId, client) => {
 
 export const selectTags = (client) => {
     return client.tag.findMany({
-        include: { _count: { select: { inventories: true } } },
+        include: { _count: { select: { inventories: true } }, inventories: {select: { id: true }}},
         orderBy: { inventories: { _count: 'desc' } },
     });
 }
+
+export const searchTags = (searchQuery, client) => {
+    return client.tag.findMany({
+        where : { name: { contains: searchQuery, mode: "insensitive" } },
+        include: { _count: { select: { inventories: true } } },
+        orderBy: { inventories: { _count: 'desc' } },
+    })
+};

@@ -1,108 +1,74 @@
-import crypto from 'crypto';
+
 import { selectInventoryById } from '../models/inventory.js'
-import { selectLastItem, createItem, selectItemById, updateItem, deleteItem} from '../models/item.js'
+import { createItem, selectItemById, updateItem, deleteItem } from '../models/item.js'
 import { toggleLike, getLikesCount } from './like.js'
 import NotFound from '../errors/notFound.js';
+import BadRequest from '../errors/badRequest.js'
+import Conflict from '../errors/conflict.js';
 import { response, modelName } from '../constants.js';
+import { checkCustomId, parseValue } from '../utils.js';
 
-const { NOT_FOUND_RECORDS } = response
+const { NOT_FOUND_RECORDS, BAD_REQUEST, CONFLICT } = response
 
-const generateRandomNumber = (numberSymbol, maxValue) => {
-    const number = crypto.randomInt(0, maxValue);
-    return number.toString().padStart(numberSymbol, '0');
-}
-
-const generateNBitRandomNumberBit = (bit) => {
-    const bytes = Math.ceil(bit/8);
-    const buffer = crypto.randomBytes(bytes);
-    let numBigInt = 0n;
-    for (let i = 0; i < bytes; i++) {
-        numBigInt = (numBigInt << 8n) | BigInt(buffer[i]);
-    }
-    const mask = (1n << BigInt(bit)) - 1n;
-    return numBigInt & mask;
-}
-
-const generateSequenceNumber = (inventoryId, digits) => {
-    const lastItem = selectLastItem(inventoryId);
-    const next = (lastItem?.id || 0) + 1;
-    return String(next).padStart(digits, '0');
-}
-
-const generateCustomId = async (inventory) => {
-    const customIdFormat = inventory.customIdFormat.parts;
-    let id = '';
-    for (const part of customIdFormat) {
-        switch (part.type) {
-        case 'TEXT':
-            id += part.value || '';
-            break;
-        case 'RANDOM6': {
-            id += generateRandomNumber(6, 1_000_000);
-            break;
-        }
-        case 'RANDOM9': {
-            id += generateRandomNumber(9, 1_000_000_000);
-            break;
-        }
-        case 'RANDOM20': {
-            id += generateNBitRandomNumberBit(20);
-            break;
-        }
-        case 'RANDOM32': {
-            id += generateNBitRandomNumberBit(32);
-            break;
-        }
-        case 'GUID':
-            id += crypto.randomUUID();
-            break;
-        case 'DATE':
-            id += dayjs().format(part.format || 'YYYYMMDD');
-            break;
-        case 'SEQUENCE': {
-            id += generateSequenceNumber(inventory.id, part.digits);
-            break;
-        }
-        default:
-            return 'ITEM-' + crypto.randomBytes(3).toString('hex').toUpperCase();
-        }
-    }
-    return id;
-}
-
-export const create = async (input, user) => {
+export const create = async (input, user, client) => {
     const { inventoryId, values } = input;
-    const inventory = await selectInventoryById(inventoryId);
-    if (!inventory) throw new NotFound(NOT_FOUND_RECORDS.text(modelName.INVENTORY));
-    const customId = await generateCustomId(inventory);
-    const data = {
-        customId: customId,
-        inventoryId: inventoryId,
-        ownerId: user.id,
+    try {
+        const inventory = await selectInventoryById(inventoryId, client);
+        if (!inventory) throw new NotFound(NOT_FOUND_RECORDS.text(modelName.INVENTORY));
+        return await createItem({ inventoryId: inventoryId, ownerId: user.id, }, inventory.customIdFormat, values, inventory.fields, client);
+    } catch (e) {
+        if (e.code == 'P2002') throw new Conflict(CONFLICT.text(modelName.ITEM));
+        throw e
     }
-    const item = await createItem(data, values);
-    console.log(item);
-    return item;
 }
 
-export const update = async (itemId, input) => {
-    const item = await selectItemById(itemId);
+export const update = async (itemId, input, expectedVersion, client) => {
+    const inventory = await selectInventoryById(input.inventoryId, client);
+    if (!inventory) throw new NotFound(NOT_FOUND_RECORDS.text(modelName.INVENTORY));
+    const item = await selectItemById(itemId, client);
+    if (!checkCustomId(inventory.customIdFormat.summary, input.customId)) throw new BadRequest(BAD_REQUEST.text)
     if (!item) throw new NotFound(NOT_FOUND_RECORDS.text(modelName.ITEM));
-    const updatedItem = await updateItem(itemId, input.values)
-    return updatedItem;
-}
-
-export const del = async (itemIds) => {
-    return deleteItem(itemIds);
-}
-
-export const like = async (itemId, user) => {
-    const { isLiked } = await toggleLike(user.id, itemId);
-    const likesCount = await getLikesCount(itemId);
-    const item = await selectItemById(itemId);
+    if (item.version !== expectedVersion) throw new Conflict (CONFLICT.text('version'))
+    const updatedItem = await updateItem(itemId, input.customId, inventory.fields, input.values, client)
+    const typeById = Object.fromEntries(item.values.map(value => [value.field.id, value.field.type]));
+    const parsedValues = updatedItem.values.map(value => ({
+        ...value,
+        value: parseValue(value.value, typeById[value.field.id]),
+    }));
     return {
         ...item,
+        values: parsedValues,
+    };
+}
+
+export const del = async (itemIds, client) => {
+    return deleteItem(itemIds, client);
+}
+
+export const like = async (itemId, user, client) => {
+    const { isLiked } = await toggleLike(user.id, itemId, client);
+    const likesCount = await getLikesCount(itemId, client);
+    return {
+        id: itemId,
         likesCount,
         likedByMe: isLiked,
     };
+}
+
+export const selectItem = async (id, client) => {
+    try{
+        const item = await selectItemById(id, client);
+        if (!item) throw new NotFound(NOT_FOUND_RECORDS.text(modelName.ITEM));
+        const typeById = Object.fromEntries(item.values.map(value => [value.field.id, value.field.type]));
+        const parsedValues = item.values.map(value => ({
+            ...value,
+            value: parseValue(value.value, typeById[value.field.id]),
+        }));
+        return {
+            ...item,
+            values: parsedValues,
+        };
+    } catch(e) {
+        console.log(e)
+    }
 }

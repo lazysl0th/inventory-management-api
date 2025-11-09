@@ -1,6 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { createInventoryFields, updateInventoryFields, deleteInventoryFields } from './inventoryFields.js';
-import { upsertTag, updateTags } from './tag.js';
+import { createInventoryField, updateInventoryField, deleteInventoryFields } from './inventoryFields.js';
 
 export const selectAllInventories = (client) => {
     return client.inventory.findMany({
@@ -39,14 +38,14 @@ export const selectInventoriesById = (inventoriesId, client) => {
     });
 }
 
-export const selectInventoriesByCondition = (orderBy, take, skip, client) => {
+export const selectInventoriesByCondition = (query, client) => {
     return client.inventory.findMany({
         include: {
             owner: { select: { id: true, name: true } },
-            _count: { select: { items: true } } },
-        orderBy,
-        take,
-        skip,
+            _count: { select: { items: true } },
+            allowedUsers: { select: { id: true, name: true } },
+        },
+        ...query
     });
 }
 
@@ -66,15 +65,6 @@ export const selectInventoriesOrderByItemCounts = (ownerId, isPublic, itemsCount
       `;
 }
 
-const createTags = (tagsNames, client) => {
-    return Promise.all(
-        tagsNames.map(async (tagName) => {
-            const tag = await upsertTag(tagName, client);
-            return { id: tag.id }
-        })
-    )
-}
-
 export const insertInventory = (data, client) => {
     return client.inventory.create({
         data: data,
@@ -86,12 +76,35 @@ export const insertInventory = (data, client) => {
     })
 }
 
-export const createInventory = (tagsNames, fields, customIdFormatJSON, data, user, client) => {
-    return client.$transaction(async (tx) => {
-        const tags = await createTags(tagsNames, tx);
-        const inventory = await insertInventory({ ...data, tags: { connect: tags }, customIdFormat: customIdFormatJSON, ownerId: user.id }, tx);
-        await createInventoryFields(inventory.id, fields, tx);
-        return selectInventoryById(inventory.id, tx);
+export const createInventory = async (tags, fields, owner, allowedUsers, inventoryBase, client) => {
+    return client.inventory.create({
+        data: {
+            ...inventoryBase,
+            owner: { connect: { id: owner.id } },
+            tags: {
+                connectOrCreate: tags.map((tag) => ({
+                    where: { name: tag.name },
+                    create: { name: tag.name },
+                })),
+            },
+            fields: {
+                create: fields.map((field) => ({
+                    title: field.title,
+                    type: field.type,
+                    description: field.description,
+                    showInTable: field.showInTable,
+                    order: field.order,
+                    isDeleted: field.isDeleted
+                })),
+            },
+            allowedUsers: { connect: allowedUsers.map((user) => ({ id: user.id })) },
+        },
+        include: {
+            tags: true,
+            fields: true,
+            allowedUsers: { select: { id: true, name: true, email: true }},
+            owner: { select: { id: true, name: true }},
+        },
     })
 }
 
@@ -103,23 +116,65 @@ export const deleteInventory = async (inventoriesId, client) => {
     })
 }
 
-export const updateInventory = async (tagsNames, existingTagsId, fields, inventoryId, updateData, client) => {
-    return await client.$transaction(async (tx) => {
-        await updateTags(tagsNames, existingTagsId, tx);
-        await updateInventoryFields(fields.filter(field => field.id), tx);
-        await createInventoryFields(inventoryId, fields.filter(field => !field.id), tx);
-        await deleteInventoryFields(inventoryId, fields.map(field => field.title), tx);
-        return tx.inventory.update({
+const createTags = async (tags, client) => {
+    return await client.tag.createMany({
+        data: tags.map(tag => ({ name: tag.name })),
+        skipDuplicates: true,
+    });
+}
+
+const findTags = async (tags, client) => {
+    return await client.tag.findMany({
+        where: { name: { in: tags.map(tag => tag.name) } },
+        select: { id: true },
+    })
+}
+
+export async function updateInventory(
+    inventoryId,
+    tags,
+    toCreate,
+    toUpdate,
+    toDeleteIds,
+    allowedUsers,
+    input,
+    client
+) {
+    return client.$transaction(async (tx) => {
+        const { title, description, category, image, isPublic, customIdFormat } = input;
+        if (tags.length) await createTags(tags, tx);
+        const newTags = tags.length ? await findTags(tags, tx) : [];
+        if (toDeleteIds.length) await deleteInventoryFields(toDeleteIds, tx);
+        for (const field of toUpdate) await updateInventoryField(field, tx);
+        for (const field of toCreate) await createInventoryField(inventoryId, field, tx)
+
+        const u = await tx.inventory.update({
             where: { id: inventoryId },
-            data: updateData,
+            data: {
+                title,
+                description,
+                category,
+                image,
+                isPublic,
+                customIdFormat,
+                version: { increment: 1 },
+                tags: { set: newTags.map((tag) => ({ id: tag.id })) },
+                allowedUsers: { set: allowedUsers },
+            },
             include: {
                 owner: { select: { id: true, name: true } },
                 tags: true,
-                fields: { orderBy: { order: 'asc' } },
-            }
-        })
-    })
+                fields: { orderBy: { order: "asc" } },
+                allowedUsers: { select: { id: true, name: true } },
+            },
+        });
+        return u
+    });
 }
+
+
+
+
 
 export const addAllowUsers = (inventoryId, userIds, client) => {
     return client.inventory.update({
@@ -180,3 +235,9 @@ export const searchInventory = (searchQuery, orderBy, client) => {
     )
 };
 
+export const updateSequencePart = (inventoryId, updatedFormat, client) => {
+    return client.inventory.update({
+        where: { id: inventoryId },
+        data: { customIdFormat: updatedFormat },
+    });
+}

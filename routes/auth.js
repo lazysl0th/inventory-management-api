@@ -1,6 +1,6 @@
 import express from 'express';
 import passport from 'passport';
-import { loginUser, registerUser } from '../controllers/auth.js';
+import { loginUser, registerUser, loginLiveblocks } from '../controllers/auth.js';
 import { signupValidation, emailSigninValidation, /*socialSigninValidation*/ } from '../middlewares/validation.js';
 import { passportAuth } from '../middlewares/passport.js';
 
@@ -15,5 +15,8 @@ router.get('/signin/google/callback', /*socialSigninValidation,*/ passport.authe
 
 router.get('/signin/facebook', passport.authenticate('facebook', { scope: ['email'] }));
 router.get('/signin/facebook/callback', /*socialSigninValidation,*/ passport.authenticate('facebook', { session: false, failureRedirect: '/auth/fail' }), loginUser);
+
+router.post('/api/liveblocks-auth', loginLiveblocks);
+
 
 export default router;
