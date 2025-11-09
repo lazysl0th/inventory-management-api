@@ -85,7 +85,7 @@ export const updateItem = async (itemId, customId, fields, values, client) => {
 export const deleteItem = async (itemIds, client) => {
     return await client.$transaction(async (tx) => {
         const deletedItems = await selectItemsById(itemIds, tx);
-        await getPrismaClient(tx).item.deleteMany({ where: { id: { in: itemIds } }, });
+        await tx.item.deleteMany({ where: { id: { in: itemIds } }, });
         return deletedItems;
     })
 }

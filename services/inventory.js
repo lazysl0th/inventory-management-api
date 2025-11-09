@@ -139,7 +139,11 @@ const groupFieldsByType = (fields) => fields.reduce((acc, field) => {
 }, {});
 
 export const getStats = async (parent, client) => {
-    const items = await selectAllItems(parent.id, client);
-    const fieldsByType = groupFieldsByType(parent.fields);
-    return calculateFieldStats(fieldsByType, items);
+    try {
+        const items = await selectAllItems(parent.id, client);
+        const fieldsByType = groupFieldsByType(parent.fields);
+        return calculateFieldStats(fieldsByType, items);
+    } catch (e) {
+        console.log(e)
+    }
 }
