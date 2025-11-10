@@ -4,7 +4,6 @@ import { errors } from 'celebrate';
 import morgan from 'morgan';
 import passport from 'passport';
 import cors from './middlewares/cors.js';
-import limiter from './middlewares/limiter.js';
 import error from './middlewares/error.js';
 import router from './routes/index.js';
 
@@ -13,8 +12,6 @@ const app = express();
 app.use(helmet());
 
 app.use(cors);
-
-app.use(limiter);
 
 app.use(express.json());
 

@@ -1,4 +1,5 @@
 import express from 'express';
+import limiter from '../middlewares/limiter.js';
 import authRoutes from '../routes/auth.js';
 import usersRoutes from './users.js';
 import inventoryRoute from './inventory.js';
@@ -13,7 +14,7 @@ const router = express.Router();
 
 router.use(authRoutes);
 
-router.use('/users', usersRoutes);
+router.use('/users', limiter, usersRoutes);
 
 router.use('/graphql', inventoryRoute);
 
