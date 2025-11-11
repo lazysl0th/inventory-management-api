@@ -24,9 +24,7 @@ const {
     GOOGLE_CLIENT_SECRET_GMAIL,
     GOOGLE_REFRESH_TOKEN_GMAIL,
     BACKEND,
-    /*EMAIL_USER,
-    EMAIL_NAME,
-    BACKEND,*/
+    EMAIL_NAME
 } = process.env;
 
 const config = {
