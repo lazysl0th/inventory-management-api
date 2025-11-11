@@ -22,6 +22,7 @@ model User {
   allowedInventories Inventory[] @relation("UserAllowedInventories")
   comments           Comment[]
   likes              Like[]
+  reset_token        String?
 
   @@index([email])
 }

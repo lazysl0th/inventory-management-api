@@ -33,12 +33,30 @@ export const findUserByParam = (field, value) => {
     });
 }
 
-export const updateUserData = (fieldWhere, valueWhere, fieldData, valueData) => {
+export const updateUserDataByCondition = (fieldWhere, valueWhere, fieldData, valueData) => {
     return prisma.user.update({
         where: { [fieldWhere]: valueWhere },
         data: { [fieldData]: valueData },
     });
 }
+
+export const updateUserPassword = (token, hash) => {
+    return prisma.user.updateMany({
+        where: { reset_token: token },
+        data: {
+            password: hash,
+            reset_token: '',
+        },
+    });
+}
+
+export const updateUserProfile = (id, name, email) => {
+    return prisma.user.update({
+        where: { id: id },
+        data: { name: name, email: email },
+    });
+}
+
 
 export const selectAllUsers = () => {
     return prisma.user.findMany({

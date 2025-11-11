@@ -1,6 +1,7 @@
 import express from 'express';
 const router = express.Router();
 import { passportAuth } from '../middlewares/passport.js'
+import { updateUserProfileValidation } from '../middlewares/validation.js'
 import { roles } from '../constants.js'
 
 import {
@@ -8,12 +9,15 @@ import {
   getUsers,
   deleteUsers,
   updateUsersStatus,
-  updateUsersRoles
+  updateUsersRoles,
+  updateUser
 } from '../controllers/users.js';
 
 router.get('/me', passportAuth('jwt'), getUserProfile);
 
-//router.use(passportAuth('jwt', [roles.ADMIN]));
+router.patch('/me', updateUserProfileValidation, passportAuth('jwt'), updateUser);
+
+router.use(passportAuth('jwt', [roles.ADMIN]));
 
 router.get('/', getUsers);
 

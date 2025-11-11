@@ -59,7 +59,7 @@ export const response = {
         statusCode: 500,
         text: 'An error occurred on the server',
     },
-    /*RESET_PASSWORD: {
+    RESET_PASSWORD: {
         statusCode: 200,
         text: 'Message for change password has been send'
     },
@@ -72,7 +72,6 @@ export const response = {
         statusCode: 403,
         text: 'Your account has been blocked. Please contact support'
     },
-*/
 };
 
 export const roles = {

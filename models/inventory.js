@@ -49,22 +49,6 @@ export const selectInventoriesByCondition = (query, client) => {
     });
 }
 
-export const selectInventoriesOrderByItemCounts = (ownerId, isPublic, itemsCount, take, client) => {
-    return client.$queryRaw`
-        SELECT i.id, i.title, i.description, i.image, i."createdAt",
-               json_build_object('id', u.id, 'name', u.name) AS "owner",
-               COUNT(it.id)::int AS "itemsCount"
-        FROM "Inventory" i
-        JOIN "User" u ON u.id = i."ownerId"
-        LEFT JOIN "Item" it ON it."inventoryId" = i.id
-        ${ownerId ? Prisma.sql`WHERE i."ownerId" = ${ownerId}` : Prisma.empty}
-        ${isPublic !== undefined ? Prisma.sql`AND i."isPublic" = ${isPublic}` : Prisma.empty}
-        GROUP BY i.id, u.id
-        ORDER BY COUNT(it.id) ${Prisma.raw(itemsCount.toUpperCase())}
-        ${take ? Prisma.sql`LIMIT ${take}` : Prisma.empty};
-      `;
-}
-
 export const insertInventory = (data, client) => {
     return client.inventory.create({
         data: data,
@@ -171,10 +155,6 @@ export async function updateInventory(
         return u
     });
 }
-
-
-
-
 
 export const addAllowUsers = (inventoryId, userIds, client) => {
     return client.inventory.update({

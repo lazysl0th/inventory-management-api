@@ -27,6 +27,7 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "express-rate-limit": "^8.1.0",
+    "googleapis": "^165.0.0",
     "graphql": "^16.11.0",
     "graphql-subscriptions": "^3.0.0",
     "graphql-tag": "^2.12.6",
