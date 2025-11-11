@@ -60,7 +60,7 @@ model Inventory {
   tags           Tag[]            @relation("InventoryTags")
   image          String?
   ownerId        Int
-  owner          User             @relation("UserOwnedInventories", fields: [ownerId], references: [id])
+  owner          User             @relation("UserOwnedInventories", fields: [ownerId], references: [id], onDelete: Cascade)
   isPublic       Boolean          @default(false)
   allowedUsers   User[]           @relation("UserAllowedInventories")
   customIdFormat Json
@@ -137,16 +137,16 @@ model Comment {
   id          Int        @id @default(autoincrement())
   content     String
   userId      Int
-  user        User       @relation(fields: [userId], references: [id])
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   inventoryId Int?
-  inventory   Inventory? @relation(fields: [inventoryId], references: [id])
+  inventory   Inventory? @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
   createdAt   DateTime   @default(now())
 }
 
 model Like {
   id     Int  @id @default(autoincrement())
   userId Int
-  user   User @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   itemId Int
   item   Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
 
