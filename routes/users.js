@@ -17,7 +17,7 @@ router.get('/me', passportAuth('jwt'), getUserProfile);
 
 router.patch('/me', updateUserProfileValidation, passportAuth('jwt'), updateUser);
 
-//router.use(passportAuth('jwt', [roles.ADMIN]));
+router.use(passportAuth('jwt', [roles.ADMIN]));
 
 router.get('/', getUsers);
 
