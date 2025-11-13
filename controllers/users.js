@@ -1,4 +1,4 @@
-import { findUserByParam, selectAllUsers, updateStatusByIds, deleteUsersByIds, updateUserProfile } from '../models/user.js';
+import { findUserByParam, selectAllUsers, selectUserById, updateStatusByIds, deleteUsersByIds, updateUserProfile } from '../models/user.js';
 import { updateUsersRolesById } from '../models/userRole.js';
 import NotFound from '../errors/notFound.js';
 import BadRequest from '../errors/badRequest.js';
@@ -21,6 +21,16 @@ export const getUserProfile = async (req, res, next) => {
 export const getUsers = async (req, res, next) => {
     try {
         const users = await selectAllUsers();
+        res.status(OK.statusCode).send(users)
+    } catch (e) {
+        console.log(e);
+        next(e);
+    }
+};
+
+export const getUser = async (req, res, next) => {
+    try {
+        const users = await selectUserById(Number(req.params.userId));
         res.status(OK.statusCode).send(users)
     } catch (e) {
         console.log(e);

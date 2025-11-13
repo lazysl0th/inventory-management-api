@@ -72,6 +72,22 @@ export const selectAllUsers = () => {
     });
 }
 
+export const selectUserById = (userId) => {
+    return prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            googleId: true,
+            facebookId: true,
+            status: true,
+            roles: { select: { role: { select: { id: true, name: true } } }, }
+        }
+    });
+}
+
+
 export const deleteUsersByIds = async (usersIds) => {
     return await prisma.$transaction(async (tx) => {
         const deletedUsers = await tx.user.findMany({

@@ -7,6 +7,7 @@ import { roles } from '../constants.js'
 import {
   getUserProfile,
   getUsers,
+  getUser,
   deleteUsers,
   updateUsersStatus,
   updateUsersRoles,
@@ -20,6 +21,8 @@ router.patch('/me', updateUserProfileValidation, passportAuth('jwt'), updateUser
 router.use(passportAuth('jwt', [roles.ADMIN]));
 
 router.get('/', getUsers);
+
+router.get('/:userId', getUser);
 
 router.delete('/', deleteUsers);
 
