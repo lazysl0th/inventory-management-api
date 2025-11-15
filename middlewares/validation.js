@@ -18,7 +18,8 @@ export const signupValidation = celebrate({
 
 export const updateUserProfileValidation = celebrate({
     body: Joi.object().keys({
-        name: Joi.string().required().min(2).max(30),
+        name: Joi.string().required(),
         email: Joi.string().required().email(),
+        userId: Joi.number().integer().allow(null)
     }),
 });

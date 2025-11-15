@@ -1,8 +1,8 @@
 import express from 'express';
 const router = express.Router();
-import { passportAuth } from '../middlewares/passport.js'
-import { updateUserProfileValidation } from '../middlewares/validation.js'
-import { roles } from '../constants.js'
+import { passportAuth } from '../middlewares/passport.js';
+import { updateUserProfileValidation } from '../middlewares/validation.js';
+import { roles } from '../constants.js';
 
 import {
   getUserProfile,

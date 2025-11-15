@@ -65,18 +65,18 @@ export const updateUsersRoles = async (req, res, next) => {
     } catch (e) {
         console.log(e);
         if (e.code === 'P2023' || e.code === 'P2000' || e.code === 'P2003' || e.code === 'P2011') return next(new BadRequest(BAD_REQUEST.text));
-        return next(e)
+        return next(e);
     }
 }
 
 export const updateUser = async(req, res, next) => {
     try {
-        const {password, ...userData} = await updateUserProfile(req.user.id, req.body.name, req.body.email);
+        const {password, ...userData} = await updateUserProfile(req.body.userId ? req.body.userId : req.user.id, { name: req.body.name, email: req.body.email });
         return res.status(OK.statusCode).send(userData)
     } catch (e) { 
-        console.log(e)
+        console.log(e);
         if (e.code == 'P2002') return next(new Conflict(CONFLICT.text(modelName.USER)));
         if (e.code === 'P2023' || e.code === 'P2000' || e.code === 'P2003' || e.code === 'P2011') return next(new BadRequest(BAD_REQUEST.text));
-        return next(e)
+        return next(e);
     }
 }

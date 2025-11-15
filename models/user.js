@@ -50,13 +50,12 @@ export const updateUserPassword = (token, hash) => {
     });
 }
 
-export const updateUserProfile = (id, name, email) => {
+export const updateUserProfile = (id, data) => {
     return prisma.user.update({
         where: { id: id },
-        data: { name: name, email: email },
+        data,
     });
 }
-
 
 export const selectAllUsers = () => {
     return prisma.user.findMany({
