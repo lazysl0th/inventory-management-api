@@ -1,24 +1,21 @@
+import crypto from "crypto";
 import { 
     createInventory,
     deleteInventory,
     selectInventoryById,
     updateInventory,
     selectInventoriesByCondition,
+    insertToken,
+    selectInventoryByApiToken,
 } from "../models/inventory.js";
 import { itemsCount, selectAllItems } from '../models/item.js'
 import { calculateFieldStats } from './stats.js'
 import NotFound from '../errors/notFound.js';
 import Conflict from '../errors/conflict.js';
 import { response, conditions } from '../constants.js';
+import prisma from '../infrastructure/prisma.js';
 
-const { NOT_FOUND_RECORDS, CONFLICT } = response
-
-const createCustomIdFormatJSON = (customIdFormat) => {
-    return {
-        parts: (customIdFormat || []).map((part) => part.type || '').join(' + ') || 'Default',
-        summary: (customIdFormat || [])
-    }
-}
+const { NOT_FOUND, NOT_FOUND_RECORDS, CONFLICT } = response
 
 export const create = async (input, client) => {
     const { tags, fields, owner, allowedUsers, ...inventoryBase } = input;
@@ -63,28 +60,19 @@ export const update = async (inventoryId, input, expectedVersion, client) => {
         }
     }
 
-  const toDeleteIds = inventory.fields.filter(field => !incomingIds.has(field.id)).map(field => field.id);
+    const toDeleteIds = inventory.fields.filter(field => !incomingIds.has(field.id)).map(field => field.id);
 
-  return updateInventory(
-    inventoryId,
-    tags,
-    toCreate,
-    toUpdate,
-    toDeleteIds,
-    allowedUsers,
-    inventoryBase,
-    client
-  );
+    return updateInventory(
+        inventoryId,
+        tags,
+        toCreate,
+        toUpdate,
+        toDeleteIds,
+        allowedUsers,
+        inventoryBase,
+        client
+    );
 };
-
-
-export const grantAccess = () => {
-
-}
-
-export const revokeAccess = () => {
-
-}
 
 const buildConditionPart = (key, value, params) => {
     if (!conditions[key]) return {};
@@ -146,4 +134,23 @@ export const getStats = async (parent, client) => {
     } catch (e) {
         console.log(e)
     }
+}
+
+const createInventoryToken = (inventoryId) => {
+    const raw = crypto.randomBytes(32).toString("hex");
+    return insertToken(inventoryId, raw, prisma)
+}
+
+export const getInventoryToken = async (inventoryId) => {
+    const inventory = await selectInventoryById(inventoryId, prisma);
+    if (!inventory) throw new NotFound(NOT_FOUND.text);
+    if (!inventory.apiToken) return createInventoryToken(inventoryId);
+    else return { apiToken: inventory.apiToken }
+}
+
+export const getInventoryInfo = async (apiToken) => {
+    const inventory = await selectInventoryByApiToken(apiToken, prisma);
+    if (!inventory) throw new NotFound(NOT_FOUND.text);
+    const stats = await getStats(inventory, prisma);
+    return {inventory: { title: inventory.title, fields: inventory.fields, itemsCount: inventory._count.items}, stats: stats};
 }

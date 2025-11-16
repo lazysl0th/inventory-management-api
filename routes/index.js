@@ -2,9 +2,10 @@ import express from 'express';
 import limiter from '../middlewares/limiter.js';
 import authRoutes from '../routes/auth.js';
 import usersRoutes from './users.js';
-import inventoryRoute from './inventory.js';
+import graphqlRoute from './graphql.js';
 import uploadRouter from "./upload.js";
 import salesForceRoutes from './salesForce.js';
+import inventoriesRoute from './inventories.js'
 import NotFoundError from '../errors/notFound.js';
 import { response } from '../constants.js';
 import '../services/passport/passport.js'
@@ -19,7 +20,9 @@ router.use('/users', limiter, usersRoutes);
 
 router.use('/salesForce', salesForceRoutes);
 
-router.use('/graphql', inventoryRoute);
+router.use('/inventories', inventoriesRoute);
+
+router.use('/graphql', graphqlRoute);
 
 router.use('/image', uploadRouter);
 

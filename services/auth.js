@@ -26,8 +26,9 @@ export const login = ({ email, password, remember, provider, socialId, name }) =
 }
 
 const loginByEmail = async (email, userPassword, remember) => {
-    const { password, ...user } = await findUserByParam('email', email);
-    if (!user) return null;
+    const userData = await findUserByParam('email', email);
+    if (!userData) return null;
+    const { password, ...user } = userData
     const matched = bcrypt.compare(userPassword, password);
     if (!matched) return null;
     const token = createToken(user.id, user.roles, remember);

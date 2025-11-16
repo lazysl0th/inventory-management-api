@@ -17,13 +17,13 @@ export const selectInventoryById = (inventoryId, client) => {
     return client.inventory.findUnique({
         where: { id: inventoryId },
         include: {
-          owner: { select: { id: true, name: true, email: true } },
-          items: true,
-          tags: true,
-          fields: true,
-          allowedUsers: { select: { id: true, name: true, email: true } },
+            owner: { select: { id: true, name: true, email: true } },
+            items: true,
+            tags: true,
+            fields: true,
+            allowedUsers: { select: { id: true, name: true, email: true } },
         },
-      });
+    });
 }
 
 export const selectInventoriesById = (inventoriesId, client) => {
@@ -132,7 +132,7 @@ export async function updateInventory(
         for (const field of toUpdate) await updateInventoryField(field, tx);
         for (const field of toCreate) await createInventoryField(inventoryId, field, tx)
 
-        const u = await tx.inventory.update({
+        return await tx.inventory.update({
             where: { id: inventoryId },
             data: {
                 title,
@@ -152,7 +152,6 @@ export async function updateInventory(
                 allowedUsers: { select: { id: true, name: true } },
             },
         });
-        return u
     });
 }
 
@@ -219,5 +218,23 @@ export const updateSequencePart = (inventoryId, updatedFormat, client) => {
     return client.inventory.update({
         where: { id: inventoryId },
         data: { customIdFormat: updatedFormat },
+    });
+}
+
+export const insertToken = (inventoryId, raw, client) => {
+    return client.inventory.update({
+        where: { id: inventoryId },
+        data: { apiToken: raw },
+        select: { apiToken: true }
+    });
+}
+
+export const selectInventoryByApiToken = (apiToken, client) => {
+    return client.inventory.findUnique({
+        where: { apiToken: apiToken },
+        include: {
+            fields: true,
+            _count: { select: { items: true } },
+        },
     });
 }

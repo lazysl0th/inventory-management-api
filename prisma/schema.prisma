@@ -1,160 +1,161 @@
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 model User {
-  id                 Int         @id @default(autoincrement())
-  name               String
-  email              String      @unique
-  password           String?
-  googleId           String?     @unique
-  facebookId         String?     @unique
-  roles              UserRole[]
-  status             Status      @default(Active)
-  createdAt          DateTime    @default(now())
-  ownedInventories   Inventory[] @relation("UserOwnedInventories")
-  ownedItems         Item[]      @relation("UserOwnedItems")
-  allowedInventories Inventory[] @relation("UserAllowedInventories")
-  comments           Comment[]
-  likes              Like[]
-  reset_token        String?
+    id                 Int         @id @default(autoincrement())
+    name               String
+    email              String      @unique
+    password           String?
+    googleId           String?     @unique
+    facebookId         String?     @unique
+    roles              UserRole[]
+    status             Status      @default(Active)
+    createdAt          DateTime    @default(now())
+    ownedInventories   Inventory[] @relation("UserOwnedInventories")
+    ownedItems         Item[]      @relation("UserOwnedItems")
+    allowedInventories Inventory[] @relation("UserAllowedInventories")
+    comments           Comment[]
+    likes              Like[]
+    reset_token        String?
 
-  @@index([email])
+    @@index([email])
 }
 
 model Role {
-  id    Int        @id @default(autoincrement())
-  name  RoleName   @unique
-  users UserRole[]
+    id    Int        @id @default(autoincrement())
+    name  RoleName   @unique
+    users UserRole[]
 }
 
 model UserRole {
-  userId Int
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  roleId Int
-  role   Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+    userId Int
+    user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    roleId Int
+    role   Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
-  @@id([userId, roleId])
+    @@id([userId, roleId])
 }
 
 enum RoleName {
-  User
-  Admin
+    User
+    Admin
 }
 
 enum Status {
-  Active
-  Blocked
+    Active
+    Blocked
 }
 
 model Inventory {
-  id             Int              @id @default(autoincrement())
-  title          String
-  description    String?
-  category       Category
-  tags           Tag[]            @relation("InventoryTags")
-  image          String?
-  ownerId        Int
-  owner          User             @relation("UserOwnedInventories", fields: [ownerId], references: [id], onDelete: Cascade)
-  isPublic       Boolean          @default(false)
-  allowedUsers   User[]           @relation("UserAllowedInventories")
-  customIdFormat Json
-  version        Int              @default(1)
-  fields         InventoryField[]
-  items          Item[]
-  comments       Comment[]
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+    id             Int              @id @default(autoincrement())
+    title          String
+    description    String?
+    category       Category
+    tags           Tag[]            @relation("InventoryTags")
+    image          String?
+    ownerId        Int
+    owner          User             @relation("UserOwnedInventories", fields: [ownerId], references: [id], onDelete: Cascade)
+    isPublic       Boolean          @default(false)
+    allowedUsers   User[]           @relation("UserAllowedInventories")
+    customIdFormat Json
+    version        Int              @default(1)
+    fields         InventoryField[]
+    items          Item[]
+    comments       Comment[]
+    createdAt      DateTime         @default(now())
+    updatedAt      DateTime         @updatedAt
+    apiToken       String?          @unique
 
-  searchVector Unsupported("tsvector")?
+    searchVector Unsupported("tsvector")?
 
-  @@index([searchVector], type: Gin)
+    @@index([searchVector], type: Gin)
 }
 
 model InventoryField {
-  id          Int         @id @default(autoincrement())
-  inventoryId Int
-  inventory   Inventory   @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
-  title       String
-  type        FieldType
-  description String?
-  showInTable Boolean     @default(true)
-  isDeleted   Boolean     @default(false)
-  order       Int
-  itemValues  ItemValue[] @relation("InventoryFieldToItemValue")
+    id          Int         @id @default(autoincrement())
+    inventoryId Int
+    inventory   Inventory   @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+    title       String
+    type        FieldType
+    description String?
+    showInTable Boolean     @default(true)
+    isDeleted   Boolean     @default(false)
+    order       Int
+    itemValues  ItemValue[] @relation("InventoryFieldToItemValue")
 
-  @@unique([inventoryId, title])
+    @@unique([inventoryId, title])
 }
 
 enum FieldType {
-  TEXT
-  LONGTEXT
-  NUMBER
-  FILE
-  BOOLEAN
+    TEXT
+    LONGTEXT
+    NUMBER
+    FILE
+    BOOLEAN
 }
 
 enum Category {
-  Equipment
-  Furniture
-  Book
-  Other
+    Equipment
+    Furniture
+    Book
+    Other
 }
 
 model Item {
-  id          Int         @id @default(autoincrement())
-  inventoryId Int
-  inventory   Inventory   @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
-  customId    String
-  ownerId     Int
-  owner       User        @relation("UserOwnedItems", fields: [ownerId], references: [id])
-  values      ItemValue[]
-  likes       Like[]
-  version     Int         @default(1)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+    id          Int         @id @default(autoincrement())
+    inventoryId Int
+    inventory   Inventory   @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+    customId    String
+    ownerId     Int
+    owner       User        @relation("UserOwnedItems", fields: [ownerId], references: [id])
+    values      ItemValue[]
+    likes       Like[]
+    version     Int         @default(1)
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
 
-  @@unique([inventoryId, customId])
+    @@unique([inventoryId, customId])
 }
 
 model ItemValue {
-  id      Int            @id @default(autoincrement())
-  itemId  Int
-  item    Item           @relation(fields: [itemId], references: [id], onDelete: Cascade)
-  fieldId Int
-  field   InventoryField @relation("InventoryFieldToItemValue", fields: [fieldId], references: [id], onDelete: Cascade)
-  value   String
+    id      Int            @id @default(autoincrement())
+    itemId  Int
+    item    Item           @relation(fields: [itemId], references: [id], onDelete: Cascade)
+    fieldId Int
+    field   InventoryField @relation("InventoryFieldToItemValue", fields: [fieldId], references: [id], onDelete: Cascade)
+    value   String
 
-  @@unique([itemId, fieldId])
+    @@unique([itemId, fieldId])
 }
 
 model Comment {
-  id          Int        @id @default(autoincrement())
-  content     String
-  userId      Int
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  inventoryId Int?
-  inventory   Inventory? @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
-  createdAt   DateTime   @default(now())
+    id          Int        @id @default(autoincrement())
+    content     String
+    userId      Int
+    user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+    inventoryId Int?
+    inventory   Inventory? @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+    createdAt   DateTime   @default(now())
 }
 
 model Like {
-  id     Int  @id @default(autoincrement())
-  userId Int
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  itemId Int
-  item   Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+    id     Int  @id @default(autoincrement())
+    userId Int
+    user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    itemId Int
+    item   Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, itemId])
+    @@unique([userId, itemId])
 }
 
 model Tag {
-  id          Int         @id @default(autoincrement())
-  name        String      @unique
-  inventories Inventory[] @relation("InventoryTags")
+    id          Int         @id @default(autoincrement())
+    name        String      @unique
+    inventories Inventory[] @relation("InventoryTags")
 }
