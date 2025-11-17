@@ -1,6 +1,7 @@
 
-import { selectInventoryById } from '../models/inventory.js'
+import { selectInventoryById, selectInventoryByApiToken } from '../models/inventory.js'
 import { createItem, selectItemById, updateItem, deleteItem } from '../models/item.js'
+import { findUserByParam } from '../models/user.js'
 import { toggleLike, getLikesCount } from './like.js'
 import NotFound from '../errors/notFound.js';
 import BadRequest from '../errors/badRequest.js'
@@ -8,14 +9,18 @@ import Conflict from '../errors/conflict.js';
 import { response, modelName } from '../constants.js';
 import { checkCustomId, parseValue } from '../utils.js';
 
+
+
 const { NOT_FOUND_RECORDS, BAD_REQUEST, CONFLICT } = response
 
 export const create = async (input, user, client) => {
-    const { inventoryId, values } = input;
+    const { inventoryId, values, apiToken } = input;
     try {
-        const inventory = await selectInventoryById(inventoryId, client);
+        const owner = apiToken ? await findUserByParam('email', user) : user;
+        if (!owner) throw new NotFound(NOT_FOUND_RECORDS.text(modelName.USER));
+        const inventory = apiToken ? await selectInventoryByApiToken(apiToken, client) : await selectInventoryById(inventoryId, client);
         if (!inventory) throw new NotFound(NOT_FOUND_RECORDS.text(modelName.INVENTORY));
-        return await createItem({ inventoryId: inventoryId, ownerId: user.id, }, inventory.customIdFormat, values, inventory.fields, client);
+        return await createItem({ inventoryId: inventory.id, ownerId: owner.id, }, inventory.customIdFormat, values, inventory.fields, client);
     } catch (e) {
         if (e.code == 'P2002') throw new Conflict(CONFLICT.text(modelName.ITEM));
         throw e

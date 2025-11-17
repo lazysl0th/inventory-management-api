@@ -233,8 +233,13 @@ export const selectInventoryByApiToken = (apiToken, client) => {
     return client.inventory.findUnique({
         where: { apiToken: apiToken },
         include: {
+            owner: { select: { id: true, name: true, email: true } },
+            items: true,
+            tags: true,
             fields: true,
+            allowedUsers: { select: { id: true, name: true, email: true } },
             _count: { select: { items: true } },
         },
+        
     });
 }
