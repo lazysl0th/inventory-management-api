@@ -65,7 +65,6 @@ const config = {
     MS_SECRET: MS_SECRET ? MS_SECRET : '',
     MS_TENANT_ID: MS_TENANT_ID ? MS_TENANT_ID : '',
     MS_CLIENT_ID: MS_CLIENT_ID ? MS_CLIENT_ID : '',
-    MS_CALLBACK_URL: NODE_ENV === 'production' && MS_CALLBACK_URL ? MS_CALLBACK_URL : 'http://localhost:3001/signin/onedrive/callback',
     DROPBOX_APP_KEY: DROPBOX_APP_KEY ? DROPBOX_APP_KEY : '',
     DROPBOX_SECRET_KEY: DROPBOX_SECRET_KEY ? DROPBOX_SECRET_KEY : '',
     DROPBOX_CALLBACK_URL: NODE_ENV === 'production' && DROPBOX_CALLBACK_URL ? DROPBOX_CALLBACK_URL : 'http://localhost:3001/signin/dropbox/callback',
