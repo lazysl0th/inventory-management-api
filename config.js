@@ -32,7 +32,8 @@ const {
     MS_CLIENT_ID,
     DROPBOX_APP_KEY,
     DROPBOX_SECRET_KEY,
-    DROPBOX_REFRESH_TOKEN
+    DROPBOX_REFRESH_TOKEN,
+    DROPBOX_CALLBACK_URL,
 } = process.env;
 
 const config = {
