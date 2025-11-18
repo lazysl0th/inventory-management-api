@@ -1,7 +1,9 @@
 import { v2 as cloudinary } from "cloudinary";
 import config from '../config.js';
+import { response } from "../constants.js";
 
-const { CLOUDINARY_NAME, CLOUDINARY_KEY, CLOUDINARY_SECRET } = config;
+const { CLOUDINARY_NAME, CLOUDINARY_KEY, CLOUDINARY_SECRET, } = config;
+const { OK, INTERNAL_SERVER_ERROR} = response
 
 cloudinary.config({
     cloud_name: CLOUDINARY_NAME,
@@ -16,9 +18,9 @@ export const uploadImage = async(req, res) => {
         const result = await cloudinary.uploader.upload(dataURI, {
             folder: "inventory-images",
         });
-        return res.json({ url: result.secure_url });
+        return res.status(OK.statusCode).json({ url: result.secure_url });
     } catch (e) {
         console.log(e);
-        res.status(500).json({ error: "Ошибка загрузки изображения" });
+        res.status(INTERNAL_SERVER_ERROR.statusCode).json({ error: "Ошибка загрузки изображения" });
     }
 }

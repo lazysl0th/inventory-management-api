@@ -144,3 +144,12 @@ export const searchUsers = (searchQuery, by, client) => {
         take: 10,
     })
 };
+
+export const selectAdminsEmail = () => {
+    return prisma.user.findMany({ 
+        where: { roles: { some: { role: { name: "Admin" } } } },
+        select: {
+            email: true,
+        }
+    });
+}

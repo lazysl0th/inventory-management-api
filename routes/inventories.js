@@ -6,8 +6,6 @@ import {
     getToken, getInventory, createItem
 } from '../controllers/inventory.js'
 
-//router.use(passportAuth('jwt'));
-
 router.post('/getToken', getToken);
 
 router.get('/:apiToken', getInventory);

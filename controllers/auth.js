@@ -1,4 +1,4 @@
-import { register, resetPassword, changePassword } from '../services/auth.js';
+import { register, resetPassword, changePassword, getDropBoxTokens } from '../services/auth.js';
 import { response, modelName } from '../constants.js';
 import Conflict from '../errors/conflict.js';
 import config from '../config.js';
@@ -41,6 +41,16 @@ export const changePasswordUser = async (req, res, next) => {
     try {
         await changePassword(req.body.token, req.body.password);
         return res.status(OK.statusCode).send({text: PASSWORD_CHANGE.text});
+    } catch (e) {
+        console.log(e);
+        return next(e);
+    }
+}
+
+export const exchangeDropBoxCodeOnToken = async (req, res, next) => {
+    try {
+        const result = await getDropBoxTokens(req.query.code);
+        return res.status(OK.statusCode).send(result);
     } catch (e) {
         console.log(e);
         return next(e);

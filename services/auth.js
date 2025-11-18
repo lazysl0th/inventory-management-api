@@ -6,9 +6,9 @@ import { urls } from '../services/email/config.js';
 import BadRequest from '../errors/badRequest.js';
 import { resetPasswordMsgTemplate } from '../services/email/templates.js'
 import config from '../config.js';
+import { checkResponse } from './salesForce.js';
 
-
-const { SALT_ROUNDS, JWT_SECRET, BAD_REQUEST } = config;
+const { SALT_ROUNDS, JWT_SECRET, BAD_REQUEST, DROPBOX_APP_KEY, DROPBOX_SECRET_KEY, DROPBOX_CALLBACK_URL } = config;
 
 export const register = async ({ name, email, password, provider, socialId }) => {
     const hash = password ? await bcrypt.hash(password, SALT_ROUNDS) : null;
@@ -71,4 +71,21 @@ export const changePassword = async (token, password) => {
         console.log(e);
         return next(e);
     }
+}
+
+export const getDropBoxTokens = async (authCode) => {
+    const res = await fetch('https://api.dropboxapi.com/oauth2/token', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            code: authCode,
+            grant_type: 'authorization_code',
+            client_id: DROPBOX_APP_KEY,
+            client_secret: DROPBOX_SECRET_KEY,
+            redirect_uri: DROPBOX_CALLBACK_URL,
+        })
+    })
+    return checkResponse(res);
 }

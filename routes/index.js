@@ -6,6 +6,7 @@ import graphqlRoute from './graphql.js';
 import uploadRouter from "./upload.js";
 import salesForceRoutes from './salesForce.js';
 import inventoriesRoute from './inventories.js'
+import supportRoute from './support.js'
 import NotFoundError from '../errors/notFound.js';
 import { response } from '../constants.js';
 import '../services/passport/passport.js'
@@ -25,6 +26,8 @@ router.use('/inventories', inventoriesRoute);
 router.use('/graphql', graphqlRoute);
 
 router.use('/image', uploadRouter);
+
+router.use('/support', supportRoute);
 
 router.use((req, res, next) => next(new NotFoundError(NOT_FOUND.text)));
 

@@ -1,6 +1,6 @@
 import express from 'express';
 import passport from 'passport';
-import { loginUser, registerUser, resetPasswordUser, changePasswordUser } from '../controllers/auth.js';
+import { loginUser, registerUser, resetPasswordUser, changePasswordUser, exchangeDropBoxCodeOnToken } from '../controllers/auth.js';
 import { signupValidation, emailSigninValidation } from '../middlewares/validation.js';
 import { passportAuth } from '../middlewares/passport.js';
 
@@ -20,5 +20,6 @@ router.get('/signin/google/callback', passport.authenticate('google', { session:
 router.get('/signin/facebook', passport.authenticate('facebook', { scope: ['email'] }));
 router.get('/signin/facebook/callback', passport.authenticate('facebook', { session: false, failureRedirect: '/auth/fail' }), loginUser);
 
+router.get('/signin/dropbox/callback', exchangeDropBoxCodeOnToken);
 
 export default router;
