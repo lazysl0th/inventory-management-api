@@ -1,5 +1,6 @@
 generator client {
     provider = "prisma-client-js"
+    previewFeatures = ["fullTextSearchPostgres"]
 }
 
 datasource db {
@@ -22,7 +23,8 @@ model User {
     allowedInventories Inventory[] @relation("UserAllowedInventories")
     comments           Comment[]
     likes              Like[]
-    reset_token        String?
+    resetPasswordToken String?
+    refreshToken       String?
 
     @@index([email])
 }
@@ -63,18 +65,25 @@ model Inventory {
     owner          User             @relation("UserOwnedInventories", fields: [ownerId], references: [id], onDelete: Cascade)
     isPublic       Boolean          @default(false)
     allowedUsers   User[]           @relation("UserAllowedInventories")
-    customIdFormat Json
+    customIdFormat Json?
     version        Int              @default(1)
     fields         InventoryField[]
     items          Item[]
     comments       Comment[]
     createdAt      DateTime         @default(now())
     updatedAt      DateTime         @updatedAt
-    apiToken       String?          @unique
+    token       String?             @unique
 
     searchVector Unsupported("tsvector")?
 
     @@index([searchVector], type: Gin)
+    
+    @@unique([id, version])
+}
+
+model Sequence {
+    partGuid     String  @id
+    currentValue Int
 }
 
 model InventoryField {

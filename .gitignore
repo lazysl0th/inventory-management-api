@@ -4,3 +4,4 @@ node_modules
 .DS_Store
 .vscode
 .prisma/client/
+dist
