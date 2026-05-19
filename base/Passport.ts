@@ -51,8 +51,6 @@ export default abstract class Passport{
     private static _handleAuthenticate(resolve: (authResult: TAuthResult) => void, reject: (e: any) => void): AuthenticateCallback {
         return (e, user, info) => {
             if (e) return reject(e);
-            //console.log(user)
-            //console.log(info)
             if (!user) return reject(this._createAuthError(info as IVerifyOptionsExtends));
             resolve({ user: user as TSafeUserWithRoles, info: info as IVerifyOptionsExtends });
         }
