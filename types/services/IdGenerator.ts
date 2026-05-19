@@ -1,6 +1,6 @@
 import type { Prisma } from "@prisma/client";
-import type { ICustomIdPart } from "../models/Inventory.js";
+import type { ICustomIdFormatPart } from "../models/Inventory.js";
 
 export interface IIdGenerator {
-    generateCustomId (customIdParts: ICustomIdPart[], tx: Prisma.TransactionClient): Promise<string>
+    generateCustomId (customIdParts: ICustomIdFormatPart[], tx: Prisma.TransactionClient): Promise<string>
 }
