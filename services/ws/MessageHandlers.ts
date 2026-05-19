@@ -1,6 +1,6 @@
-import type { ICommentService } from "../../types/services/Comment.js";
 import type WsService from "./Ws.js";
-import type { AliveWebSocket, IMessageHandler, TClientData, TMessage } from "./Ws.js";
+import type { AliveWebSocket, IMessageHandler, TClientData, TMessage } from "../../types/services/Ws.js";
+
 
 export class PingHandler implements IMessageHandler {
   type: TMessage = 'PING';
