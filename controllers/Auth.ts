@@ -30,6 +30,7 @@ export default class AuthController extends Controller implements IAuthControlle
     loginUserBySocials: Handler = this.handle(async(req, res) => {
         const redirectUrl = FRONTEND_URL + AUTH_SUCCESS
         const authTokens = req.authInfo;
+        console.log(req.authInfo)
         this.setCookie(res, 'refreshToken', authTokens.refreshToken);
         this.redirect(res, redirectUrl, authTokens.accessToken);
     })

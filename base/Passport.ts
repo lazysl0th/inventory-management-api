@@ -16,7 +16,6 @@ export default abstract class Passport{
     protected async verifyHandle<TUser>(handler: VerifyUserHandler<TUser>, done: DoneCallbackWithOptions): Promise<void> {
         try {
             const authResult = await handler() as IAuthResultData | TVerifyResultData | null;
-            console.log(authResult);
             if (!authResult) return done(null, false, { message: UNAUTHORIZED.TEXT });
             if (authResult.user.status === Status.Blocked) return done(null, false, { message: BLOCKED.TEXT });
             return done(null, authResult.user, { message: '', authTokens: 'authTokens' in authResult ? authResult.authTokens : undefined });
@@ -42,8 +41,8 @@ export default abstract class Passport{
 
     private static _createAuthError(info: IVerifyOptionsExtends): IError | void {
         switch(info.message) {
-            case UNAUTHORIZED.TEXT: return new Unauthorized(UNAUTHORIZED.TEXT);
-            case NO_TOKEN || info instanceof jwt.JsonWebTokenError || BLOCKED.TEXT: return new Forbidden(BLOCKED.TEXT);
+            case UNAUTHORIZED.TEXT || NO_TOKEN || info instanceof jwt.JsonWebTokenError: return new Unauthorized(UNAUTHORIZED.TEXT);
+            case BLOCKED.TEXT: return new Forbidden(BLOCKED.TEXT);
             case NOT_FOUND.TEXT: return new NotFound(NOT_FOUND.TEXT);
             default: return new Unauthorized(info.message || UNAUTHORIZED.TEXT);
         }
@@ -52,6 +51,8 @@ export default abstract class Passport{
     private static _handleAuthenticate(resolve: (authResult: TAuthResult) => void, reject: (e: any) => void): AuthenticateCallback {
         return (e, user, info) => {
             if (e) return reject(e);
+            //console.log(user)
+            //console.log(info)
             if (!user) return reject(this._createAuthError(info as IVerifyOptionsExtends));
             resolve({ user: user as TSafeUserWithRoles, info: info as IVerifyOptionsExtends });
         }

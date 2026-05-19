@@ -16,7 +16,7 @@ export default class UserModule {
 
     private init() {
         const service = new UserService(new UserModel());
-        const controller = new UserController(this.service);
+        const controller = new UserController(service);
         const router = new UserRouter(controller, new UserValidator());
         return { service, router }
     }
