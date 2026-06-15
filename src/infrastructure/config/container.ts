@@ -1,7 +1,7 @@
-import { CONFIG_TOKEN } from "#/application/interfaces/IConfig.js";
+import { CONFIG_TOKEN } from "../../application/interfaces/IConfig.js";
 import { container } from "tsyringe";
 import config from "./env.js";
-import type ILogger from "#/application/interfaces/ILogger.js";
+import type ILogger from "../../application/interfaces/ILogger.js";
 import LoggerService from "../services/LoggerService.js";
 
 const createContainer = () => {

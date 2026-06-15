@@ -4,10 +4,10 @@ import { injectable, inject } from "tsyringe";
 import {
   CONFIG_TOKEN,
   type TTerminusConfig,
-} from "#/application/interfaces/IConfig.js";
+} from "../../application/interfaces/IConfig.js";
 
 //import type { ITranslator } from "#/application/interfaces/ITranslator.js";
-import type ILogger from "#/application/interfaces/ILogger.js";
+import type ILogger from "../../application/interfaces/ILogger.js";
 //import ShutdownService from "./ShutdownService.js";
 
 @injectable()

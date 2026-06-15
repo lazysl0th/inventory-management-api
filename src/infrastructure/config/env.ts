@@ -2,7 +2,7 @@ import {
   envSchema,
   NodeEnv,
   type TConfig,
-} from "#/application/interfaces/IConfig.js";
+} from "../../application/interfaces/IConfig.js";
 
 const env = {
   NODE_ENV: process.env.NODE_ENV ?? NodeEnv.Development,
