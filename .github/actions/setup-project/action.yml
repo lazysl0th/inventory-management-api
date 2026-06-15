@@ -1,0 +1,15 @@
+name: 'Setup Project Environment'
+description: 'Configures Node.js and installs dependencies with caching'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: 🟢 Initialize Node.js Environment
+      uses: actions/setup-node@v6
+      with:
+        node-version: 24.14.1
+        cache: npm
+
+    - name: 📦 Install Project Dependencies
+      run: npm ci
+      shell: bash
