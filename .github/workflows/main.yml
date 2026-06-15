@@ -1,0 +1,49 @@
+name: Continuous Integration
+
+run-name: CI Run by @${{ github.actor }} — 🚀 ${{ github.event.head_commit.message }}
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  lint:
+    name: Code Quality (Linting)
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔍 Clone Repository
+        uses: actions/checkout@v6
+
+      - name: 🛠️ Setup Node & Dependencies
+        uses: ./.github/actions/setup-project
+
+      - name: 🧼 Run Linter Checks
+        run: npm run lint
+
+  test:
+    name: Automated Testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔍 Clone Repository
+        uses: actions/checkout@v6
+
+      - name: 🛠️ Setup Node & Dependencies
+        uses: ./.github/actions/setup-project
+
+      - name: 🧪 Execute Test Suite
+        run: npm test
+
+  build:
+    name: Production Build Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔍 Clone Repository
+        uses: actions/checkout@v6
+
+      - name: 🛠️ Setup Node & Dependencies
+        uses: ./.github/actions/setup-project
+
+      - name: 🏗️ Compile Application
+        run: npm run build

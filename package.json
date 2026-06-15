@@ -8,6 +8,7 @@
     "format": "prettier --write .",
     "check": "npm run lint && npm run format",
     "dev": "tsx watch server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
