@@ -5,16 +5,27 @@
   "main": "app.js",
   "scripts": {
     "lint": "eslint . --fix",
-    "format": "prettier --write .",
-    "check": "npm run lint && npm run format",
+    "format": "prettier --write ",
     "dev": "tsx watch server.ts",
     "test": "echo \"Error: no test specified\" && exit 0",
+    "check": "npm run lint && npm run format && npm run test",
+    "commit": "npm run lint && cz",
     "build": "tsc",
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "./src/**/*.{js,ts}": "npm run lint",
+    "./src/**/*.{js,ts,json,css,scss,md}": "npm run format"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   },
   "keywords": [],
   "author": "",
@@ -60,13 +71,18 @@
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
     "@types/ws": "^8.18.1",
+    "commitizen": "^4.3.2",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint": "^10.5.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
     "globals": "^17.6.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.7",
     "prettier": "3.8.4",
     "prisma": "^6.17.1",
     "rimraf": "^6.1.2",
+    "standard-version": "^9.5.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
