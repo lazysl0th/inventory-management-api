@@ -2,6 +2,8 @@ import http from 'http';
 import { WebSocket, WebSocketServer } from 'ws';
 import App from './app.js';
 import { APP_PORT } from './constants/base.js';
+import { terminusService } from './src/index.js';
+import { createTerminus } from '@godaddy/terminus';
 
 const httpServer = http.createServer();
 
@@ -9,6 +11,8 @@ export const wsServer: WebSocketServer = new WebSocketServer({
     server: httpServer,
     path: '/'
 });
+
+createTerminus(httpServer, terminusService.options());
 
 const app = new App(wsServer);
 
@@ -35,7 +39,7 @@ httpServer.listen(APP_PORT, () => {
     console.log(`The server has successfully started on port ${APP_PORT}`);
 });
 
-const gracefulShutdown = (signal: string): void => {
+/*const gracefulShutdown = (signal: string): void => {
     console.log(`\n[${signal}] Signal received to stop. Graceful Shutdown initiating...`);
 
     const forceExitTimeout = setTimeout(() => {
@@ -67,7 +71,7 @@ const gracefulShutdown = (signal: string): void => {
 };
 
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));*/
 
 
 process.on('unhandledRejection', (reason: unknown) => {
