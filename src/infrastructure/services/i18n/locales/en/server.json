@@ -1,0 +1,14 @@
+{
+  "server_running": "The server is running on {{port}}.",
+  "port_busy": "Error: Port {{port}} is busy.",
+  "startup_error": "Critical error starting server.",
+  "critical_error": "A critical error has been detected and shutdown is being initiated.",
+  "cleanup_start": "Cleaning up internal server resources...",
+  "cleanup_success": "The server's internal resources have been successfully cleaned up.",
+  "cleanup_error": "Error cleaning up server resources.",
+  "process_exited_cleanly": "The server shutdown process completed without errors.",
+  "liveness_failed": "Availability check failed.",
+  "app_unavailable": "The application is unavailable.",
+  "app_stop_safe": "The application stopped safely.",
+  "app_stop_error": "Error stopping the application."
+}
