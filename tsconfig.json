@@ -31,6 +31,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "paths": {
+      "#/application/*": ["./src/application/*"],
       "#/infrastructure/*": ["./src/infrastructure/*"]
     },
 
