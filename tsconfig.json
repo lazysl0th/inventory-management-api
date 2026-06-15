@@ -30,6 +30,9 @@
     "exactOptionalPropertyTypes": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "paths": {
+      "#/infrastructure/*": ["./src/infrastructure/*"]
+    },
 
     // Style Options
     // "noImplicitReturns": true,
