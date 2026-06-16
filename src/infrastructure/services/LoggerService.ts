@@ -1,4 +1,4 @@
-import type ILogger from "#/application/interfaces/ILogger.js";
+import type ILogger from "#/application/logger/interfaces/ILogger.js";
 
 export default class ConsoleLogger implements ILogger {
   error(meta: Record<string, unknown>, message: string): void {

@@ -1,7 +1,7 @@
-import { CONFIG_TOKEN } from "#/application/interfaces/IConfig.js";
+import { CONFIG_TOKEN } from "#/application/configuration/interfaces/IConfig.js";
 import { container } from "tsyringe";
 import config from "./env.js";
-import type ILogger from "#/application/interfaces/ILogger.js";
+import type ILogger from "#/application/logger/interfaces/ILogger.js";
 import LoggerService from "../services/LoggerService.js";
 import CorsConfig from "./cors.js";
 
