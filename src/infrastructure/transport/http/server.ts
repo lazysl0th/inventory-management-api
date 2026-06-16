@@ -1,21 +1,21 @@
 import { createTerminus } from "@godaddy/terminus";
 import http from "http";
 import { WebSocketServer } from "ws";
-import { terminusService } from "../../index.js";
+import { terminusService } from "../../../index.js";
 import express from "express";
 import cors from "cors";
 import { container } from "tsyringe";
-import { CONFIG_TOKEN } from "#/application/interfaces/IConfig.js";
-import AppModule from "../../module/App.js";
+import { CONFIG_TOKEN } from "#/application/configuration/interfaces/IConfig.js";
+import AppModule from "../../../module/App.js";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
-import Passport from "../../base/Passport.js";
+import Passport from "../../../base/Passport.js";
 import { errors } from "celebrate";
-import error from "../../middlewares/error.js";
-import CorsConfig from "../config/cors.js";
-import LIMITER_OPTIONS from "../config/limiter.js";
+import error from "../../../middlewares/error.js";
+import CorsConfig from "../../config/cors.js";
+import LIMITER_OPTIONS from "../../config/limiter.js";
 
 const bootstrap = () => {
   const config = container.resolve(CONFIG_TOKEN);

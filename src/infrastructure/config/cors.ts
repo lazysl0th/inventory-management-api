@@ -5,7 +5,7 @@ import { injectable, inject } from "tsyringe";
 import {
   CONFIG_TOKEN,
   type TCorsConfig,
-} from "#/application/interfaces/IConfig.js";
+} from "#/application/configuration/interfaces/IConfig.js";
 import ForbiddenError from "#/domain/errors/ForbiddenError.js";
 
 @injectable()
