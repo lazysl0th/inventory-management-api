@@ -6,7 +6,6 @@ import IntegrationModule from "./Integration.js";
 import InventoryModule from "./Inventory.js";
 import ItemModule from "./Item.js";
 import PassportStrategyModule from "./PassportStrategy.js";
-import TagModule from "./Tag.js";
 import UserModule from "./User.js";
 import UserRoleModule from "./UserRole.js";
 import CommentModule from "./Comment.js";
@@ -34,7 +33,6 @@ export default class AppModule {
       new SubscribeHandler(wsService),
       new UnsubscribeHandler(wsService),
     ]);
-    const tag = new TagModule();
     const user = new UserModule();
     const userRole = new UserRoleModule();
     const auth = new AuthModule(user.service);
@@ -45,7 +43,6 @@ export default class AppModule {
 
     const passport = new PassportStrategyModule(auth.service, user.service);
     const indexRouter = new IndexRouter(
-      tag.router,
       auth.router,
       user.router,
       userRole.router,
