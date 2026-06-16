@@ -1,7 +1,7 @@
 import { Router } from "express";
-import type { ITagController } from "../../../../types/controllers/Tag.js";
+import type TagController from "./TagController.js";
 
-const createTagRoutes = (tagController: ITagController): Router => {
+const createTagRoutes = (tagController: TagController): Router => {
   const router = Router();
   router.get("/", tagController.getTags);
   return router;

@@ -8,7 +8,7 @@ import type { IRoute } from "../transport/http/types.js";
 import createTagRoutes from "../transport/http/tag/tagRoutes.js";
 import TagService from "../../services/Tag.js";
 import TagModel from "../../models/Tag.js";
-import TagController from "../../controllers/Tag.js";
+import TagController from "../transport/http/tag/TagController.js";
 
 const createContainer = () => {
   container.register(CONFIG_TOKEN, { useValue: config });
