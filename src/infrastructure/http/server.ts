@@ -8,21 +8,22 @@ import { container } from "tsyringe";
 import { CONFIG_TOKEN } from "#/application/interfaces/IConfig.js";
 import AppModule from "../../module/App.js";
 import helmet from "helmet";
-import { CORS_OPTIONS } from "../../constants/cors.js";
 import rateLimit from "express-rate-limit";
-import { LIMITER_OPTIONS } from "../../constants/limiter.js";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import Passport from "../../base/Passport.js";
 import { errors } from "celebrate";
 import error from "../../middlewares/error.js";
+import CorsConfig from "../config/cors.js";
+import LIMITER_OPTIONS from "../config/limiter.js";
 
 const bootstrap = () => {
   const config = container.resolve(CONFIG_TOKEN);
+  const corsConfig = container.resolve(CorsConfig);
   const app = express();
   app.set("trust proxy", 1);
   app.use(helmet());
-  app.use(cors(CORS_OPTIONS));
+  app.use(cors(corsConfig.options));
   app.use(rateLimit(LIMITER_OPTIONS));
   app.use(cookieParser());
   app.use(express.json());
