@@ -6,13 +6,13 @@
   "scripts": {
     "lint": "eslint . --fix",
     "format": "prettier --write ./src/**/*.ts",
-    "dev": "tsx watch server.ts",
+    "dev": "tsx watch ./src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 0",
     "check": "npm run lint && npm run format && npm run test",
     "commit": "npm run check && cz",
-    "build": "tsc",
-    "start": "node dist/server.js",
-    "prisma:generate": "prisma generate",
+    "build": "npm run prisma:generate && tsc",
+    "start": "node dist/index.js",
+    "prisma:generate": "prisma generate --schema=./src/prisma/schema.prisma",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
@@ -28,7 +28,7 @@
     }
   },
   "imports": {
-    "#/*": "./dist/src/*"
+    "#/*": "./dist/*"
   },
   "keywords": [],
   "author": "",
