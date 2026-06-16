@@ -5,7 +5,7 @@ import { terminusService } from "../../index.js";
 import express from "express";
 import cors from "cors";
 import { container } from "tsyringe";
-import { CONFIG_TOKEN } from "../../application/interfaces/IConfig.js";
+import { CONFIG_TOKEN } from "#/application/interfaces/IConfig.js";
 import AppModule from "../../module/App.js";
 import helmet from "helmet";
 import { CORS_OPTIONS } from "../../constants/cors.js";
