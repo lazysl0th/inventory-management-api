@@ -1,19 +1,50 @@
 name: 'Setup Project Environment'
-description: 'Configures Node.js and installs dependencies with caching'
+description: 'Configures Node.js, installs dependencies, and optionally sets up DB & migrations'
+
+inputs:
+  with-database:
+    description: 'Whether to spin up Postgres and run Prisma migrations'
+    required: false
+    default: 'false'
 
 runs:
   using: 'composite'
   steps:
     - name: 🟢 Initialize Node.js Environment
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v4
       with:
         node-version: 24.14.1
         cache: npm
+
+    - name: 🐘 Start PostgreSQL Container
+      if: ${{ inputs.with-database == 'true' }}
+      run: |
+        # Запускаем контейнер в фоне
+        docker run -d --name ci_postgres \
+          -e POSTGRES_USER=ci_user \
+          -e POSTGRES_PASSWORD=ci_password \
+          -e POSTGRES_DB=ci_worklog_db \
+          -p 5432:5432 \
+          postgres:16-alpine
+
+        echo "⏳ Waiting for PostgreSQL to be ready..."
+        until docker exec ci_postgres pg_isready -U ci_user; do
+          sleep 1
+        done
+
+        echo "DATABASE_URL=postgresql://ci_user:ci_password@localhost:5432/ci_worklog_db?schema=public" >> $GITHUB_ENV
+      shell: bash
 
     - name: 📦 Install Project Dependencies
       run: npm ci
       shell: bash
 
-    - name: Generate Prisma Client
+    - name: ⚙️ Generate Prisma Client
+      if: ${{ inputs.with-database == 'true' }}
       run: npx prisma generate
+      shell: bash
+
+    - name: 🗄️ Run Prisma Migrations
+      if: ${{ inputs.with-database == 'true' }}
+      run: npx prisma migrate deploy
       shell: bash
