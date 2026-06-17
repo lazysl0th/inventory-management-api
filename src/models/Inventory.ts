@@ -9,7 +9,7 @@ import Prisma from "../infrastructure/persistence/prisma/prisma.js";
 import type { EnumInventorySortOrder } from "../types/services/Inventory.js";
 import { INVENTORY_SELECT } from "../constants/selects.js";
 import { INVENTORY_ORDER } from "../constants/orders.js";
-import { container, inject, injectable } from "tsyringe";
+import { container, injectable } from "tsyringe";
 @injectable()
 export default class InventoryModel
   extends Model<TInventory, TInventoryCreateData, TInventoryUpdateData>
@@ -18,8 +18,9 @@ export default class InventoryModel
   private inventorySelect = INVENTORY_SELECT;
 
   private inventorySortOrder = INVENTORY_ORDER;
+  prisma: Prisma;
 
-  constructor(@inject(Prisma) private readonly prisma: Prisma) {
+  constructor(/*@inject(Prisma) private readonly prisma: Prisma*/) {
     super();
     this.prisma = container.resolve(Prisma);
   }

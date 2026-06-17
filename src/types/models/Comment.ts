@@ -1,11 +1,14 @@
-import type { Prisma } from "@prisma/client";
+import type {
+  CommentCreateInput,
+  CommentGetPayload,
+} from "#/infrastructure/persistence/prisma/generated/models.js";
 import type { Settings } from "../settings.js";
 
-export type TComment = Prisma.CommentGetPayload<{
+export type TComment = CommentGetPayload<{
   select: Settings["selects"]["comment"];
 }>;
 
-export type TCommentCreateData = Prisma.CommentCreateInput;
+export type TCommentCreateData = CommentCreateInput;
 
 export interface ICommentModel {
   getAll(inventoryId: number): Promise<TComment[]>;

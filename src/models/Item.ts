@@ -10,14 +10,15 @@ import Prisma from "../infrastructure/persistence/prisma/prisma.js";
 import type IdGeneratorService from "../services/IdGenerator.js";
 import type { ICustomIdFormatPart } from "../types/models/Inventory.js";
 import { ITEM_SELECT } from "../constants/selects.js";
-import { container, inject } from "tsyringe";
+import { container } from "tsyringe";
 
 export default class ItemModel
   extends Model<TItem, TItemCreateData, TItemUpdateData>
   implements IItemModel
 {
+  prisma: Prisma;
   constructor(
-    @inject(Prisma) private readonly prisma: Prisma,
+    /*@inject(Prisma) private readonly prisma: Prisma,*/
     private readonly IdGenerator: IdGeneratorService,
   ) {
     super();

@@ -1,6 +1,6 @@
-import type { Status } from "@prisma/client";
 import type { Handler } from "express";
 import type { TSafeUserWithRoles } from "../models/User.js";
+import type { Status } from "#/infrastructure/persistence/prisma/generated/enums.js";
 
 export interface IParamUserId {
   userId: number;

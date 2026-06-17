@@ -6,7 +6,7 @@ import {
 import type { IPartIdGenerator } from "../types/services/PartIdGenerator.js";
 import type { IIdGenerator } from "../types/services/IdGenerator.js";
 import type { IPartIdFormatter } from "../types/services/PartIdFormatter.js";
-import type { Prisma } from "@prisma/client";
+import type { TransactionClient } from "#/infrastructure/persistence/prisma/generated/internal/prismaNamespace.js";
 
 export default class IdGeneratorService implements IIdGenerator {
   private readonly partIdFormatters: Map<string, IPartIdFormatter>;
@@ -29,7 +29,7 @@ export default class IdGeneratorService implements IIdGenerator {
 
   async _generatePartId(
     part: ICustomIdFormatPart,
-    tx: Prisma.TransactionClient,
+    tx: TransactionClient,
   ): Promise<string | number | bigint | Date> {
     if (part.type === EnumCustomIdPartType.TEXT && part.format)
       return part.format;
@@ -50,7 +50,7 @@ export default class IdGeneratorService implements IIdGenerator {
 
   async generateCustomId(
     customIdParts: ICustomIdFormatPart[],
-    tx: Prisma.TransactionClient,
+    tx: TransactionClient,
   ): Promise<string> {
     const generatedParts = await Promise.all(
       customIdParts.map(async (part) => {

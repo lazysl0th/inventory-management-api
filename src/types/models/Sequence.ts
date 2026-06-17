@@ -1,8 +1,6 @@
-import type { Prisma, Sequence } from "@prisma/client";
+import type { Sequence } from "#/infrastructure/persistence/prisma/generated/client.js";
+import type { TransactionClient } from "#/infrastructure/persistence/prisma/generated/internal/prismaNamespace.js";
 
 export interface ISequenceModel {
-  updateOrCreate(
-    partGuid: string,
-    tx?: Prisma.TransactionClient,
-  ): Promise<Sequence>;
+  updateOrCreate(partGuid: string, tx?: TransactionClient): Promise<Sequence>;
 }

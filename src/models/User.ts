@@ -10,7 +10,7 @@ import type {
 } from "../types/models/User.js";
 import type { TProvider } from "../types/services/Auth.js";
 import { USER_SELECT } from "../constants/selects.js";
-import { container, inject } from "tsyringe";
+import { container } from "tsyringe";
 import Prisma from "#/infrastructure/persistence/prisma/prisma.js";
 import type { Status } from "#/infrastructure/persistence/prisma/generated/enums.js";
 import type {
@@ -23,8 +23,9 @@ export default class UserModel
   extends Model<TSafeUserWithRoles, TUserCreateData, TUserUpdateData>
   implements IUserModel
 {
+  prisma: Prisma;
   private userSelect = USER_SELECT;
-  constructor(@inject(Prisma) private readonly prisma: Prisma) {
+  constructor(/*@inject(Prisma) private readonly prisma: Prisma*/) {
     super();
     this.prisma = container.resolve(Prisma);
   }

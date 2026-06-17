@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import type { InventoryOrderByWithRelationInput } from "#/infrastructure/persistence/prisma/generated/models.js";
 import type { EnumInventorySortOrder } from "./services/Inventory.js";
 
 export interface Settings {
@@ -130,7 +130,7 @@ export interface Settings {
   sortOrder: {
     inventory: Record<
       EnumInventorySortOrder,
-      Prisma.InventoryOrderByWithRelationInput
+      InventoryOrderByWithRelationInput
     >;
   };
   url: {

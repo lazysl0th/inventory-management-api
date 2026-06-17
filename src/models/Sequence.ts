@@ -2,10 +2,11 @@ import type { Sequence } from "#/infrastructure/persistence/prisma/generated/cli
 import type { TransactionClient } from "#/infrastructure/persistence/prisma/generated/internal/prismaNamespace.js";
 import Prisma from "../infrastructure/persistence/prisma/prisma.js";
 import type { ISequenceModel } from "../types/models/Sequence.js";
-import { container, inject } from "tsyringe";
+import { container } from "tsyringe";
 
 export default class SequenceModel implements ISequenceModel {
-  constructor(@inject(Prisma) private readonly prisma: Prisma) {
+  prisma: Prisma;
+  constructor(/*@inject(Prisma) private readonly prisma: Prisma*/) {
     this.prisma = container.resolve(Prisma);
   }
   async updateOrCreate(

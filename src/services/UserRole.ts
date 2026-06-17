@@ -1,14 +1,11 @@
-import type { Prisma } from "@prisma/client";
+import type { BatchPayload } from "#/infrastructure/persistence/prisma/generated/internal/prismaNamespace.js";
 import type { IUserRoleModel } from "../types/models/UserRole.js";
 import type { IUserRoleService } from "../types/services/UserRole.js";
 
 export default class UserRoleService implements IUserRoleService {
   constructor(private readonly UserRoleModel: IUserRoleModel) {}
 
-  async addRoles(
-    userIds: number[],
-    roleIds: number[],
-  ): Promise<Prisma.BatchPayload> {
+  async addRoles(userIds: number[], roleIds: number[]): Promise<BatchPayload> {
     const userRoleIds = userIds.flatMap((userId) =>
       roleIds.map((roleId) => ({ userId, roleId })),
     );
@@ -18,7 +15,7 @@ export default class UserRoleService implements IUserRoleService {
   async deleteRoles(
     userIds: number[],
     roleIds: number[],
-  ): Promise<Prisma.BatchPayload> {
+  ): Promise<BatchPayload> {
     return this.UserRoleModel.deleteUsersRoles(userIds, roleIds);
   }
 }

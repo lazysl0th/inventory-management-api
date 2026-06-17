@@ -1,4 +1,4 @@
-import type { Status } from "@prisma/client";
+import type { Status } from "#/infrastructure/persistence/prisma/generated/enums.js";
 import type {
   TSafeUser,
   TSafeUserWithRoles,

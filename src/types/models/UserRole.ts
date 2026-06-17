@@ -1,11 +1,12 @@
-import type { Prisma } from "@prisma/client";
+import type { BatchPayload } from "#/infrastructure/persistence/prisma/generated/internal/prismaNamespace.js";
+import type { UserRoleGetPayload } from "#/infrastructure/persistence/prisma/generated/models.js";
 
-export type TUserRole = Prisma.UserRoleGetPayload<true>;
+export type TUserRole = UserRoleGetPayload<true>;
 
 export interface IUserRoleModel {
-  createUsersRoles(userRoleIds: TUserRole[]): Promise<Prisma.BatchPayload>;
+  createUsersRoles(userRoleIds: TUserRole[]): Promise<BatchPayload>;
   deleteUsersRoles(
     usersIds: number[],
     rolesIds: number[],
-  ): Promise<Prisma.BatchPayload>;
+  ): Promise<BatchPayload>;
 }

@@ -1,12 +1,14 @@
-import { container, inject } from "tsyringe";
+import { container, injectable } from "tsyringe";
 import { COMMENT_SELECT } from "../constants/selects.js";
 import type { ICommentModel, TComment } from "../types/models/Comment.js";
 import Prisma from "../infrastructure/persistence/prisma/prisma.js";
 
+@injectable()
 export default class CommentModel implements ICommentModel {
   commentSelect = COMMENT_SELECT;
+  prisma: Prisma;
 
-  constructor(@inject(Prisma) private readonly prisma: Prisma) {
+  constructor(/*@inject(Prisma) private readonly prisma: Prisma*/) {
     this.prisma = container.resolve(Prisma);
   }
 

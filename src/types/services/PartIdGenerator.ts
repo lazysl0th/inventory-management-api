@@ -1,8 +1,8 @@
-import type { Prisma } from "@prisma/client";
+import type { TransactionClient } from "#/infrastructure/persistence/prisma/generated/internal/prismaNamespace.js";
 
 export interface IPartIdGenerator {
   generate(
     param?: string,
-    tx?: Prisma.TransactionClient,
+    tx?: TransactionClient,
   ): number | bigint | string | Promise<number> | Promise<Date>;
 }
