@@ -10,7 +10,7 @@ import type {
 } from "../types/controllers/Inventory.js";
 import type { IInventoryService } from "../types/services/Inventory.js";
 import type { IInventoryData, TInventory } from "../types/models/Inventory.js";
-import { Category } from "@prisma/client";
+import { Category } from "#/infrastructure/persistence/prisma/generated/enums.js";
 
 export default class InventoryController
   extends Controller

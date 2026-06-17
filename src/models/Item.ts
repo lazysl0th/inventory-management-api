@@ -6,23 +6,28 @@ import type {
   TItemUpdateData,
   TLike,
 } from "../types/models/Item.js";
-import prisma from "../prisma/prisma.js";
+import Prisma from "../infrastructure/persistence/prisma/prisma.js";
 import type IdGeneratorService from "../services/IdGenerator.js";
 import type { ICustomIdFormatPart } from "../types/models/Inventory.js";
 import { ITEM_SELECT } from "../constants/selects.js";
+import { container, inject } from "tsyringe";
 
 export default class ItemModel
   extends Model<TItem, TItemCreateData, TItemUpdateData>
   implements IItemModel
 {
-  constructor(private readonly IdGenerator: IdGeneratorService) {
+  constructor(
+    @inject(Prisma) private readonly prisma: Prisma,
+    private readonly IdGenerator: IdGeneratorService,
+  ) {
     super();
+    this.prisma = container.resolve(Prisma);
   }
 
   private itemSelect = ITEM_SELECT;
 
   async getAll(inventoryId: number): Promise<TItem[]> {
-    return await prisma.item.findMany({
+    return await this.prisma.client.item.findMany({
       where: { inventoryId },
       select: this.itemSelect,
       orderBy: { createdAt: "desc" },
@@ -30,7 +35,7 @@ export default class ItemModel
   }
 
   async getById(id: number): Promise<TItem | null> {
-    return await prisma.item.findUnique({
+    return await this.prisma.client.item.findUnique({
       where: { id },
       select: this.itemSelect,
     });
@@ -40,7 +45,7 @@ export default class ItemModel
     data: TItemCreateData,
     customIdFormatParts: ICustomIdFormatPart[],
   ): Promise<TItem> {
-    return await prisma.$transaction(async (tx) => {
+    return await this.prisma.client.$transaction(async (tx) => {
       data.customId = await this.IdGenerator.generateCustomId(
         customIdFormatParts,
         tx,
@@ -53,7 +58,7 @@ export default class ItemModel
   }
 
   async updateById(id: number, data: TItemUpdateData): Promise<TItem> {
-    return prisma.item.update({
+    return this.prisma.client.item.update({
       where: { id },
       data,
       select: this.itemSelect,
@@ -61,25 +66,25 @@ export default class ItemModel
   }
 
   async deleteByIds(ids: number[]): Promise<{ count: number }> {
-    return await prisma.item.deleteMany({
+    return await this.prisma.client.item.deleteMany({
       where: { id: { in: ids } },
     });
   }
 
   async getLike(userId: number, itemId: number): Promise<TLike | null> {
-    return prisma.like.findUnique({
+    return this.prisma.client.like.findUnique({
       where: { userId_itemId: { userId, itemId } },
     });
   }
 
   async addLike(userId: number, itemId: number): Promise<TLike> {
-    return await prisma.like.create({
+    return await this.prisma.client.like.create({
       data: { userId, itemId },
     });
   }
 
   async deleteLike(userId: number, itemId: number): Promise<TLike> {
-    return prisma.like.delete({
+    return this.prisma.client.like.delete({
       where: {
         userId_itemId: {
           userId,
@@ -90,7 +95,7 @@ export default class ItemModel
   }
 
   async countLike(itemId: number): Promise<number> {
-    return prisma.like.count({
+    return this.prisma.client.like.count({
       where: { itemId },
     });
   }

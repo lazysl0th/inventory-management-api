@@ -5,11 +5,12 @@ import type {
   TInventoryCreateData,
   TInventoryUpdateData,
 } from "../types/models/Inventory.js";
-import prisma from "../prisma/prisma.js";
+import Prisma from "../infrastructure/persistence/prisma/prisma.js";
 import type { EnumInventorySortOrder } from "../types/services/Inventory.js";
 import { INVENTORY_SELECT } from "../constants/selects.js";
 import { INVENTORY_ORDER } from "../constants/orders.js";
-
+import { container, inject, injectable } from "tsyringe";
+@injectable()
 export default class InventoryModel
   extends Model<TInventory, TInventoryCreateData, TInventoryUpdateData>
   implements IInventoryModel
@@ -18,15 +19,20 @@ export default class InventoryModel
 
   private inventorySortOrder = INVENTORY_ORDER;
 
+  constructor(@inject(Prisma) private readonly prisma: Prisma) {
+    super();
+    this.prisma = container.resolve(Prisma);
+  }
+
   async getById(id: number): Promise<TInventory | null> {
-    return await prisma.inventory.findUnique({
+    return await this.prisma.client.inventory.findUnique({
       where: { id },
       select: this.inventorySelect,
     });
   }
 
   async getByToken(token: string): Promise<TInventory | null> {
-    return await prisma.inventory.findUnique({
+    return await this.prisma.client.inventory.findUnique({
       where: { token },
       select: this.inventorySelect,
     });
@@ -38,7 +44,7 @@ export default class InventoryModel
     allowedUserId?: number,
     isPublic?: boolean,
   ): Promise<TInventory[]> {
-    return await prisma.inventory.findMany({
+    return await this.prisma.client.inventory.findMany({
       ...(ownerId && { where: { ownerId } }),
       ...(allowedUserId &&
         isPublic && {
@@ -55,7 +61,7 @@ export default class InventoryModel
   }
 
   async create(data: TInventoryCreateData): Promise<TInventory> {
-    return await prisma.inventory.create({
+    return await this.prisma.client.inventory.create({
       data,
       select: this.inventorySelect,
     });
@@ -66,7 +72,7 @@ export default class InventoryModel
     data: TInventoryUpdateData,
     version: number,
   ): Promise<TInventory> {
-    return await prisma.inventory.update({
+    return await this.prisma.client.inventory.update({
       where: {
         id_version: {
           id,
@@ -79,13 +85,13 @@ export default class InventoryModel
   }
 
   async deleteByIds(ids: number[]): Promise<{ count: number }> {
-    return await prisma.inventory.deleteMany({
+    return await this.prisma.client.inventory.deleteMany({
       where: { id: { in: ids } },
     });
   }
 
   async search(query: string): Promise<TInventory[]> {
-    return await prisma.inventory.findMany({
+    return await this.prisma.client.inventory.findMany({
       where: {
         OR: [
           {

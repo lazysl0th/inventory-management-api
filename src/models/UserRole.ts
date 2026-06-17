@@ -1,12 +1,14 @@
-import prisma from "../prisma/prisma.js";
+import { container, inject } from "tsyringe";
 import type { IUserRoleModel, TUserRole } from "../types/models/UserRole.js";
-import type { Prisma } from "@prisma/client";
+import Prisma from "#/infrastructure/persistence/prisma/prisma.js";
+import type { BatchPayload } from "#/infrastructure/persistence/prisma/generated/internal/prismaNamespace.js";
 
 export default class UserRoleModel implements IUserRoleModel {
-  async createUsersRoles(
-    userRoleIds: TUserRole[],
-  ): Promise<Prisma.BatchPayload> {
-    return prisma.userRole.createMany({
+  constructor(@inject(Prisma) private readonly prisma: Prisma) {
+    this.prisma = container.resolve(Prisma);
+  }
+  async createUsersRoles(userRoleIds: TUserRole[]): Promise<BatchPayload> {
+    return this.prisma.client.userRole.createMany({
       data: userRoleIds,
       skipDuplicates: true,
     });
@@ -15,8 +17,8 @@ export default class UserRoleModel implements IUserRoleModel {
   async deleteUsersRoles(
     userIds: number[],
     roleIds: number[],
-  ): Promise<Prisma.BatchPayload> {
-    return prisma.userRole.deleteMany({
+  ): Promise<BatchPayload> {
+    return this.prisma.client.userRole.deleteMany({
       where: {
         userId: { in: userIds },
         roleId: { in: roleIds },

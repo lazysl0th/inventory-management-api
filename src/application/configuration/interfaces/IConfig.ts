@@ -13,7 +13,7 @@ export const envSchema = z.object({
   FRONTEND_URL: z.url(),
   BACKEND_URL: z.url(),
   SHUTDOWN_SERVER_TIMEOUT: z.coerce.number(),
-  //DATABASE_URL: z.url(),
+  DATABASE_URL: z.url(),
 });
 
 export type TConfig = z.infer<typeof envSchema>;
@@ -22,7 +22,7 @@ export type TPort = Pick<TConfig, "PORT">;
 
 export type TTerminusConfig = Pick<TConfig, "SHUTDOWN_SERVER_TIMEOUT" | "PORT">;
 
-//export type TPrismaConfig = Pick<TConfig, 'DATABASE_URL'>;
+export type TPrismaConfig = Pick<TConfig, "DATABASE_URL">;
 
 export type TCorsConfig = Pick<TConfig, "FRONTEND_URL">;
 

@@ -3,7 +3,7 @@ import Validator from "../base/Validator.js";
 import { Joi, Segments } from "celebrate";
 import type { IUserValidator } from "../types/validators/User.js";
 import type { TSafeUser } from "../types/models/User.js";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "#/infrastructure/persistence/prisma/generated/client.js";
 
 export default class UserValidator extends Validator implements IUserValidator {
   getUser(): Handler {

@@ -1,16 +1,21 @@
-import type { Prisma } from "@prisma/client";
 import type { ICustomIdFormatPart } from "./Inventory.js";
 import type { Settings } from "../settings.js";
+import type {
+  ItemCreateInput,
+  ItemGetPayload,
+  ItemUpdateInput,
+  LikeGetPayload,
+} from "#/infrastructure/persistence/prisma/generated/models.js";
 
-export type TItem = Prisma.ItemGetPayload<{
+export type TItem = ItemGetPayload<{
   select: Settings["selects"]["item"];
 }>;
 
-export type TLike = Prisma.LikeGetPayload<true>;
+export type TLike = LikeGetPayload<true>;
 
-export type TItemCreateData = Prisma.ItemCreateInput;
+export type TItemCreateData = ItemCreateInput;
 
-export type TItemUpdateData = Prisma.ItemUpdateInput;
+export type TItemUpdateData = ItemUpdateInput;
 
 export interface IItemData {
   customId: string;
