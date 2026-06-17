@@ -3,8 +3,8 @@ import dayjs from "dayjs";
 import NotFound from "../errors/NotFound.js";
 import type { ISequenceModel } from "../types/models/Sequence.js";
 import type { IPartIdGenerator } from "../types/services/PartIdGenerator.js";
-import type { Prisma } from "@prisma/client";
 import { NOT_FOUND } from "../constants/response.js";
+import type { TransactionClient } from "#/infrastructure/persistence/prisma/generated/internal/prismaNamespace.js";
 
 export class TextGenerator implements IPartIdGenerator {
   generate(text: string): string {
@@ -15,10 +15,7 @@ export class TextGenerator implements IPartIdGenerator {
 export class SequenceGenerator implements IPartIdGenerator {
   constructor(private readonly SequenceModel: ISequenceModel) {}
 
-  async generate(
-    partGuid: string,
-    tx: Prisma.TransactionClient,
-  ): Promise<number> {
+  async generate(partGuid: string, tx: TransactionClient): Promise<number> {
     const sequence = await this.SequenceModel.updateOrCreate(partGuid, tx);
     if (!sequence) throw new NotFound(NOT_FOUND.TEXT);
     return sequence.currentValue;
