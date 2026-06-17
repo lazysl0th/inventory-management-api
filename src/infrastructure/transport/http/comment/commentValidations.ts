@@ -5,7 +5,7 @@ import validate from "../middlewares/validation.js";
 import {
   addCommentSchema,
   getCommentsSchema,
-} from "#/application/comment/dtos/CommentDTO.js";
+} from "#/application/comment/dtos/CommentDto.js";
 
 export interface ICommentValidations {
   getComments: RequestHandler;
