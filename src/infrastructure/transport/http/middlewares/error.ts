@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
-import type { IError } from "../types/base/Error.js";
-import { INTERNAL_SERVER_ERROR } from "../constants/response.js";
+import type { IError } from "../../../../types/base/Error.js";
+import { INTERNAL_SERVER_ERROR } from "../../../../constants/response.js";
 
 export default (
   e: IError | Error,
