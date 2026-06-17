@@ -10,8 +10,14 @@ import type {
   TLike,
 } from "../types/models/Item.js";
 import type { IInventoryService } from "../types/services/Inventory.js";
-import type { Prisma } from "@prisma/client";
 import { BAD_REQUEST, NOT_FOUND } from "../constants/response.js";
+import type {
+  ItemUpdateInput,
+  ItemValueCreateNestedManyWithoutItemInput,
+  ItemValueScalarWhereInput,
+  ItemValueUncheckedCreateWithoutItemInput,
+  ItemValueUpdateWithWhereUniqueWithoutItemInput,
+} from "#/infrastructure/persistence/prisma/generated/models.js";
 
 export default class ItemService implements IItemService {
   constructor(
@@ -30,8 +36,8 @@ export default class ItemService implements IItemService {
   }
 
   private _createValues(
-    itemValues: Prisma.ItemValueUncheckedCreateWithoutItemInput[],
-  ): Prisma.ItemValueUncheckedCreateWithoutItemInput[] {
+    itemValues: ItemValueUncheckedCreateWithoutItemInput[],
+  ): ItemValueUncheckedCreateWithoutItemInput[] {
     return itemValues.map((value) => ({
       value:
         typeof value.value !== "boolean"
@@ -45,7 +51,7 @@ export default class ItemService implements IItemService {
 
   private _updateValues(
     itemValues: IItemValue[],
-  ): Prisma.ItemValueUpdateWithWhereUniqueWithoutItemInput[] {
+  ): ItemValueUpdateWithWhereUniqueWithoutItemInput[] {
     return itemValues
       .filter((value) => value.id)
       .map((value) => ({
@@ -62,9 +68,7 @@ export default class ItemService implements IItemService {
       }));
   }
 
-  private _deleteValues(
-    itemValues: IItemValue[],
-  ): Prisma.ItemValueScalarWhereInput {
+  private _deleteValues(itemValues: IItemValue[]): ItemValueScalarWhereInput {
     return {
       id: {
         notIn: itemValues.filter((value) => value.id).map((value) => value.id),
@@ -73,14 +77,14 @@ export default class ItemService implements IItemService {
   }
 
   private _valuesForCreateItem(
-    itemValues: Prisma.ItemValueUncheckedCreateWithoutItemInput[],
-  ): Prisma.ItemValueCreateNestedManyWithoutItemInput {
+    itemValues: ItemValueUncheckedCreateWithoutItemInput[],
+  ): ItemValueCreateNestedManyWithoutItemInput {
     return { create: this._createValues(itemValues) };
   }
 
   private _valuesForUpdateItem(
     itemValues: IItemValue[],
-  ): Pick<Prisma.ItemUpdateInput, "values"> | undefined {
+  ): Pick<ItemUpdateInput, "values"> | undefined {
     return itemValues.length
       ? {
           values: {

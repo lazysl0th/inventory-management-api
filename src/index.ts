@@ -10,6 +10,9 @@ createContainer();
 
 export const terminusService = container.resolve(TerminusService);
 
+const initPersistences = container.resolveAll<Promise<void>>("InitPersistence");
+await Promise.all(initPersistences);
+
 process.on("unhandledRejection", (reason: unknown) => {
   console.error("Unhandled rejection:", reason);
 });

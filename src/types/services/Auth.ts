@@ -1,4 +1,4 @@
-import type { Role } from "@prisma/client";
+import type { Role } from "#/infrastructure/persistence/prisma/generated/client.js";
 import type { TSafeUserWithRoles } from "../models/User.js";
 import type { gmail_v1 } from "googleapis";
 

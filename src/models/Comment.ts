@@ -1,12 +1,19 @@
+import { container, injectable } from "tsyringe";
 import { COMMENT_SELECT } from "../constants/selects.js";
-import prisma from "../prisma/prisma.js";
 import type { ICommentModel, TComment } from "../types/models/Comment.js";
+import Prisma from "../infrastructure/persistence/prisma/prisma.js";
 
+@injectable()
 export default class CommentModel implements ICommentModel {
   commentSelect = COMMENT_SELECT;
+  prisma: Prisma;
+
+  constructor(/*@inject(Prisma) private readonly prisma: Prisma*/) {
+    this.prisma = container.resolve(Prisma);
+  }
 
   async getAll(inventoryId: number): Promise<TComment[]> {
-    return await prisma.comment.findMany({
+    return await this.prisma.client.comment.findMany({
       where: { inventoryId },
       select: this.commentSelect,
     });
@@ -17,7 +24,7 @@ export default class CommentModel implements ICommentModel {
     inventoryId: number,
     userId: number,
   ): Promise<TComment> {
-    return await prisma.comment.create({
+    return await this.prisma.client.comment.create({
       data: { content, inventoryId, userId },
       select: this.commentSelect,
     });

@@ -11,10 +11,25 @@ import type {
   TInventoryField,
   TUpdateInventoryData,
 } from "../types/models/Inventory.js";
-import { Prisma } from "@prisma/client";
 import type { TSafeUserWithRoles } from "../types/models/User.js";
 import BadRequest from "../errors/BadRequest.js";
 import { BAD_REQUEST, NOT_FOUND } from "../constants/response.js";
+import type {
+  InventoryCreateInput,
+  InventoryFieldCreateNestedManyWithoutInventoryInput,
+  InventoryFieldCreateWithoutInventoryInput,
+  InventoryFieldScalarWhereInput,
+  InventoryFieldUncheckedCreateWithoutInventoryInput,
+  InventoryFieldUpdateManyWithoutInventoryNestedInput,
+  InventoryFieldUpdateWithWhereUniqueWithoutInventoryInput,
+  InventoryUpdateInput,
+  TagCreateNestedManyWithoutInventoriesInput,
+  TagCreateOrConnectWithoutInventoriesInput,
+  TagCreateWithoutInventoriesInput,
+  TagUpdateManyWithoutInventoriesNestedInput,
+  UserCreateNestedManyWithoutAllowedInventoriesInput,
+  UserUpdateManyWithoutAllowedInventoriesNestedInput,
+} from "#/infrastructure/persistence/prisma/generated/models.js";
 
 export default class InventoryService implements IInventoryService {
   constructor(private readonly InventoryModel: IInventoryModel) {}
@@ -40,8 +55,8 @@ export default class InventoryService implements IInventoryService {
   }
 
   private _connectOrCreateTags(
-    tags: Prisma.TagCreateWithoutInventoriesInput[],
-  ): Prisma.TagCreateOrConnectWithoutInventoriesInput[] {
+    tags: TagCreateWithoutInventoriesInput[],
+  ): TagCreateOrConnectWithoutInventoriesInput[] {
     return tags.map((tag) => ({
       where: { name: tag.name },
       create: { name: tag.name },
@@ -49,14 +64,14 @@ export default class InventoryService implements IInventoryService {
   }
 
   private _tagsForCreateInventory(
-    tags: Prisma.TagCreateWithoutInventoriesInput[],
-  ): Prisma.TagCreateNestedManyWithoutInventoriesInput {
+    tags: TagCreateWithoutInventoriesInput[],
+  ): TagCreateNestedManyWithoutInventoriesInput {
     return { connectOrCreate: this._connectOrCreateTags(tags) };
   }
 
   private _tagsForUpdateInventory(
-    tags: Prisma.TagCreateWithoutInventoriesInput[] | undefined,
-  ): Prisma.TagUpdateManyWithoutInventoriesNestedInput {
+    tags: TagCreateWithoutInventoriesInput[] | undefined,
+  ): TagUpdateManyWithoutInventoriesNestedInput {
     return tags
       ? {
           set: [],
@@ -66,8 +81,8 @@ export default class InventoryService implements IInventoryService {
   }
 
   private _createFields(
-    fields: Prisma.InventoryFieldUncheckedCreateWithoutInventoryInput[],
-  ): Prisma.InventoryFieldUncheckedCreateWithoutInventoryInput[] {
+    fields: InventoryFieldUncheckedCreateWithoutInventoryInput[],
+  ): InventoryFieldUncheckedCreateWithoutInventoryInput[] {
     return fields
       .filter((field) => !field.id)
       .map((field) => ({
@@ -81,7 +96,7 @@ export default class InventoryService implements IInventoryService {
 
   private _deleteFields(
     fields: TInventoryField[],
-  ): Prisma.InventoryFieldScalarWhereInput {
+  ): InventoryFieldScalarWhereInput {
     return {
       id: {
         notIn: fields.filter((field) => field.id).map((field) => field.id),
@@ -91,7 +106,7 @@ export default class InventoryService implements IInventoryService {
 
   private _updateFields(
     fields: TInventoryField[],
-  ): Prisma.InventoryFieldUpdateWithWhereUniqueWithoutInventoryInput[] {
+  ): InventoryFieldUpdateWithWhereUniqueWithoutInventoryInput[] {
     return fields
       .filter((fields) => fields.id)
       .map((field) => ({
@@ -107,14 +122,14 @@ export default class InventoryService implements IInventoryService {
   }
 
   private _fieldsForCreateInventory(
-    fields: Prisma.InventoryFieldCreateWithoutInventoryInput[],
-  ): Prisma.InventoryFieldCreateNestedManyWithoutInventoryInput {
+    fields: InventoryFieldCreateWithoutInventoryInput[],
+  ): InventoryFieldCreateNestedManyWithoutInventoryInput {
     return { create: this._createFields(fields) };
   }
 
   private _fieldsForUpdateInventory(
     fields: TInventoryField[] | undefined,
-  ): Prisma.InventoryFieldUpdateManyWithoutInventoryNestedInput {
+  ): InventoryFieldUpdateManyWithoutInventoryNestedInput {
     return fields
       ? {
           deleteMany: this._deleteFields(fields),
@@ -126,13 +141,13 @@ export default class InventoryService implements IInventoryService {
 
   private _connectAllowedUser(
     allowedUsers: TSafeUserWithRoles[],
-  ): Prisma.UserCreateNestedManyWithoutAllowedInventoriesInput {
+  ): UserCreateNestedManyWithoutAllowedInventoriesInput {
     return { connect: allowedUsers.map((user) => ({ id: user.id })) };
   }
 
   private _setAllowedUser(
     allowedUsers: TSafeUserWithRoles[] | undefined,
-  ): Prisma.UserUpdateManyWithoutAllowedInventoriesNestedInput {
+  ): UserUpdateManyWithoutAllowedInventoriesNestedInput {
     return allowedUsers
       ? { set: allowedUsers.map((user) => ({ id: user.id })) }
       : {};
@@ -142,7 +157,7 @@ export default class InventoryService implements IInventoryService {
     userId: number,
     inventoryData: IInventoryData,
   ): Promise<TInventory> {
-    const inventoryCreateData: Prisma.InventoryCreateInput = {
+    const inventoryCreateData: InventoryCreateInput = {
       ...inventoryData,
       owner: { connect: { id: userId } },
       tags: this._tagsForCreateInventory(inventoryData.tags),
@@ -156,7 +171,7 @@ export default class InventoryService implements IInventoryService {
     inventoryId: number,
     inventoryData: TUpdateInventoryData,
   ): Promise<TInventory> {
-    const inventoryUpdateData: Prisma.InventoryUpdateInput = {
+    const inventoryUpdateData: InventoryUpdateInput = {
       ...inventoryData,
       version: { increment: 1 },
       tags: this._tagsForUpdateInventory(inventoryData.tags),

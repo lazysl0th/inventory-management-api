@@ -1,25 +1,31 @@
-import { Prisma, type Status } from "@prisma/client";
 import type { TProvider } from "../services/Auth.js";
 import type { Settings } from "../settings.js";
+import type {
+  UserCreateInput,
+  UserGetPayload,
+  UserUpdateInput,
+  UserWhereInput,
+} from "#/infrastructure/persistence/prisma/generated/models.js";
+import type { Status } from "#/infrastructure/persistence/prisma/generated/enums.js";
 
-export type TUser = Prisma.UserGetPayload<{
+export type TUser = UserGetPayload<{
   select: Omit<Settings["selects"]["user"], "roles">;
 }>;
 
-export type TUserWithRoles = Prisma.UserGetPayload<{
+export type TUserWithRoles = UserGetPayload<{
   select: Settings["selects"]["user"];
 }>;
 
-export type TSafeUser = Prisma.UserGetPayload<{
+export type TSafeUser = UserGetPayload<{
   select: Omit<
     Settings["selects"]["user"],
     "roles" | "password" | "resetPasswordToken" | "refreshToken" | "createdAt"
   >;
 }>;
 
-export type TUserCreateData = Prisma.UserCreateInput;
+export type TUserCreateData = UserCreateInput;
 
-export type TUserUpdateData = Prisma.UserUpdateInput;
+export type TUserUpdateData = UserUpdateInput;
 
 export type TSafeUserSelect = Omit<
   Settings["selects"]["user"],
@@ -54,7 +60,7 @@ export interface IUserModel {
   updateByIds(
     ids: number[],
     data: Partial<TSafeUserWithRoles>,
-    whereNot: Prisma.UserWhereInput[],
+    whereNot: UserWhereInput[],
   ): Promise<{ count: number }>;
   deleteByIds(ids: number[]): Promise<{ count: number }>;
 }

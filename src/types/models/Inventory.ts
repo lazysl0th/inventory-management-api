@@ -1,25 +1,33 @@
-import type { Category, Prisma } from "@prisma/client";
 import type { IUserData } from "../services/Auth.js";
 import type { EnumInventorySortOrder } from "../services/Inventory.js";
 import type { Settings } from "../settings.js";
 import type { TUserWithRoles } from "./User.js";
+import type {
+  InventoryCreateInput,
+  InventoryFieldGetPayload,
+  InventoryGetPayload,
+  InventoryUpdateInput,
+  TagGetPayload,
+} from "#/infrastructure/persistence/prisma/generated/models.js";
+import type { Category } from "#/infrastructure/persistence/prisma/generated/enums.js";
+import type { InputJsonValue } from "#/infrastructure/persistence/prisma/generated/internal/prismaNamespace.js";
 
 export type TInventorySelect = Settings["selects"]["inventory"];
 
-export type TInventory = Prisma.InventoryGetPayload<{
+export type TInventory = InventoryGetPayload<{
   select: Settings["selects"]["inventory"];
 }>;
 
 export type TInventoryField = Omit<
-  Prisma.InventoryFieldGetPayload<true>,
+  InventoryFieldGetPayload<true>,
   "inventoryId"
 >;
 
-export type TTag = Omit<Prisma.TagGetPayload<true>, "id">;
+export type TTag = Omit<TagGetPayload<true>, "id">;
 
-export type TInventoryCreateData = Prisma.InventoryCreateInput;
+export type TInventoryCreateData = InventoryCreateInput;
 
-export type TInventoryUpdateData = Prisma.InventoryUpdateInput;
+export type TInventoryUpdateData = InventoryUpdateInput;
 
 export interface IInventoryBaseData {
   id: number;
@@ -40,7 +48,7 @@ export interface IInventoryData extends IInventoryBaseData {
   fields: TInventoryField[];
   allowedUsers: TUserWithRoles[];
   token?: string;
-  customIdFormat?: Prisma.InputJsonValue;
+  customIdFormat?: InputJsonValue;
 }
 
 export type TUpdateInventoryData = Partial<IInventoryData> &

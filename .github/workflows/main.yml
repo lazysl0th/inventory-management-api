@@ -31,6 +31,8 @@ jobs:
 
       - name: 🛠️ Setup Node & Dependencies
         uses: ./.github/actions/setup-project
+        with:
+          with-database: 'true'
 
       - name: 🧪 Execute Test Suite
         run: npm test
@@ -44,6 +46,8 @@ jobs:
 
       - name: 🛠️ Setup Node & Dependencies
         uses: ./.github/actions/setup-project
+        with:
+          with-database: 'true'
 
       - name: 🏗️ Compile Application
         run: npm run build

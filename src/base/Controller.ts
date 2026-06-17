@@ -3,7 +3,6 @@ import type {
   ExtendedRequest,
   HandlerController,
 } from "../types/base/Controller.js";
-import { Prisma } from "@prisma/client";
 import BadRequest from "../errors/BadRequest.js";
 import Conflict from "../errors/Conflict.js";
 import Forbidden from "../errors/Forbidden.js";
@@ -11,6 +10,7 @@ import jwt from "jsonwebtoken";
 import type { IError } from "../types/base/Error.js";
 import { isIError } from "../utils.js";
 import { BAD_REQUEST, CONFLICT, FORBIDDEN, OK } from "../constants/response.js";
+import { PrismaClientKnownRequestError } from "#/infrastructure/persistence/prisma/generated/internal/prismaNamespace.js";
 
 export abstract class Controller {
   protected handle<TParams = object, TBody = object, TQuery = object>(
@@ -29,7 +29,7 @@ export abstract class Controller {
   protected handleError(e: unknown, next: NextFunction): void {
     console.log(e);
     let err: IError;
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+    if (e instanceof PrismaClientKnownRequestError) {
       switch (e.code) {
         case "P2002":
           err = new Conflict(CONFLICT.TEXT_USER);

@@ -8,6 +8,7 @@ import type { IRoute } from "../transport/http/types.js";
 import createTagRoutes from "../transport/http/tag/tagRoutes.js";
 import TagModel from "../../models/Tag.js";
 import TagController from "../transport/http/tag/TagController.js";
+import Prisma from "../persistence/prisma/prisma.js";
 
 const createContainer = () => {
   container.register(CONFIG_TOKEN, { useValue: config });
@@ -24,6 +25,13 @@ const createContainer = () => {
   });
   container.register("ITagRepository", {
     useClass: TagModel,
+  });
+
+  container.register<Promise<void>>("InitPersistence", {
+    useFactory: async (dbclient) => {
+      const prismaCLient = dbclient.resolve(Prisma);
+      await prismaCLient.connect();
+    },
   });
 };
 

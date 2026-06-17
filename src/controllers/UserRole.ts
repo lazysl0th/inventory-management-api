@@ -5,7 +5,7 @@ import type {
   IUserRoleController,
 } from "../types/controllers/UserRole.js";
 import type { IUserRoleService } from "../types/services/UserRole.js";
-import type { Prisma } from "@prisma/client";
+import type { BatchPayload } from "#/infrastructure/persistence/prisma/generated/internal/prismaNamespace.js";
 
 export default class UserRoleController
   extends Controller
@@ -19,7 +19,7 @@ export default class UserRoleController
     const userIds = req.body.userIds;
     const roleIds = req.body.roleIds;
     const result = await this.UserRoleService.addRoles(userIds, roleIds);
-    this.ok<Prisma.BatchPayload>(res, result);
+    this.ok<BatchPayload>(res, result);
   });
 
   deleteRoles: Handler = this.handle<object, IBodyUserRole>(
@@ -27,7 +27,7 @@ export default class UserRoleController
       const userIds = req.body.userIds;
       const roleIds = req.body.roleIds;
       const result = await this.UserRoleService.deleteRoles(userIds, roleIds);
-      this.ok<Prisma.BatchPayload>(res, result);
+      this.ok<BatchPayload>(res, result);
     },
   );
 }
