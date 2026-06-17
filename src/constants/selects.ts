@@ -52,16 +52,6 @@ export const ITEM_SELECT = {
   values: { select: { id: true, field: true, value: true } },
 } as const;
 
-export const TAG_SELECT = {
-  id: true,
-  name: true,
-  _count: {
-    select: {
-      inventories: true,
-    },
-  },
-} as const;
-
 export const COMMENT_SELECT = {
   id: true,
   content: true,

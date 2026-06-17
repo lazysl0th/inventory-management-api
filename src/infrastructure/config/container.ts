@@ -6,7 +6,7 @@ import LoggerService from "../services/LoggerService.js";
 import CorsConfig from "./cors.js";
 import type { IRoute } from "../transport/http/types.js";
 import createTagRoutes from "../transport/http/tag/tagRoutes.js";
-import TagModel from "../../models/Tag.js";
+import PrismaTagRepository from "../persistence/repositories/PrismaTagRepository.js";
 import TagController from "../transport/http/tag/TagController.js";
 import Prisma from "../persistence/prisma/prisma.js";
 
@@ -24,7 +24,7 @@ const createContainer = () => {
     },
   });
   container.register("ITagRepository", {
-    useClass: TagModel,
+    useClass: PrismaTagRepository,
   });
 
   container.register<Promise<void>>("InitPersistence", {
