@@ -1,10 +1,11 @@
 import { inject, injectable } from "tsyringe";
-import type { ITagModel, TTag } from "../../../types/models/Tag.js";
+import type { ITagRepository } from "../interfaces/ITagRepository.js";
+import type { TTag } from "#/domain/entities/Tag.js";
 
 @injectable()
 export default class GetTags {
   constructor(
-    @inject("ITagRepository") private readonly TagRepository: ITagModel,
+    @inject("ITagRepository") private readonly TagRepository: ITagRepository,
   ) {}
 
   public async execute(): Promise<TTag[]> {

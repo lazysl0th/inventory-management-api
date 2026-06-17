@@ -109,15 +109,6 @@ export interface Settings {
       updatedAt: boolean;
       values: { select: { id: boolean; field: boolean; value: boolean } };
     };
-    tag: {
-      id: boolean;
-      name: boolean;
-      _count: {
-        select: {
-          inventories: boolean;
-        };
-      };
-    };
     comment: {
       id: boolean;
       content: boolean;
