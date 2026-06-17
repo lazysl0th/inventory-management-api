@@ -13,7 +13,7 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import Passport from "../../../base/Passport.js";
 import { errors } from "celebrate";
-import error from "../../../middlewares/error.js";
+import error from "./middlewares/error.js";
 import CorsConfig from "../../config/cors.js";
 import LIMITER_OPTIONS from "../../config/limiter.js";
 import type { IRoute } from "./types.js";

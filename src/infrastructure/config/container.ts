@@ -9,6 +9,9 @@ import createTagRoutes from "../transport/http/tag/tagRoutes.js";
 import PrismaTagRepository from "../persistence/repositories/PrismaTagRepository.js";
 import TagController from "../transport/http/tag/TagController.js";
 import Prisma from "../persistence/prisma/prisma.js";
+import commentValidations, {
+  СOMMENT_VALIDATIONS_TOKEN,
+} from "../transport/http/comment/commentValidations.js";
 
 const createContainer = () => {
   container.register(CONFIG_TOKEN, { useValue: config });
@@ -25,6 +28,10 @@ const createContainer = () => {
   });
   container.register("ITagRepository", {
     useClass: PrismaTagRepository,
+  });
+
+  container.register(СOMMENT_VALIDATIONS_TOKEN, {
+    useValue: commentValidations,
   });
 
   container.register<Promise<void>>("InitPersistence", {
