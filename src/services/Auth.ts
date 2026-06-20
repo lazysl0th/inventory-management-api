@@ -12,14 +12,14 @@ import type {
   IAuthTokens,
 } from "../types/services/Auth.js";
 import type { IEmailService } from "../types/services/Email.js";
-import BadRequest from "../errors/BadRequest.js";
 import ResetPasswordUserMessage from "./messages/ResetPasswordUser.js";
 import type { gmail_v1 } from "googleapis";
 import type { IUserService } from "../types/services/User.js";
 import { isAccessTokenData, isResetPasswordTokenData } from "../utils.js";
-import Forbidden from "../errors/Forbidden.js";
 import { CRYPTO } from "../constants/crypto.js";
 import { BAD_REQUEST, FORBIDDEN } from "../constants/response.js";
+import BadRequest from "#/domain/errors/BadRequest.js";
+import Forbidden from "#/domain/errors/Forbidden.js";
 
 export default class AuthService implements IAuthService {
   constructor(

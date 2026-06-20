@@ -1,19 +1,27 @@
 import { z } from "zod";
 
+export const commentSchema = z.object({
+  inventoryId: z.coerce.number().positive().int(),
+  content: z.string().trim().min(1),
+  userId: z.coerce.number().positive().int(),
+});
+
 export const getCommentsSchema = z.object({
-  params: z.object({
-    inventoryId: z.coerce.number().positive().int(),
+  params: commentSchema.pick({ inventoryId: true }).extend({
+    inventoryId: z.string(),
   }),
 });
 
 export const addCommentSchema = z.object({
-  params: getCommentsSchema.shape.params,
-  body: z.object({
-    content: z.string().trim().min(1),
+  params: commentSchema.pick({ inventoryId: true }).extend({
+    inventoryId: z.string(),
   }),
+  body: commentSchema.pick({ content: true }),
 });
 
-export type TGetCommentsDto = z.infer<typeof getCommentsSchema>["params"];
+export type TGetCommentsParams = z.infer<typeof getCommentsSchema>["params"];
 
-export type TAddCommentDto = z.infer<typeof addCommentSchema>["params"] &
-  z.infer<typeof addCommentSchema>["body"];
+export type TAddCommentParams = z.infer<typeof addCommentSchema>["params"];
+export type TAddCommentBody = z.infer<typeof addCommentSchema>["body"];
+
+export type TCreateCommentDto = z.infer<typeof commentSchema>;

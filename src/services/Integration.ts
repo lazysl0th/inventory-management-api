@@ -15,9 +15,9 @@ import type {
   ISalesForceApi,
   IGetInfoResponse,
 } from "../types/services/intagrations/SalesForce.js";
-import NotFound from "../errors/NotFound.js";
 import type { IUserService } from "../types/services/User.js";
 import { NOT_FOUND } from "../constants/response.js";
+import NotFound from "#/domain/errors/NotFound.js";
 
 export default class IntegrationService implements IIntegrationService {
   constructor(

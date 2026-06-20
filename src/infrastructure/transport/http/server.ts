@@ -1,6 +1,5 @@
 import { createTerminus } from "@godaddy/terminus";
-import http from "http";
-import { WebSocketServer } from "ws";
+import { createServer } from "http";
 import { terminusService } from "../../../index.js";
 import express from "express";
 import cors from "cors";
@@ -16,7 +15,9 @@ import { errors } from "celebrate";
 import error from "./middlewares/error.js";
 import CorsConfig from "../../config/cors.js";
 import LIMITER_OPTIONS from "../../config/limiter.js";
-import type { IRoute } from "./types.js";
+import type { IRoute } from "./types/types.js";
+import SocketIO from "../ws/socketio/socketio.js";
+import { CommentCreatedHandler } from "../ws/events/handlers/CommentCreatedHandler.js";
 
 const bootstrap = () => {
   const config = container.resolve(CONFIG_TOKEN);
@@ -31,13 +32,16 @@ const bootstrap = () => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(morgan("dev"));
-  routes.forEach((route) => app.use(route.path, route.router));
-  const httpServer = http.createServer(app);
-  const wsServer: WebSocketServer = new WebSocketServer({
+  const httpServer = createServer(app);
+  /*const wsServer: WebSocketServer = new WebSocketServer({
     server: httpServer,
     path: "/",
-  });
-  const appModule = new AppModule(wsServer);
+  });*/
+  const socketIo = container.resolve(SocketIO);
+  socketIo.attach(httpServer);
+  container.resolve(CommentCreatedHandler);
+  const appModule = new AppModule(/*wsServer*/);
+  routes.forEach((route) => app.use(route.path, route.router));
   app.use(
     Passport.initialize([
       appModule.passport.local.strategy,

@@ -51,12 +51,3 @@ export const ITEM_SELECT = {
   updatedAt: true,
   values: { select: { id: true, field: true, value: true } },
 } as const;
-
-export const COMMENT_SELECT = {
-  id: true,
-  content: true,
-  userId: true,
-  user: { select: { id: true, name: true, email: true } },
-  inventoryId: true,
-  createdAt: true,
-} as const;

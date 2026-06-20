@@ -109,14 +109,6 @@ export interface Settings {
       updatedAt: boolean;
       values: { select: { id: boolean; field: boolean; value: boolean } };
     };
-    comment: {
-      id: boolean;
-      content: boolean;
-      userId: boolean;
-      user: { select: { id: boolean; name: boolean; email: boolean } };
-      inventoryId: boolean;
-      createdAt: boolean;
-    };
   };
   sortOrder: {
     inventory: Record<

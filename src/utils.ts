@@ -4,7 +4,6 @@ import type {
   IAccessTokenData,
   IResetPasswordTokenData,
 } from "./types/services/Auth.js";
-import type { TClientData } from "./types/services/Ws.js";
 
 export function replaceParamsInTemplate(
   params: Record<string, string>,
@@ -43,8 +42,4 @@ export function isAccessTokenData(obj: unknown): obj is IAccessTokenData {
 
 export function isIError(obj: unknown): obj is IError {
   return isObject(obj) && "statusCode" in obj && "message" in obj;
-}
-
-export function isClientMessage(data: unknown): data is TClientData {
-  return isObject(data) && "type" in data && typeof data.type === "string";
 }

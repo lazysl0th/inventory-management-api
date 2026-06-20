@@ -1,12 +1,11 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "./generated/client.js";
-import { inject, injectable, singleton } from "tsyringe";
+import { inject, singleton } from "tsyringe";
 import {
   CONFIG_TOKEN,
   type TPrismaConfig,
 } from "#/application/configuration/interfaces/IConfig.js";
 
-@injectable()
 @singleton()
 export default class Prisma {
   public readonly client: PrismaClient;

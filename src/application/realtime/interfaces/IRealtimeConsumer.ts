@@ -1,7 +1,3 @@
-export interface IRealtimeConsumer {
-  onMessage(
-    connectionId: string,
-    type: string,
-    payload: unknown,
-  ): Promise<void>;
+export interface IRealtimeConsumer<T> {
+  onMessage(connectionId: string, type: string, payload: T): Promise<void>;
 }

@@ -1,4 +1,3 @@
-import NotFound from "../errors/NotFound.js";
 import type {
   IUserModel,
   TSafeUser,
@@ -15,6 +14,7 @@ import {
   RoleName,
   Status,
 } from "#/infrastructure/persistence/prisma/generated/enums.js";
+import NotFound from "#/domain/errors/NotFound.js";
 
 export default class UserService implements IUserService {
   constructor(private readonly UserModel: IUserModel) {}

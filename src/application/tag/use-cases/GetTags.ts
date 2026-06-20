@@ -1,14 +1,14 @@
 import { inject, injectable } from "tsyringe";
 import type { ITagRepository } from "../interfaces/ITagRepository.js";
-import type { TTag } from "#/domain/entities/Tag.js";
+import type Tag from "#/domain/entities/Tag.js";
 
 @injectable()
 export default class GetTags {
   constructor(
-    @inject("ITagRepository") private readonly TagRepository: ITagRepository,
+    @inject("ITagRepository") private readonly tagRepository: ITagRepository,
   ) {}
 
-  public async execute(): Promise<TTag[]> {
-    return await this.TagRepository.getAll();
+  public async execute(): Promise<Tag[]> {
+    return await this.tagRepository.getAll();
   }
 }

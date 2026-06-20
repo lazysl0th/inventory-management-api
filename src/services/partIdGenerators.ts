@@ -1,10 +1,10 @@
 import crypto from "crypto";
 import dayjs from "dayjs";
-import NotFound from "../errors/NotFound.js";
 import type { ISequenceModel } from "../types/models/Sequence.js";
 import type { IPartIdGenerator } from "../types/services/PartIdGenerator.js";
 import { NOT_FOUND } from "../constants/response.js";
 import type { TransactionClient } from "#/infrastructure/persistence/prisma/generated/internal/prismaNamespace.js";
+import NotFound from "#/domain/errors/NotFound.js";
 
 export class TextGenerator implements IPartIdGenerator {
   generate(text: string): string {

@@ -19,27 +19,17 @@ export type TagModel = runtime.Types.Result.DefaultSelection<Prisma.$TagPayload>
 
 export type AggregateTag = {
   _count: TagCountAggregateOutputType | null
-  _avg: TagAvgAggregateOutputType | null
-  _sum: TagSumAggregateOutputType | null
   _min: TagMinAggregateOutputType | null
   _max: TagMaxAggregateOutputType | null
 }
 
-export type TagAvgAggregateOutputType = {
-  id: number | null
-}
-
-export type TagSumAggregateOutputType = {
-  id: number | null
-}
-
 export type TagMinAggregateOutputType = {
-  id: number | null
+  id: string | null
   name: string | null
 }
 
 export type TagMaxAggregateOutputType = {
-  id: number | null
+  id: string | null
   name: string | null
 }
 
@@ -49,14 +39,6 @@ export type TagCountAggregateOutputType = {
   _all: number
 }
 
-
-export type TagAvgAggregateInputType = {
-  id?: true
-}
-
-export type TagSumAggregateInputType = {
-  id?: true
-}
 
 export type TagMinAggregateInputType = {
   id?: true
@@ -112,18 +94,6 @@ export type TagAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
-   * Select which fields to average
-  **/
-  _avg?: TagAvgAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
-   * Select which fields to sum
-  **/
-  _sum?: TagSumAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
    * Select which fields to find the minimum value
   **/
   _min?: TagMinAggregateInputType
@@ -154,18 +124,14 @@ export type TagGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
   take?: number
   skip?: number
   _count?: TagCountAggregateInputType | true
-  _avg?: TagAvgAggregateInputType
-  _sum?: TagSumAggregateInputType
   _min?: TagMinAggregateInputType
   _max?: TagMaxAggregateInputType
 }
 
 export type TagGroupByOutputType = {
-  id: number
+  id: string
   name: string
   _count: TagCountAggregateOutputType | null
-  _avg: TagAvgAggregateOutputType | null
-  _sum: TagSumAggregateOutputType | null
   _min: TagMinAggregateOutputType | null
   _max: TagMaxAggregateOutputType | null
 }
@@ -189,7 +155,7 @@ export type TagWhereInput = {
   AND?: Prisma.TagWhereInput | Prisma.TagWhereInput[]
   OR?: Prisma.TagWhereInput[]
   NOT?: Prisma.TagWhereInput | Prisma.TagWhereInput[]
-  id?: Prisma.IntFilter<"Tag"> | number
+  id?: Prisma.UuidFilter<"Tag"> | string
   name?: Prisma.StringFilter<"Tag"> | string
   inventories?: Prisma.InventoryListRelationFilter
 }
@@ -202,7 +168,7 @@ export type TagOrderByWithRelationInput = {
 }
 
 export type TagWhereUniqueInput = Prisma.AtLeast<{
-  id?: number
+  id?: string
   name?: string
   AND?: Prisma.TagWhereInput | Prisma.TagWhereInput[]
   OR?: Prisma.TagWhereInput[]
@@ -214,53 +180,54 @@ export type TagOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   _count?: Prisma.TagCountOrderByAggregateInput
-  _avg?: Prisma.TagAvgOrderByAggregateInput
   _max?: Prisma.TagMaxOrderByAggregateInput
   _min?: Prisma.TagMinOrderByAggregateInput
-  _sum?: Prisma.TagSumOrderByAggregateInput
 }
 
 export type TagScalarWhereWithAggregatesInput = {
   AND?: Prisma.TagScalarWhereWithAggregatesInput | Prisma.TagScalarWhereWithAggregatesInput[]
   OR?: Prisma.TagScalarWhereWithAggregatesInput[]
   NOT?: Prisma.TagScalarWhereWithAggregatesInput | Prisma.TagScalarWhereWithAggregatesInput[]
-  id?: Prisma.IntWithAggregatesFilter<"Tag"> | number
+  id?: Prisma.UuidWithAggregatesFilter<"Tag"> | string
   name?: Prisma.StringWithAggregatesFilter<"Tag"> | string
 }
 
 export type TagCreateInput = {
+  id?: string
   name: string
   inventories?: Prisma.InventoryCreateNestedManyWithoutTagsInput
 }
 
 export type TagUncheckedCreateInput = {
-  id?: number
+  id?: string
   name: string
   inventories?: Prisma.InventoryUncheckedCreateNestedManyWithoutTagsInput
 }
 
 export type TagUpdateInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   inventories?: Prisma.InventoryUpdateManyWithoutTagsNestedInput
 }
 
 export type TagUncheckedUpdateInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   inventories?: Prisma.InventoryUncheckedUpdateManyWithoutTagsNestedInput
 }
 
 export type TagCreateManyInput = {
-  id?: number
+  id?: string
   name: string
 }
 
 export type TagUpdateManyMutationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type TagUncheckedUpdateManyInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -285,10 +252,6 @@ export type TagCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
 }
 
-export type TagAvgOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-}
-
 export type TagMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -297,10 +260,6 @@ export type TagMaxOrderByAggregateInput = {
 export type TagMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-}
-
-export type TagSumOrderByAggregateInput = {
-  id?: Prisma.SortOrder
 }
 
 export type TagCreateNestedManyWithoutInventoriesInput = {
@@ -342,11 +301,12 @@ export type TagUncheckedUpdateManyWithoutInventoriesNestedInput = {
 }
 
 export type TagCreateWithoutInventoriesInput = {
+  id?: string
   name: string
 }
 
 export type TagUncheckedCreateWithoutInventoriesInput = {
-  id?: number
+  id?: string
   name: string
 }
 
@@ -375,21 +335,22 @@ export type TagScalarWhereInput = {
   AND?: Prisma.TagScalarWhereInput | Prisma.TagScalarWhereInput[]
   OR?: Prisma.TagScalarWhereInput[]
   NOT?: Prisma.TagScalarWhereInput | Prisma.TagScalarWhereInput[]
-  id?: Prisma.IntFilter<"Tag"> | number
+  id?: Prisma.UuidFilter<"Tag"> | string
   name?: Prisma.StringFilter<"Tag"> | string
 }
 
 export type TagUpdateWithoutInventoriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type TagUncheckedUpdateWithoutInventoriesInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type TagUncheckedUpdateManyWithoutInventoriesInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -460,7 +421,7 @@ export type $TagPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
     inventories: Prisma.$InventoryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
-    id: number
+    id: string
     name: string
   }, ExtArgs["result"]["tag"]>
   composites: {}
@@ -886,7 +847,7 @@ export interface Prisma__TagClient<T, Null = never, ExtArgs extends runtime.Type
  * Fields of the Tag model
  */
 export interface TagFieldRefs {
-  readonly id: Prisma.FieldRef<"Tag", 'Int'>
+  readonly id: Prisma.FieldRef<"Tag", 'String'>
   readonly name: Prisma.FieldRef<"Tag", 'String'>
 }
     

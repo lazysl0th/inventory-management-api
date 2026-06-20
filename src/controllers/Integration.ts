@@ -3,7 +3,6 @@ import multer, { type Multer } from "multer";
 import { Controller } from "../base/Controller.js";
 import type { IIntegrationController } from "../types/controllers/Integration.js";
 import type { Handler } from "express";
-import BadRequest from "../errors/BadRequest.js";
 import type { IUploadResultDropbox } from "../types/services/intagrations/Dropbox.js";
 import type {
   IAuthCodeDropbox,
@@ -18,9 +17,10 @@ import type {
 } from "../types/services/intagrations/SalesForce.js";
 import type { IParamUserId } from "../types/controllers/User.js";
 import Passport from "../base/Passport.js";
-import Forbidden from "../errors/Forbidden.js";
 import { BAD_REQUEST, INSUFFICIENT_PERMISSION } from "../constants/response.js";
 import { MULTER_OPTIONS } from "../constants/multer.js";
+import BadRequest from "#/domain/errors/BadRequest.js";
+import Forbidden from "#/domain/errors/Forbidden.js";
 
 export default class IntegrationController
   extends Controller

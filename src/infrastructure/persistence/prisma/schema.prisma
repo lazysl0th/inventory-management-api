@@ -144,12 +144,12 @@ model ItemValue {
 }
 
 model Comment {
-    id          Int        @id @default(autoincrement())
+    id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     content     String
     userId      Int
     user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-    inventoryId Int?
-    inventory   Inventory? @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+    inventoryId Int
+    inventory   Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
     createdAt   DateTime   @default(now())
 }
 
@@ -164,7 +164,7 @@ model Like {
 }
 
 model Tag {
-    id          Int         @id @default(autoincrement())
+    id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     name        String      @unique
     inventories Inventory[] @relation("InventoryTags")
 }

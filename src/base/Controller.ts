@@ -3,14 +3,14 @@ import type {
   ExtendedRequest,
   HandlerController,
 } from "../types/base/Controller.js";
-import BadRequest from "../errors/BadRequest.js";
-import Conflict from "../errors/Conflict.js";
-import Forbidden from "../errors/Forbidden.js";
 import jwt from "jsonwebtoken";
 import type { IError } from "../types/base/Error.js";
 import { isIError } from "../utils.js";
 import { BAD_REQUEST, CONFLICT, FORBIDDEN, OK } from "../constants/response.js";
 import { PrismaClientKnownRequestError } from "#/infrastructure/persistence/prisma/generated/internal/prismaNamespace.js";
+import Conflict from "#/domain/errors/Conflict.js";
+import BadRequest from "#/domain/errors/BadRequest.js";
+import Forbidden from "#/domain/errors/Forbidden.js";
 
 export abstract class Controller {
   protected handle<TParams = object, TBody = object, TQuery = object>(
