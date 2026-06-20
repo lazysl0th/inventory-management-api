@@ -26,6 +26,12 @@ import type { IWsRoute } from "../transport/ws/socketio/types/types.js";
 import type { Socket } from "socket.io";
 import { commentsValidationRegistry } from "#/application/inventory/dtos/WSInventoryDto.js";
 import PrismaCommentRepository from "../persistence/repositories/PrismaCommentRepository.js";
+import AuthService from "../../services/Auth.js";
+import EmailService from "../../services/Email.js";
+import UserModule from "../../module/User.js";
+import AuthController from "../../controllers/Auth.js";
+import authRoutes from "../transport/http/modules/auth/authRoutes.js";
+import AuthValidator from "../../validators/Auth.js";
 
 const createContainer = () => {
   container.register(CONFIG_TOKEN, { useValue: config });
@@ -58,6 +64,21 @@ const createContainer = () => {
       };
     },
   });
+
+  container.register<IRoute>("IRoute", {
+    useFactory: () => {
+      const user = new UserModule();
+      const service = new AuthService(user.service, new EmailService());
+      const controller = new AuthController(service);
+      //const commentValidations = container.resolve(СOMMENT_VALIDATIONS_TOKEN);
+      //const routesController = container.resolve(CommentController);
+      return {
+        path: "/",
+        router: authRoutes(controller, new AuthValidator()),
+      };
+    },
+  });
+
   container.register("ITagRepository", {
     useClass: PrismaTagRepository,
   });

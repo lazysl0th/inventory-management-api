@@ -33,14 +33,10 @@ const bootstrap = () => {
   app.use(express.urlencoded({ extended: true }));
   app.use(morgan("dev"));
   const httpServer = createServer(app);
-  /*const wsServer: WebSocketServer = new WebSocketServer({
-    server: httpServer,
-    path: "/",
-  });*/
   const socketIo = container.resolve(SocketIO);
   socketIo.attach(httpServer);
   container.resolve(CommentCreatedHandler);
-  const appModule = new AppModule(/*wsServer*/);
+  const appModule = new AppModule();
   routes.forEach((route) => app.use(route.path, route.router));
   app.use(
     Passport.initialize([

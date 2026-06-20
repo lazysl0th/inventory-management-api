@@ -13,7 +13,7 @@ export default class AppModule {
   public readonly passport: PassportStrategyModule;
 
   constructor() {
-    const { passport, indexRouter } = this.init(/*wsServer*/);
+    const { passport, indexRouter } = this.init();
     this.passport = passport;
     this.router = indexRouter.router;
   }
@@ -28,7 +28,7 @@ export default class AppModule {
 
     const passport = new PassportStrategyModule(auth.service, user.service);
     const indexRouter = new IndexRouter(
-      auth.router,
+      //auth.router,
       user.router,
       userRole.router,
       inventory.router,
