@@ -1,5 +1,3 @@
-import NotFound from "../errors/NotFound.js";
-import BadRequest from "../errors/BadRequest.js";
 import { isCustomIdFormatObject } from "../utils.js";
 import type { IItemService } from "../types/services/Item.js";
 import type {
@@ -18,6 +16,8 @@ import type {
   ItemValueUncheckedCreateWithoutItemInput,
   ItemValueUpdateWithWhereUniqueWithoutItemInput,
 } from "#/infrastructure/persistence/prisma/generated/models.js";
+import BadRequest from "#/domain/errors/BadRequest.js";
+import NotFound from "#/domain/errors/NotFound.js";
 
 export default class ItemService implements IItemService {
   constructor(

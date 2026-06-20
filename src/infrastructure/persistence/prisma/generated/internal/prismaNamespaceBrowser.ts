@@ -297,6 +297,7 @@ export type ItemValueOrderByRelevanceFieldEnum =
   (typeof ItemValueOrderByRelevanceFieldEnum)[keyof typeof ItemValueOrderByRelevanceFieldEnum];
 
 export const CommentOrderByRelevanceFieldEnum = {
+  id: "id",
   content: "content",
 } as const;
 
@@ -304,6 +305,7 @@ export type CommentOrderByRelevanceFieldEnum =
   (typeof CommentOrderByRelevanceFieldEnum)[keyof typeof CommentOrderByRelevanceFieldEnum];
 
 export const TagOrderByRelevanceFieldEnum = {
+  id: "id",
   name: "name",
 } as const;
 

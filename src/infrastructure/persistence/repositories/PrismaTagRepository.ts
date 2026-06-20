@@ -1,14 +1,23 @@
-import type { ITagRepository } from "../../../application/tag/interfaces/ITagRepository.js";
 import { inject, injectable } from "tsyringe";
 import Prisma from "../prisma/prisma.js";
-import type { TTag } from "#/domain/entities/Tag.js";
+import type {
+  ITagRepository,
+  TTag,
+} from "#/application/tag/interfaces/ITagRepository.js";
+import Tag from "#/domain/entities/Tag.js";
 
 @injectable()
 export default class PrismaTagRepository implements ITagRepository {
   constructor(@inject(Prisma) private readonly prisma: Prisma) {}
 
-  async getAll(): Promise<TTag[]> {
-    return await this.prisma.client.tag.findMany({
+  private createTag(tagData: TTag): Tag {
+    return new Tag({
+      ...tagData,
+      count: tagData._count.inventories,
+    });
+  }
+  async getAll(): Promise<Tag[]> {
+    const tagsData = await this.prisma.client.tag.findMany({
       include: {
         _count: {
           select: {
@@ -18,5 +27,6 @@ export default class PrismaTagRepository implements ITagRepository {
       },
       orderBy: { inventories: { _count: "desc" } },
     });
+    return tagsData.map(this.createTag);
   }
 }

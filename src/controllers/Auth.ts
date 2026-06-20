@@ -11,7 +11,6 @@ import type {
   TResetUserPasswordData,
 } from "../types/services/Auth.js";
 import type { Handler } from "express";
-import Forbidden from "../errors/Forbidden.js";
 import { FRONTEND_URL } from "../constants/base.js";
 import { AUTH_SUCCESS } from "../constants/uri.js";
 import {
@@ -20,6 +19,7 @@ import {
   LOGOUT,
   RESET_PASSWORD,
 } from "../constants/response.js";
+import Forbidden from "#/domain/errors/Forbidden.js";
 
 export default class AuthController
   extends Controller

@@ -11,12 +11,14 @@ import type {
   IQueryUserFilter,
   IBodyUpdateUsers,
 } from "../types/controllers/User.js";
-import BadRequest from "../errors/BadRequest.js";
+
 import type { Handler } from "express";
 import type { IUserService } from "../types/services/User.js";
 import Passport from "../base/Passport.js";
-import Forbidden from "../errors/Forbidden.js";
+
 import { BAD_REQUEST, INSUFFICIENT_PERMISSION } from "../constants/response.js";
+import Forbidden from "#/domain/errors/Forbidden.js";
+import BadRequest from "#/domain/errors/BadRequest.js";
 
 export default class UserController
   extends Controller

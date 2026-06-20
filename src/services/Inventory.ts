@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import NotFound from "../errors/NotFound.js";
+
 import type {
   EnumInventorySortOrder,
   IInventoryService,
@@ -12,7 +12,7 @@ import type {
   TUpdateInventoryData,
 } from "../types/models/Inventory.js";
 import type { TSafeUserWithRoles } from "../types/models/User.js";
-import BadRequest from "../errors/BadRequest.js";
+
 import { BAD_REQUEST, NOT_FOUND } from "../constants/response.js";
 import type {
   InventoryCreateInput,
@@ -30,6 +30,8 @@ import type {
   UserCreateNestedManyWithoutAllowedInventoriesInput,
   UserUpdateManyWithoutAllowedInventoriesNestedInput,
 } from "#/infrastructure/persistence/prisma/generated/models.js";
+import NotFound from "#/domain/errors/NotFound.js";
+import BadRequest from "#/domain/errors/BadRequest.js";
 
 export default class InventoryService implements IInventoryService {
   constructor(private readonly InventoryModel: IInventoryModel) {}

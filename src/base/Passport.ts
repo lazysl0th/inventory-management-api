@@ -7,9 +7,6 @@ import type {
   VerifyUserHandler,
 } from "../types/base/Passport.js";
 import type { IError } from "../types/base/Error.js";
-import Unauthorized from "../errors/Unauthorized.js";
-import Forbidden from "../errors/Forbidden.js";
-import NotFound from "../errors/NotFound.js";
 import type { TSafeUserWithRoles } from "../types/models/User.js";
 import type {
   IAuthResultData,
@@ -25,6 +22,9 @@ import {
 import { NO_TOKEN } from "../constants/errorText.js";
 import { Status } from "#/infrastructure/persistence/prisma/generated/enums.js";
 import type { Role } from "#/infrastructure/persistence/prisma/generated/client.js";
+import Forbidden from "#/domain/errors/Forbidden.js";
+import Unauthorized from "#/domain/errors/Unauthorized.js";
+import NotFound from "#/domain/errors/NotFound.js";
 
 export default abstract class Passport {
   protected async verifyHandle<TUser>(
