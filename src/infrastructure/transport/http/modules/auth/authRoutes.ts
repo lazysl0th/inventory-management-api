@@ -1,21 +1,17 @@
 import { Router } from "express";
 import type { IAuthController } from "../../../../../types/controllers/Auth.js";
-import type { IAuthValidator } from "../../../../../types/validators/Auth.js";
 import Passport from "../../../../../base/Passport.js";
+import type { IAuthValidations } from "./authValidations.js";
 
 const authRoutes = (
   authController: IAuthController,
-  authValidations: IAuthValidator,
+  authValidations: IAuthValidations,
 ): Router => {
   const router = Router();
-  router.post(
-    "/signup",
-    authValidations.registerUser(),
-    authController.registerUser,
-  );
+  router.post("/signup", authValidations.signup, authController.registerUser);
   router.post(
     "/signin",
-    authValidations.loginUserByEmail(),
+    authValidations.signin,
     Passport.authorize("local"),
     authController.loginUserByEmail,
   );
@@ -43,7 +39,7 @@ const authRoutes = (
   );
   router.post(
     "/resetPassword",
-    authValidations.resetUserPassword(),
+    authValidations.resetPassword,
     authController.resetUserPassword,
   );
   router.post("/changePassword", authController.changeUserPassword);

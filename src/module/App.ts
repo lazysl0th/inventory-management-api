@@ -28,7 +28,6 @@ export default class AppModule {
 
     const passport = new PassportStrategyModule(auth.service, user.service);
     const indexRouter = new IndexRouter(
-      //auth.router,
       user.router,
       userRole.router,
       inventory.router,

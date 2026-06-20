@@ -31,7 +31,9 @@ import EmailService from "../../services/Email.js";
 import UserModule from "../../module/User.js";
 import AuthController from "../../controllers/Auth.js";
 import authRoutes from "../transport/http/modules/auth/authRoutes.js";
-import AuthValidator from "../../validators/Auth.js";
+import authValidations, {
+  AUTH_VALIDATIONS_TOKEN,
+} from "../transport/http/modules/auth/authValidations.js";
 
 const createContainer = () => {
   container.register(CONFIG_TOKEN, { useValue: config });
@@ -65,16 +67,20 @@ const createContainer = () => {
     },
   });
 
+  container.register(AUTH_VALIDATIONS_TOKEN, {
+    useValue: authValidations,
+  });
+
   container.register<IRoute>("IRoute", {
     useFactory: () => {
       const user = new UserModule();
       const service = new AuthService(user.service, new EmailService());
       const controller = new AuthController(service);
-      //const commentValidations = container.resolve(СOMMENT_VALIDATIONS_TOKEN);
+      const authValidations = container.resolve(AUTH_VALIDATIONS_TOKEN);
       //const routesController = container.resolve(CommentController);
       return {
         path: "/",
-        router: authRoutes(controller, new AuthValidator()),
+        router: authRoutes(controller, authValidations),
       };
     },
   });
