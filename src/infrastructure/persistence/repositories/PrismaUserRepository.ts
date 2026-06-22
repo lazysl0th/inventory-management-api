@@ -2,10 +2,7 @@ import { USER_SELECT } from "../../../constants/selects.js";
 import { container } from "tsyringe";
 import Prisma from "#/infrastructure/persistence/prisma/prisma.js";
 import type { Status } from "#/infrastructure/persistence/prisma/generated/enums.js";
-import type {
-  UserWhereInput,
-  UserWhereUniqueInput,
-} from "#/infrastructure/persistence/prisma/generated/models.js";
+import type { UserWhereInput } from "#/infrastructure/persistence/prisma/generated/models.js";
 import type { BatchPayload } from "#/infrastructure/persistence/prisma/generated/internal/prismaNamespace.js";
 import type {
   IUserRepository,
@@ -14,9 +11,7 @@ import type {
   TUserBySafeMode,
   TUserCreateData,
   TUserUpdateData,
-  TUserWithRoles,
 } from "#/application/user/dtos/IUserRepository.js";
-import type { TSocialProvider } from "#/application/auth/dtos/AuthDto.js";
 
 export default class PrismaUserRepository implements IUserRepository {
   prisma: Prisma;
@@ -66,23 +61,6 @@ export default class PrismaUserRepository implements IUserRepository {
         ? { select: this.userSelectSafe }
         : { select: this.userSelect }),
     })) as TUserBySafeMode<T> | null;
-  }
-
-  async getByEmail(email: string): Promise<TUserWithRoles | null> {
-    return await this.prisma.client.user.findUnique({
-      where: { email },
-      select: this.userSelect,
-    });
-  }
-
-  async getBySocialId(
-    provider: TSocialProvider,
-    socialId: string,
-  ): Promise<TSafeUserWithRoles | null> {
-    return await this.prisma.client.user.findUnique({
-      where: { [provider]: socialId } as unknown as UserWhereUniqueInput,
-      select: this.userSelectSafe,
-    });
   }
 
   async getEmailAdmins(): Promise<{ email: string }[]> {

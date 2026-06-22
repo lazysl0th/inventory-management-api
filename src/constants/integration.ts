@@ -15,9 +15,6 @@ const {
   GOOGLE_CLIENT_SECRET,
   GOOGLE_REFRESH_TOKEN,
   GOOGLE_CALLBACK_URL,
-  FACEBOOK_APP_ID,
-  FACEBOOK_APP_SECRET,
-  FACEBOOK_CALLBACK_URL,
 } = process.env;
 
 const isProd = NODE_ENV === "production";
@@ -58,13 +55,4 @@ export const GOOGLE = {
     isProd && GOOGLE_CALLBACK_URL
       ? GOOGLE_CALLBACK_URL
       : "http://localhost:3001/signin/google/callback",
-};
-
-export const FACEBOOK = {
-  CLIENT_ID: FACEBOOK_APP_ID ? FACEBOOK_APP_ID : "",
-  CLIENT_SECRET: FACEBOOK_APP_SECRET ? FACEBOOK_APP_SECRET : "",
-  CALLBACK_URL:
-    isProd && FACEBOOK_CALLBACK_URL
-      ? FACEBOOK_CALLBACK_URL
-      : "http://localhost:3001/signin/facebook/callback",
 };

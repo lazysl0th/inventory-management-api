@@ -6,7 +6,6 @@ import type {
   UserWhereInput,
 } from "#/infrastructure/persistence/prisma/generated/models.js";
 import type { Status } from "#/infrastructure/persistence/prisma/generated/enums.js";
-import type { TSocialProvider } from "#/application/auth/dtos/AuthDto.js";
 
 export type TUser = UserGetPayload<{
   select: Omit<Settings["selects"]["user"], "roles">;
@@ -48,11 +47,6 @@ export interface IUserRepository {
     id: string,
     safeMode?: T,
   ): Promise<TUserBySafeMode<T> | null>;
-  getByEmail(email: string): Promise<TUserWithRoles | null>;
-  getBySocialId(
-    provider: TSocialProvider,
-    socialId: string,
-  ): Promise<TSafeUserWithRoles | null>;
   getEmailAdmins(): Promise<{ email: string }[]>;
   create(data: TUserCreateData): Promise<TSafeUserWithRoles>;
   updateById(id: string, data: TUserUpdateData): Promise<TSafeUserWithRoles>;
