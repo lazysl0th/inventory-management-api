@@ -2,13 +2,15 @@ import { google, type gmail_v1, type Auth } from "googleapis";
 import type {
   IEmailService,
   IEmailServiceOptions,
-} from "../types/services/Email.js";
+} from "../../application/email/interfaces/IEmailService.js";
 
-import { replaceParamsInTemplate } from "../utils.js";
-import type { Content } from "../types/base/MessageContent.js";
-import { MESSAGE_TEMPLATE, SENDER_NAME } from "../constants/email.js";
-import { GOOGLE } from "../constants/integration.js";
+import { replaceParamsInTemplate } from "../../utils.js";
+import type { Content } from "../../types/base/MessageContent.js";
+import { MESSAGE_TEMPLATE, SENDER_NAME } from "../../constants/email.js";
+import { GOOGLE } from "../../constants/integration.js";
+import { injectable } from "tsyringe";
 
+@injectable()
 export default class EmailService implements IEmailService {
   private readonly oAuth2Client: Auth.OAuth2Client;
   private readonly options: IEmailServiceOptions;

@@ -1,15 +1,4 @@
-import Model from "../base/Model.js";
-import type {
-  IUserModel,
-  TSafeUserSelect,
-  TSafeUserWithRoles,
-  TUserBySafeMode,
-  TUserCreateData,
-  TUserUpdateData,
-  TUserWithRoles,
-} from "../types/models/User.js";
-import type { TProvider } from "../types/services/Auth.js";
-import { USER_SELECT } from "../constants/selects.js";
+import { USER_SELECT } from "../../../constants/selects.js";
 import { container } from "tsyringe";
 import Prisma from "#/infrastructure/persistence/prisma/prisma.js";
 import type { Status } from "#/infrastructure/persistence/prisma/generated/enums.js";
@@ -18,15 +7,21 @@ import type {
   UserWhereUniqueInput,
 } from "#/infrastructure/persistence/prisma/generated/models.js";
 import type { BatchPayload } from "#/infrastructure/persistence/prisma/generated/internal/prismaNamespace.js";
+import type {
+  IUserRepository,
+  TSafeUserSelect,
+  TSafeUserWithRoles,
+  TUserBySafeMode,
+  TUserCreateData,
+  TUserUpdateData,
+  TUserWithRoles,
+} from "#/application/user/dtos/IUserRepository.js";
+import type { TSocialProvider } from "#/application/auth/dtos/AuthDto.js";
 
-export default class UserModel
-  extends Model<TSafeUserWithRoles, TUserCreateData, TUserUpdateData>
-  implements IUserModel
-{
+export default class PrismaUserRepository implements IUserRepository {
   prisma: Prisma;
   private userSelect = USER_SELECT;
   constructor(/*@inject(Prisma) private readonly prisma: Prisma*/) {
-    super();
     this.prisma = container.resolve(Prisma);
   }
 
@@ -45,6 +40,13 @@ export default class UserModel
     return safeUserSelect;
   }
 
+  async create(data: TUserCreateData): Promise<TSafeUserWithRoles> {
+    return await this.prisma.client.user.create({
+      data,
+      select: this.userSelectSafe,
+    });
+  }
+
   async getAll(query?: string): Promise<TSafeUserWithRoles[]> {
     return await this.prisma.client.user.findMany({
       ...(query && {
@@ -55,7 +57,7 @@ export default class UserModel
   }
 
   async getById<T extends boolean = true>(
-    id: number,
+    id: string,
     safeMode: T = true as T,
   ): Promise<TUserBySafeMode<T> | null> {
     return (await this.prisma.client.user.findUnique({
@@ -74,7 +76,7 @@ export default class UserModel
   }
 
   async getBySocialId(
-    provider: TProvider,
+    provider: TSocialProvider,
     socialId: string,
   ): Promise<TSafeUserWithRoles | null> {
     return await this.prisma.client.user.findUnique({
@@ -92,15 +94,8 @@ export default class UserModel
     });
   }
 
-  async create(data: TUserCreateData): Promise<TSafeUserWithRoles> {
-    return await this.prisma.client.user.create({
-      data,
-      select: this.userSelectSafe,
-    });
-  }
-
   async updateById(
-    id: number,
+    id: string,
     data: TUserUpdateData,
   ): Promise<TSafeUserWithRoles> {
     return this.prisma.client.user.update({
@@ -111,7 +106,7 @@ export default class UserModel
   }
 
   async updateStatusByIds(
-    ids: number[],
+    ids: string[],
     status: Status,
   ): Promise<BatchPayload> {
     return await this.prisma.client.user.updateMany({
@@ -124,7 +119,7 @@ export default class UserModel
   }
 
   async updateByIds(
-    ids: number[],
+    ids: string[],
     data: Partial<TSafeUserWithRoles>,
     whereNot: UserWhereInput[],
   ): Promise<{ count: number }> {
@@ -150,7 +145,7 @@ export default class UserModel
     });
   }
 
-  async deleteByIds(ids: number[]): Promise<BatchPayload> {
+  async deleteByIds(ids: string[]): Promise<BatchPayload> {
     return await this.prisma.client.user.deleteMany({
       where: { id: { in: ids } },
     });

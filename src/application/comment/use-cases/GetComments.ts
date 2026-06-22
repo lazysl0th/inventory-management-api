@@ -1,11 +1,11 @@
 import { inject, injectable } from "tsyringe";
 import type { ICommentRepository } from "../interfaces/ICommentRepository.js";
-import type Comment from "#/domain/entities/Comment.js";
+import Comment from "#/domain/entities/Comment.js";
 
 @injectable()
 export default class GetComments {
   constructor(
-    @inject("ICommentRepository")
+    @inject("CommentRepository")
     private readonly commentsRepository: ICommentRepository,
   ) {}
 

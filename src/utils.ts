@@ -1,9 +1,5 @@
 import type { IError } from "./types/base/Error.js";
 import type { ICustomIdFormat } from "./types/models/Inventory.js";
-import type {
-  IAccessTokenData,
-  IResetPasswordTokenData,
-} from "./types/services/Auth.js";
 
 export function replaceParamsInTemplate(
   params: Record<string, string>,
@@ -24,20 +20,6 @@ export function isCustomIdFormatObject(obj: unknown): obj is ICustomIdFormat {
 
 function isObject(obj: unknown): obj is Record<string, unknown> {
   return typeof obj === "object" && obj !== null;
-}
-
-export function isResetPasswordTokenData(
-  obj: unknown,
-): obj is IResetPasswordTokenData {
-  return isObject(obj) && "type" in obj && obj.type === "resetPassword";
-}
-
-export function isAccessTokenData(obj: unknown): obj is IAccessTokenData {
-  return (
-    isObject(obj) &&
-    "type" in obj &&
-    (obj.type === "access" || obj.type === "refresh")
-  );
 }
 
 export function isIError(obj: unknown): obj is IError {

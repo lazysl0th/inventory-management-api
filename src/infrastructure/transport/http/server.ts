@@ -10,7 +10,7 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
-import Passport from "../../../base/Passport.js";
+//import Passport from "../../../base/Passport.js";
 import { errors } from "celebrate";
 import error from "./middlewares/error.js";
 import CorsConfig from "../../config/cors.js";
@@ -18,11 +18,13 @@ import LIMITER_OPTIONS from "../../config/limiter.js";
 import type { IRoute } from "./types/types.js";
 import SocketIO from "../ws/socketio/socketio.js";
 import { CommentCreatedHandler } from "../ws/events/handlers/CommentCreatedHandler.js";
+import type { IAuthStrategy } from "#/application/auth/interfaces/IAuthStrategy.js";
 
 const bootstrap = () => {
   const config = container.resolve(CONFIG_TOKEN);
   const corsConfig = container.resolve(CorsConfig);
   const routes = container.resolveAll<IRoute>("IRoute");
+  const authStrategies = container.resolveAll<IAuthStrategy>("AuthStrategy");
   const app = express();
   app.set("trust proxy", 1);
   app.use(helmet());
@@ -37,15 +39,16 @@ const bootstrap = () => {
   socketIo.attach(httpServer);
   container.resolve(CommentCreatedHandler);
   const appModule = new AppModule();
+  authStrategies.forEach((strategy) => strategy.register());
   routes.forEach((route) => app.use(route.path, route.router));
-  app.use(
+  /*app.use(
     Passport.initialize([
       appModule.passport.local.strategy,
       appModule.passport.jwt.strategy,
       appModule.passport.google.strategy,
       appModule.passport.facebook.strategy,
     ]),
-  );
+  );*/
   app.use(appModule.router);
   app.use(errors());
   app.use(error);

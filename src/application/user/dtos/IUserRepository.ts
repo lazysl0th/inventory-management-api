@@ -1,5 +1,4 @@
-import type { TProvider } from "../services/Auth.js";
-import type { Settings } from "../settings.js";
+import type { Settings } from "../../../types/settings.js";
 import type {
   UserCreateInput,
   UserGetPayload,
@@ -7,6 +6,7 @@ import type {
   UserWhereInput,
 } from "#/infrastructure/persistence/prisma/generated/models.js";
 import type { Status } from "#/infrastructure/persistence/prisma/generated/enums.js";
+import type { TSocialProvider } from "#/application/auth/dtos/AuthDto.js";
 
 export type TUser = UserGetPayload<{
   select: Omit<Settings["selects"]["user"], "roles">;
@@ -41,26 +41,26 @@ export type TUserBySafeMode<T extends boolean> = T extends true
   ? TSafeUserWithRoles
   : TUserWithRoles;
 
-export interface IUserModel {
+export interface IUserRepository {
   userSelectSafe: TSafeUserSelect;
   getAll(query?: string): Promise<TSafeUserWithRoles[]>;
   getById<T extends boolean = true>(
-    id: number,
+    id: string,
     safeMode?: T,
   ): Promise<TUserBySafeMode<T> | null>;
   getByEmail(email: string): Promise<TUserWithRoles | null>;
   getBySocialId(
-    provider: TProvider,
+    provider: TSocialProvider,
     socialId: string,
   ): Promise<TSafeUserWithRoles | null>;
   getEmailAdmins(): Promise<{ email: string }[]>;
   create(data: TUserCreateData): Promise<TSafeUserWithRoles>;
-  updateById(id: number, data: TUserUpdateData): Promise<TSafeUserWithRoles>;
-  updateStatusByIds(ids: number[], status: Status): Promise<{ count: number }>;
+  updateById(id: string, data: TUserUpdateData): Promise<TSafeUserWithRoles>;
+  updateStatusByIds(ids: string[], status: Status): Promise<{ count: number }>;
   updateByIds(
-    ids: number[],
+    ids: string[],
     data: Partial<TSafeUserWithRoles>,
     whereNot: UserWhereInput[],
   ): Promise<{ count: number }>;
-  deleteByIds(ids: number[]): Promise<{ count: number }>;
+  deleteByIds(ids: string[]): Promise<{ count: number }>;
 }

@@ -3,7 +3,7 @@ import { z } from "zod";
 export const commentSchema = z.object({
   inventoryId: z.coerce.number().positive().int(),
   content: z.string().trim().min(1),
-  userId: z.coerce.number().positive().int(),
+  userId: z.uuid(),
 });
 
 export const getCommentsSchema = z.object({

@@ -20,14 +20,14 @@ export interface IItemService {
   getItems(inventoryId: number): Promise<TItem[]>;
   getItem(id: number): Promise<TItem>;
   createItem(
-    userId: number,
+    userId: string,
     inventoryId: number,
     itemValues: IItemValue[],
   ): Promise<TItem>;
   updateItem(id: number, itemData: Partial<IItemData>): Promise<TItem>;
   deleteItems(ids: number[]): Promise<{ count: number }>;
-  addLike(userId: number, itemId: number): Promise<TLike>;
-  deleteLike(userId: number, itemId: number): Promise<TLike>;
+  addLike(userId: string, itemId: number): Promise<TLike>;
+  deleteLike(userId: string, itemId: number): Promise<TLike>;
   getLikesCount(itemId: number): Promise<number>;
-  getLike(userId: number, itemId: number): Promise<TLike | null>;
+  getLike(userId: string, itemId: number): Promise<TLike | null>;
 }

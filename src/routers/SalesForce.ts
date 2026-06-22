@@ -1,5 +1,4 @@
 import type { IIntegrationController } from "../types/controllers/Integration.js";
-import Passport from "../base/Passport.js";
 import Router from "../base/Router.js";
 import type { IBaseRouter } from "../types/base/Router.js";
 import type { IIntegrationValidator } from "../types/validators/Integration.js";
@@ -14,7 +13,7 @@ export default class SalesForceRouter extends Router implements IBaseRouter {
   }
 
   initializeRoutes(): void {
-    this.router.use(Passport.authorize("jwt"));
+    //this.router.use(Passport.authorize("jwt"));
     this.router.get(
       "/address",
       this.SalesForceController.getLocationFromSalesForce,

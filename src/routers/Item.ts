@@ -1,4 +1,3 @@
-import Passport from "../base/Passport.js";
 import Router from "../base/Router.js";
 import type { IItemController } from "../types/controllers/Item.js";
 import type { IItemRouter } from "../types/routers/Item.js";
@@ -24,7 +23,7 @@ export default class ItemRouter extends Router implements IItemRouter {
       this.ItemValidator.getItem(),
       this.ItemController.getItem,
     );
-    this.router.use(Passport.authorize("jwt"));
+    //this.router.use(Passport.authorize("jwt"));
     this.router.post(
       "/",
       this.ItemValidator.createItem(),

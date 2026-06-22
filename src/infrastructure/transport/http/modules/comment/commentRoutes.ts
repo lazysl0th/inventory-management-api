@@ -1,5 +1,5 @@
 import { Router } from "express";
-import Passport from "../../../../../base/Passport.js";
+//import Passport from "../../../../../base/Passport.js";
 import type { ICommentValidations } from "./commentValidations.js";
 import type CommentController from "./CommentController.js";
 
@@ -15,7 +15,7 @@ const commentRoutes = (
   );
   router.post(
     "/inventories/:inventoryId",
-    Passport.authorize("jwt"),
+    //Passport.authorize("jwt"),
     commentValidations.addComment,
     commentController.addComment,
   );

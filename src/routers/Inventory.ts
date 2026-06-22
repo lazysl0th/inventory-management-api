@@ -1,6 +1,5 @@
 import type { IInventoryController } from "../types/controllers/Inventory.js";
 import type { IInventoryRouter } from "../types/routers/Inventory.js";
-import Passport from "../base/Passport.js";
 import Router from "../base/Router.js";
 import type { IInventoryValidator } from "../types/validators/Inventory.js";
 
@@ -40,7 +39,7 @@ export default class InventoryRouter
       "/token/:inventoryToken",
       this.InventoryController.getInventoryByToken,
     );
-    this.router.use(Passport.authorize("jwt"));
+    //this.router.use(Passport.authorize("jwt"));
     this.router.post("/", this.InventoryController.createInventory);
     this.router.patch(
       "/:inventoryId",

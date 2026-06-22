@@ -1,9 +1,5 @@
 import { Controller } from "../base/Controller.js";
 import type {
-  TSafeUserWithRoles,
-  TUserUpdateData,
-} from "../types/models/User.js";
-import type {
   IUserController,
   IParamUserId,
   IParamUserIds,
@@ -14,11 +10,14 @@ import type {
 
 import type { Handler } from "express";
 import type { IUserService } from "../types/services/User.js";
-import Passport from "../base/Passport.js";
 
 import { BAD_REQUEST, INSUFFICIENT_PERMISSION } from "../constants/response.js";
 import Forbidden from "#/domain/errors/Forbidden.js";
 import BadRequest from "#/domain/errors/BadRequest.js";
+import type {
+  TSafeUserWithRoles,
+  TUserUpdateData,
+} from "#/application/user/dtos/IUserRepository.js";
 
 export default class UserController
   extends Controller
@@ -28,9 +27,9 @@ export default class UserController
     super();
   }
 
-  getUserProfile: Handler = this.handle(async (req, res) => {
-    const user = req.user;
-    this.ok<TSafeUserWithRoles>(res, user);
+  getUserProfile: Handler = this.handle(async () => {
+    //const user = req.user;
+    //this.ok<TSafeUserWithRoles>(res, user);
   });
 
   getUser: Handler = this.handle<IParamUserId>(async (req, res) => {
@@ -53,8 +52,8 @@ export default class UserController
       const userData = req.body;
       const currentUser = req.user;
       if (
-        currentUser.id !== userId &&
-        !Passport.checkUserRoles(currentUser, ["Admin"])
+        currentUser.id !== userId //&&
+        //!Passport.checkUserRoles(currentUser, ["Admin"])
       )
         throw new Forbidden(INSUFFICIENT_PERMISSION.TEXT);
       const updatedUser = await this.UserService.updateUser(userId, userData);

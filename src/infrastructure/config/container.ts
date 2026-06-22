@@ -26,19 +26,39 @@ import type { IWsRoute } from "../transport/ws/socketio/types/types.js";
 import type { Socket } from "socket.io";
 import { commentsValidationRegistry } from "#/application/inventory/dtos/WSInventoryDto.js";
 import PrismaCommentRepository from "../persistence/repositories/PrismaCommentRepository.js";
-import AuthService from "../../services/Auth.js";
-import EmailService from "../../services/Email.js";
-import UserModule from "../../module/User.js";
-import AuthController from "../../controllers/Auth.js";
+import EmailService from "../services/EmailService.js";
 import authRoutes from "../transport/http/modules/auth/authRoutes.js";
 import authValidations, {
   AUTH_VALIDATIONS_TOKEN,
 } from "../transport/http/modules/auth/authValidations.js";
+import AuthController from "../transport/http/modules/auth/AuthController.js";
+import BcryptService from "../services/BcryptService.js";
+import JwtService from "../services/JwtService.js";
+import PrismaAuthRepository from "../persistence/repositories/PrismaAuthRepository.js";
+import UuidService from "../services/UuidService.js";
+import PassportService from "../services/passport/PassportService.js";
+import PassportGoogleStrategy from "../services/passport/strategies/Google.js";
+import type { IAuthStrategy } from "#/application/auth/interfaces/IAuthStrategy.js";
+import PassportFacebookStrategy from "../services/passport/strategies/Facebook.js";
+import PassportJwtStrategy from "../services/passport/strategies/Jwt.js";
 
 const createContainer = () => {
   container.register(CONFIG_TOKEN, { useValue: config });
   container.registerSingleton(CorsConfig);
   container.register<ILogger>("ILogger", { useClass: LoggerService });
+  container.register("HashService", { useClass: BcryptService });
+  container.register("TokenService", { useClass: JwtService });
+  container.register("IdService", { useClass: UuidService });
+  container.register("EmailService", { useClass: EmailService });
+  container.register<IAuthStrategy>("AuthStrategy", {
+    useClass: PassportGoogleStrategy,
+  });
+  container.register<IAuthStrategy>("AuthStrategy", {
+    useClass: PassportFacebookStrategy,
+  });
+  container.register<IAuthStrategy>("AuthStrategy", {
+    useClass: PassportJwtStrategy,
+  });
   container.register<IRoute>("IRoute", {
     useFactory: (container) => {
       const routesController = container.resolve(TagController);
@@ -48,7 +68,7 @@ const createContainer = () => {
       };
     },
   });
-  container.register("ITagRepository", {
+  container.register("TagRepository", {
     useClass: PrismaTagRepository,
   });
 
@@ -67,33 +87,31 @@ const createContainer = () => {
     },
   });
 
+  container.register("CommentRepository", {
+    useClass: PrismaCommentRepository,
+  });
+
   container.register(AUTH_VALIDATIONS_TOKEN, {
     useValue: authValidations,
   });
 
   container.register<IRoute>("IRoute", {
     useFactory: () => {
-      const user = new UserModule();
-      const service = new AuthService(user.service, new EmailService());
-      const controller = new AuthController(service);
       const authValidations = container.resolve(AUTH_VALIDATIONS_TOKEN);
-      //const routesController = container.resolve(CommentController);
+      const routesController = container.resolve(AuthController);
+      const authService = container.resolve(PassportService);
       return {
         path: "/",
-        router: authRoutes(controller, authValidations),
+        router: authRoutes(routesController, authValidations, authService),
       };
     },
   });
 
-  container.register("ITagRepository", {
-    useClass: PrismaTagRepository,
+  container.register("AuthRepository", {
+    useClass: PrismaAuthRepository,
   });
 
-  container.register("ICommentRepository", {
-    useClass: PrismaCommentRepository,
-  });
-
-  container.register("IInventoryRepository", {
+  container.register("InventoryRepository", {
     useClass: InventoryModel,
   });
 
@@ -119,17 +137,17 @@ const createContainer = () => {
     },
   });
 
-  container.registerSingleton("ISessionRepository", InMemorySessionRepository);
+  container.registerSingleton("SessionRepository", InMemorySessionRepository);
 
-  container.register("ISubscriptionManager", {
+  container.register("SubscriptionManager", {
     useClass: SocketIoSubscriptionManager,
   });
 
-  container.register("IRealtimePublisher", {
+  container.register("RealtimePublisher", {
     useClass: SocketIoPublisher,
   });
 
-  container.registerSingleton("IEventBus", EventEmitterBus);
+  container.registerSingleton("EventBus", EventEmitterBus);
 
   container.registerSingleton(CommentCreatedHandler);
 };

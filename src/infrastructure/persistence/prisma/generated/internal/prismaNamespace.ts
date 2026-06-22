@@ -1339,8 +1339,8 @@ export const UserScalarFieldEnum = {
   name: "name",
   email: "email",
   password: "password",
-  googleId: "googleId",
-  facebookId: "facebookId",
+  google: "google",
+  facebook: "facebook",
   status: "status",
   createdAt: "createdAt",
   resetPasswordToken: "resetPasswordToken",
@@ -1487,17 +1487,25 @@ export const NullsOrder = {
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder];
 
 export const UserOrderByRelevanceFieldEnum = {
+  id: "id",
   name: "name",
   email: "email",
   password: "password",
-  googleId: "googleId",
-  facebookId: "facebookId",
+  google: "google",
+  facebook: "facebook",
   resetPasswordToken: "resetPasswordToken",
   refreshToken: "refreshToken",
 } as const;
 
 export type UserOrderByRelevanceFieldEnum =
   (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum];
+
+export const UserRoleOrderByRelevanceFieldEnum = {
+  userId: "userId",
+} as const;
+
+export type UserRoleOrderByRelevanceFieldEnum =
+  (typeof UserRoleOrderByRelevanceFieldEnum)[keyof typeof UserRoleOrderByRelevanceFieldEnum];
 
 export const JsonNullValueFilter = {
   DbNull: DbNull,
@@ -1512,6 +1520,7 @@ export const InventoryOrderByRelevanceFieldEnum = {
   title: "title",
   description: "description",
   image: "image",
+  ownerId: "ownerId",
   token: "token",
 } as const;
 
@@ -1535,6 +1544,7 @@ export type InventoryFieldOrderByRelevanceFieldEnum =
 
 export const ItemOrderByRelevanceFieldEnum = {
   customId: "customId",
+  ownerId: "ownerId",
 } as const;
 
 export type ItemOrderByRelevanceFieldEnum =
@@ -1550,10 +1560,18 @@ export type ItemValueOrderByRelevanceFieldEnum =
 export const CommentOrderByRelevanceFieldEnum = {
   id: "id",
   content: "content",
+  userId: "userId",
 } as const;
 
 export type CommentOrderByRelevanceFieldEnum =
   (typeof CommentOrderByRelevanceFieldEnum)[keyof typeof CommentOrderByRelevanceFieldEnum];
+
+export const LikeOrderByRelevanceFieldEnum = {
+  userId: "userId",
+} as const;
+
+export type LikeOrderByRelevanceFieldEnum =
+  (typeof LikeOrderByRelevanceFieldEnum)[keyof typeof LikeOrderByRelevanceFieldEnum];
 
 export const TagOrderByRelevanceFieldEnum = {
   id: "id",
@@ -1566,22 +1584,6 @@ export type TagOrderByRelevanceFieldEnum =
 /**
  * Field references
  */
-
-/**
- * Reference to a field of type 'Int'
- */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<
-  $PrismaModel,
-  "Int"
->;
-
-/**
- * Reference to a field of type 'Int[]'
- */
-export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<
-  $PrismaModel,
-  "Int[]"
->;
 
 /**
  * Reference to a field of type 'String'
@@ -1629,6 +1631,22 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<
 export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<
   $PrismaModel,
   "DateTime[]"
+>;
+
+/**
+ * Reference to a field of type 'Int'
+ */
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  "Int"
+>;
+
+/**
+ * Reference to a field of type 'Int[]'
+ */
+export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  "Int[]"
 >;
 
 /**

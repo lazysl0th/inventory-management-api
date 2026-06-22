@@ -1,13 +1,13 @@
 import type { Handler } from "express";
-import type { TSafeUserWithRoles } from "../models/User.js";
 import type { Status } from "#/infrastructure/persistence/prisma/generated/enums.js";
+import type { TSafeUserWithRoles } from "#/application/user/dtos/IUserRepository.js";
 
 export interface IParamUserId {
-  userId: number;
+  userId: string;
 }
 
 export interface IParamUserIds {
-  userIds: number[];
+  userIds: string[];
 }
 
 export interface IBodyUpdateUserStatus extends IParamUserIds {
@@ -15,7 +15,7 @@ export interface IBodyUpdateUserStatus extends IParamUserIds {
 }
 
 export interface IBodyUpdateUsers {
-  ids: number[];
+  ids: string[];
   data: Partial<TSafeUserWithRoles>;
 }
 

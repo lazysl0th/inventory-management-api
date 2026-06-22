@@ -13,6 +13,27 @@ const env = {
     "postgres://lazy_sloth:secret@localhost:5432/inventory_dev?schema=public",
   FRONTEND_URL: process.env.FRONTEND_URL ?? "http://localhost:8080",
   BACKEND_URL: process.env.BACKEND_URL ?? "http://localhost:3001",
+  SALT_ROUNDS: process.env.SALT_ROUNDS ?? 10,
+  JWT_SECRET: process.env.JWT_SECRET ?? "JWT_SECRET_DEV",
+  ACCESS_TOKEN_EXPIRES: process.env.ACCESS_TOKEN_EXPIRES ?? 900,
+  RESET_PASSWORD_TOKEN_EXPIRES: process.env.RESET_PASSWORD_TOKEN_EXPIRES ?? 900,
+  REFRESH_TOKEN_EXPIRES: process.env.REFRESH_TOKEN_EXPIRES ?? 172800,
+  REMEMBER_REFRESH_TOKEN_EXPIRES:
+    process.env.REMEMBER_REFRESH_TOKEN_EXPIRES ?? 604800,
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+  GOOGLE_REDIRECT_URL:
+    process.env.GOOGLE_REDIRECT_URL ??
+    "https://developers.google.com/oauthplayground",
+  GOOGLE_REFRESH_TOKEN: process.env.GOOGLE_REFRESH_TOKEN,
+  GOOGLE_CALLBACK_URL:
+    process.env.GOOGLE_CALLBACK_URL ??
+    "http://localhost:3001/signin/google/callback",
+  FACEBOOK_CLIENT_ID: process.env.FACEBOOK_APP_ID,
+  FACEBOOK_CLIENT_SECRET: process.env.FACEBOOK_APP_SECRET,
+  FACEBOOK_CALLBACK_URL:
+    process.env.FACEBOOK_CALLBACK_URL ??
+    "http://localhost:3001/signin/facebook/callback",
 };
 
 const config: TConfig = envSchema.parse(env);

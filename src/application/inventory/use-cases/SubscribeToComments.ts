@@ -9,11 +9,11 @@ import type { ISessionRepository } from "#/application/realtime/interfaces/ISess
 @injectable()
 export default class SubscribeToComments {
   constructor(
-    @inject("ISubscriptionManager")
+    @inject("SubscriptionManager")
     private readonly subscriptionManager: ISubscriptionManager,
-    @inject("IInventoryRepository")
+    @inject("InventoryRepository")
     private readonly inventoryRepository: IInventoryModel,
-    @inject("ISessionRepository")
+    @inject("SessionRepository")
     private readonly sessionRepository: ISessionRepository,
   ) {}
 

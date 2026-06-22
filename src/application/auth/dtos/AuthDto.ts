@@ -1,49 +1,100 @@
-import validator from "validator";
+import { userSchema } from "#/application/user/dtos/UserDto.js";
+import type User from "#/domain/entities/User.js";
 import z from "zod";
 
-export const signinSchema = z.object({
-  email: z.email("Incorrect email format"),
-  password: z.string().refine((value) => validator.isStrongPassword(value), {
-    message:
-      "Password must be at least 8 characters long and include uppercase and lowercase letters, numbers, and special characters.",
+export const signupSchema = z.object({
+  body: userSchema.extend({
+    password:
+      z.string() /*.refine((value) => validator.isStrongPassword(value), {
+      message:
+        "Password must be at least 8 characters long and include uppercase and lowercase letters, numbers, and special characters.",
+    })*/,
   }),
-  rememberMe: z.stringbool().optional(),
 });
 
-export const signupSchema = signinSchema.omit({ rememberMe: true }).extend({
-  name: z.string().min(1, "Name must be at least 1 characters long"),
-});
-
-export const resetPasswordSchema = signinSchema.pick({ email: true });
-
-export const authResponseSchema = z.object({
-  accessToken: z.string(),
-});
-/*
-export const jwtPayloadSchema = z.object({
-  id: z.string().meta({
-    description: authResponseDescription.idDescription,
-    example: authResponseDescription.idExample,
+export const localSigninSchema = z.object({
+  body: signupSchema.shape.body.omit({ name: true }).extend({
+    remember: z.boolean().optional(),
   }),
+});
+
+export const socialSigninSchema = z.object({
+  body: userSchema.extend({
+    provider: z.enum(["google", "facebook"]),
+    providerId: z.string(),
+  }),
+});
+
+export const resetPasswordSchema = z.object({
+  body: signupSchema.shape.body.pick({ email: true }),
+});
+
+export const changePasswordSchema = z.object({
+  body: signupSchema.shape.body.pick({ password: true }).extend({
+    token: z.jwt(),
+  }),
+});
+
+export const authTokensSchema = z.object({
+  accessToken: z.jwt(),
+  refreshToken: z.jwt(),
+});
+
+export const authResponseSchema = authTokensSchema.pick({ accessToken: true });
+
+export const authTextResponseSchema = z.object({
+  message: z.string(),
+});
+
+export const jwtResetPasswordPayloadSchema = z.object({
+  userId: z.string(),
+  type: z.literal("resetPassword"),
   iat: z.number().optional(),
   exp: z.number().optional(),
-})
+});
 
-export const cookieTokenSchema = z.object({
-  token: z.string(token.invalidFormat).min(1, token.required).meta({
-    description: token.description,
-    example: token.example,
+export const jwtRefreshPayloadSchema = z.object({
+  userId: z.string(),
+  type: z.literal("refresh"),
+  iat: z.number().optional(),
+  exp: z.number().optional(),
+});
+
+export const cookiesTokenSchema = z.object({
+  cookies: z.object({
+    refreshToken: z.jwt().optional(),
   }),
-})
-*/
-export type TLoginBodyDto = z.infer<typeof signinSchema>;
+});
 
-export type TRegisterBodyDto = z.infer<typeof signupSchema>;
+export type TLocalLoginBodyDto = z.infer<typeof localSigninSchema>["body"];
 
-export type TResetPasswordBodyDto = z.infer<typeof resetPasswordSchema>;
+export type TSocialLoginBodyDto = z.infer<typeof socialSigninSchema>["body"];
 
-export type TAuthUserResponseDto = z.infer<typeof authResponseSchema>;
+export type TSocialProvider = z.infer<
+  typeof socialSigninSchema
+>["body"]["provider"];
 
-//export type TJwtPayloadDto = z.infer<typeof jwtPayloadSchema>
+export type TRegisterBodyDto = z.infer<typeof signupSchema>["body"];
 
-//export type TCookieDto = z.infer<typeof cookieTokenSchema>
+export type TAuthTokens = z.infer<typeof authTokensSchema>;
+
+export interface IAuthResult {
+  authTokens: TAuthTokens;
+  user: User;
+}
+
+export type TResetPasswordBodyDto = z.infer<typeof resetPasswordSchema>["body"];
+
+export type TChangePasswordBodyDto = z.infer<
+  typeof changePasswordSchema
+>["body"];
+
+export type TAuthResponseDto = z.infer<typeof authResponseSchema>;
+
+export type TAuthTextResponseDto = z.infer<typeof authTextResponseSchema>;
+
+export type TJwtResetPasswordPayload = z.infer<
+  typeof jwtResetPasswordPayloadSchema
+>;
+
+export type TCookiesTokenDto = z.infer<typeof cookiesTokenSchema>["cookies"];

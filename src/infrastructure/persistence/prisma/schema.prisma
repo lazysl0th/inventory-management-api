@@ -9,15 +9,15 @@ datasource db {
 }
 
 model User {
-    id                 Int         @id @default(autoincrement())
+    id                 String     @id @db.Uuid
     name               String
     email              String      @unique
     password           String?
-    googleId           String?     @unique
-    facebookId         String?     @unique
+    google             String?     @unique
+    facebook           String?     @unique
     roles              UserRole[]
     status             Status      @default(Active)
-    createdAt          DateTime    @default(now())
+    createdAt          DateTime
     ownedInventories   Inventory[] @relation("UserOwnedInventories")
     ownedItems         Item[]      @relation("UserOwnedItems")
     allowedInventories Inventory[] @relation("UserAllowedInventories")
@@ -36,7 +36,7 @@ model Role {
 }
 
 model UserRole {
-    userId Int
+    userId String @db.Uuid
     user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
     roleId Int
     role   Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
@@ -61,7 +61,7 @@ model Inventory {
     category       Category
     tags           Tag[]            @relation("InventoryTags")
     image          String?
-    ownerId        Int
+    ownerId        String           @db.Uuid
     owner          User             @relation("UserOwnedInventories", fields: [ownerId], references: [id], onDelete: Cascade)
     isPublic       Boolean          @default(false)
     allowedUsers   User[]           @relation("UserAllowedInventories")
@@ -121,7 +121,7 @@ model Item {
     inventoryId Int
     inventory   Inventory   @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
     customId    String
-    ownerId     Int
+    ownerId     String      @db.Uuid
     owner       User        @relation("UserOwnedItems", fields: [ownerId], references: [id])
     values      ItemValue[]
     likes       Like[]
@@ -144,18 +144,18 @@ model ItemValue {
 }
 
 model Comment {
-    id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    id          String     @id @db.Uuid
     content     String
-    userId      Int
+    userId      String      @db.Uuid
     user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
     inventoryId Int
     inventory   Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
-    createdAt   DateTime   @default(now())
+    createdAt   DateTime
 }
 
 model Like {
     id     Int  @id @default(autoincrement())
-    userId Int
+    userId String      @db.Uuid
     user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
     itemId Int
     item   Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
@@ -164,7 +164,7 @@ model Like {
 }
 
 model Tag {
-    id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    id          String     @id @db.Uuid
     name        String      @unique
     inventories Inventory[] @relation("InventoryTags")
 }

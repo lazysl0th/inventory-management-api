@@ -1,15 +1,15 @@
+import type { TAuthTokens } from "#/application/auth/dtos/AuthDto.js";
+import type { TSafeUserWithRoles } from "#/application/user/dtos/IUserRepository.js";
 import type { Strategy } from "passport";
 import type { Profile, VerifyCallback } from "passport-google-oauth20";
 import type { IVerifyOptions } from "passport-local";
-import type { IAuthTokens } from "../services/Auth.js";
-import type { TSafeUserWithRoles } from "../models/User.js";
 
 export interface IStrategy<S extends Strategy> {
   readonly strategy: S;
 }
 
 export interface IVerifyOptionsExtends extends IVerifyOptions {
-  authTokens?: IAuthTokens | undefined;
+  authTokens?: TAuthTokens | undefined;
 }
 
 export type TAuthResult = {
