@@ -15,8 +15,8 @@ export interface IParamInventoryToken {
 
 export interface IQueryInventorySort {
   sort?: EnumInventorySortOrder;
-  ownerId?: number;
-  allowedUserId?: number;
+  ownerId?: string;
+  allowedUserId?: string;
   isPublic?: boolean;
 }
 

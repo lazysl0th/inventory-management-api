@@ -72,19 +72,19 @@ export default class ItemModel
     });
   }
 
-  async getLike(userId: number, itemId: number): Promise<TLike | null> {
+  async getLike(userId: string, itemId: number): Promise<TLike | null> {
     return this.prisma.client.like.findUnique({
       where: { userId_itemId: { userId, itemId } },
     });
   }
 
-  async addLike(userId: number, itemId: number): Promise<TLike> {
+  async addLike(userId: string, itemId: number): Promise<TLike> {
     return await this.prisma.client.like.create({
       data: { userId, itemId },
     });
   }
 
-  async deleteLike(userId: number, itemId: number): Promise<TLike> {
+  async deleteLike(userId: string, itemId: number): Promise<TLike> {
     return this.prisma.client.like.delete({
       where: {
         userId_itemId: {

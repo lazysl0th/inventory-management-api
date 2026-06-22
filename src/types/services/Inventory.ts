@@ -8,14 +8,14 @@ export enum EnumInventorySortOrder {
 export interface IInventoryService {
   getInventories(
     sortOrder?: EnumInventorySortOrder,
-    ownerId?: number,
-    allowedUserId?: number,
+    ownerId?: string,
+    allowedUserId?: string,
     isPublic?: boolean,
   ): Promise<TInventory[]>;
   getInventoryById(id: number): Promise<TInventory>;
   getInventoryByToken(apiToken: string): Promise<unknown>;
   createInventory(
-    userId: number,
+    userId: string,
     inventoryData: IInventoryData,
   ): Promise<TInventory>;
   updateInventory(

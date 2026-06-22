@@ -1,44 +1,29 @@
-import type {
-  IUserModel,
-  TSafeUser,
-  TSafeUserWithRoles,
-  TUserBySafeMode,
-  TUserCreateData,
-  TUserUpdateData,
-  TUserWithRoles,
-} from "../types/models/User.js";
 import type { IUserService } from "../types/services/User.js";
-import type { TProvider } from "../types/services/Auth.js";
 import { NOT_FOUND } from "../constants/response.js";
 import {
   RoleName,
   Status,
 } from "#/infrastructure/persistence/prisma/generated/enums.js";
 import NotFound from "#/domain/errors/NotFound.js";
+import type {
+  IUserRepository,
+  TSafeUser,
+  TSafeUserWithRoles,
+  TUserBySafeMode,
+  TUserCreateData,
+  TUserUpdateData,
+} from "#/application/user/dtos/IUserRepository.js";
 
 export default class UserService implements IUserService {
-  constructor(private readonly UserModel: IUserModel) {}
+  constructor(private readonly UserModel: IUserRepository) {}
 
   async getUserById<T extends boolean = true>(
-    id: number,
+    id: string,
     safeMode: T = true as T,
   ): Promise<TUserBySafeMode<T>> {
     const user = await this.UserModel.getById(id, safeMode);
     if (!user) throw new NotFound(NOT_FOUND.TEXT);
     return user;
-  }
-
-  async getUserByEmail(email: string): Promise<TUserWithRoles> {
-    const user = await this.UserModel.getByEmail(email);
-    if (!user) throw new NotFound(NOT_FOUND.TEXT);
-    return user;
-  }
-
-  async getUserBySocialId(
-    provider: TProvider,
-    socialId: string,
-  ): Promise<TSafeUserWithRoles | null> {
-    return await this.UserModel.getBySocialId(provider, socialId);
   }
 
   async getUsers(query?: string): Promise<TSafeUserWithRoles[]> {
@@ -65,21 +50,21 @@ export default class UserService implements IUserService {
   }
 
   async updateUser(
-    id: number,
+    id: string,
     data: TUserUpdateData,
   ): Promise<TSafeUserWithRoles> {
     return await this.UserModel.updateById(id, data);
   }
 
   async updateUserStatus(
-    ids: number[],
+    ids: string[],
     status: Status,
   ): Promise<{ count: number }> {
     return await this.UserModel.updateStatusByIds(ids, status);
   }
 
   async updateUsers(
-    ids: number[],
+    ids: string[],
     userData: Partial<TSafeUser>,
   ): Promise<{ count: number }> {
     const whereInputNot = Object.entries(userData).map(([key, value]) => ({
@@ -88,7 +73,7 @@ export default class UserService implements IUserService {
     return await this.UserModel.updateByIds(ids, userData, whereInputNot);
   }
 
-  async deleteUsers(ids: number[]): Promise<{ count: number }> {
+  async deleteUsers(ids: string[]): Promise<{ count: number }> {
     return await this.UserModel.deleteByIds(ids);
   }
 

@@ -1,10 +1,18 @@
 import { inject, injectable } from "tsyringe";
 import Prisma from "../prisma/prisma.js";
-import type {
-  ITagRepository,
-  TTag,
-} from "#/application/tag/interfaces/ITagRepository.js";
+import type { ITagRepository } from "#/application/tag/interfaces/ITagRepository.js";
 import Tag from "#/domain/entities/Tag.js";
+import type { TagGetPayload } from "../prisma/generated/models.js";
+
+export type TTag = TagGetPayload<{
+  include: {
+    _count: {
+      select: {
+        inventories: true;
+      };
+    };
+  };
+}>;
 
 @injectable()
 export default class PrismaTagRepository implements ITagRepository {
@@ -16,6 +24,7 @@ export default class PrismaTagRepository implements ITagRepository {
       count: tagData._count.inventories,
     });
   }
+
   async getAll(): Promise<Tag[]> {
     const tagsData = await this.prisma.client.tag.findMany({
       include: {

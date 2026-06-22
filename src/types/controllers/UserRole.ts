@@ -1,7 +1,7 @@
 import type { Handler } from "express";
 
 export interface IBodyUserRole {
-  userIds: number[];
+  userIds: string[];
   roleIds: number[];
 }
 

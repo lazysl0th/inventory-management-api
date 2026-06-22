@@ -1,7 +1,5 @@
-import type { IUserData } from "../services/Auth.js";
 import type { EnumInventorySortOrder } from "../services/Inventory.js";
 import type { Settings } from "../settings.js";
-import type { TUserWithRoles } from "./User.js";
 import type {
   InventoryCreateInput,
   InventoryFieldGetPayload,
@@ -11,6 +9,7 @@ import type {
 } from "#/infrastructure/persistence/prisma/generated/models.js";
 import type { Category } from "#/infrastructure/persistence/prisma/generated/enums.js";
 import type { InputJsonValue } from "#/infrastructure/persistence/prisma/generated/internal/prismaNamespace.js";
+import type { TUserWithRoles } from "#/application/user/dtos/IUserRepository.js";
 
 export type TInventorySelect = Settings["selects"]["inventory"];
 
@@ -23,7 +22,7 @@ export type TInventoryField = Omit<
   "inventoryId"
 >;
 
-export type TTag = Omit<TagGetPayload<true>, "id">;
+export type TTag = TagGetPayload<true>;
 
 export type TInventoryCreateData = InventoryCreateInput;
 
@@ -34,10 +33,6 @@ export interface IInventoryBaseData {
   title: string;
   category: Category;
   version: number;
-}
-
-export interface IAllowedUsers extends IUserData {
-  id: number;
 }
 
 export interface IInventoryData extends IInventoryBaseData {
@@ -119,8 +114,8 @@ export interface IInventoryModel {
   getByToken(token: string): Promise<TInventory | null>;
   getAll(
     sortOrder?: EnumInventorySortOrder,
-    ownerId?: number,
-    allowedUserId?: number,
+    ownerId?: string,
+    allowedUserId?: string,
     isPublic?: boolean,
   ): Promise<TInventory[]>;
   create(data: TInventoryCreateData): Promise<TInventory>;

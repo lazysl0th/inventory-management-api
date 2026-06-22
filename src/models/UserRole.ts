@@ -16,7 +16,7 @@ export default class UserRoleModel implements IUserRoleModel {
   }
 
   async deleteUsersRoles(
-    userIds: number[],
+    userIds: string[],
     roleIds: number[],
   ): Promise<BatchPayload> {
     return this.prisma.client.userRole.deleteMany({

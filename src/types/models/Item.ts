@@ -37,8 +37,8 @@ export interface IItemModel {
   ): Promise<TItem>;
   updateById(id: number, data: TItemUpdateData): Promise<TItem>;
   deleteByIds(ids: number[]): Promise<{ count: number }>;
-  getLike(userId: number, itemId: number): Promise<TLike | null>;
-  addLike(userId: number, itemId: number): Promise<TLike>;
-  deleteLike(userId: number, itemId: number): Promise<TLike>;
+  getLike(userId: string, itemId: number): Promise<TLike | null>;
+  addLike(userId: string, itemId: number): Promise<TLike>;
+  deleteLike(userId: string, itemId: number): Promise<TLike>;
   countLike(itemId: number): Promise<number>;
 }

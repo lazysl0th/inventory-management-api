@@ -5,7 +5,7 @@ import type { IGetSessionByUserIdParams } from "../../dtos/ConnectionManagementD
 @injectable()
 export class GetSessionByUserId {
   constructor(
-    @inject("ISessionRepository") private sessionRepository: ISessionRepository,
+    @inject("SessionRepository") private sessionRepository: ISessionRepository,
   ) {}
 
   async getUserId(params: IGetSessionByUserIdParams): Promise<object | null> {

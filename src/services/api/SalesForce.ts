@@ -1,10 +1,10 @@
+import type { TSafeUser } from "#/application/user/dtos/IUserRepository.js";
 import IntegrationApi from "../../base/IntegrationApi.js";
 import { SALES_FORCE } from "../../constants/integration.js";
 import type {
   IAccessInfo,
   IAddressDescribe,
   ISalesForceApi,
-  IContact,
   IAdditionalData,
   IAddInfoCompositeResponse,
   IGetInfoResponse,
@@ -47,7 +47,7 @@ export default class SalesForceApi
   }
 
   async createAccountWithContact(
-    contactData: IContact,
+    contactData: TSafeUser,
     additionalData: IAdditionalData,
   ): Promise<IAddInfoCompositeResponse> {
     const accessInfo = await this._getAccessInfo();

@@ -1,6 +1,6 @@
+import type { TAuthTokens } from "#/application/auth/dtos/AuthDto.js";
+import type User from "#/domain/entities/User.js";
 import type { Request, Response } from "express";
-import type { TSafeUserWithRoles } from "../models/User.js";
-import type { IAuthTokens } from "../services/Auth.js";
 
 export type HandlerController<
   TParams = object,
@@ -16,7 +16,7 @@ export interface ExtendedRequest<
   TBody = object,
   TQuery = object,
 > extends Request<TParams, object, TBody, TQuery> {
-  user: TSafeUserWithRoles;
-  authInfo: IAuthTokens;
+  user: User;
+  authTokens: TAuthTokens;
   file?: Express.Multer.File;
 }

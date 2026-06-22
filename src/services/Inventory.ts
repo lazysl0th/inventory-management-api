@@ -11,7 +11,6 @@ import type {
   TInventoryField,
   TUpdateInventoryData,
 } from "../types/models/Inventory.js";
-import type { TSafeUserWithRoles } from "../types/models/User.js";
 
 import { BAD_REQUEST, NOT_FOUND } from "../constants/response.js";
 import type {
@@ -32,6 +31,7 @@ import type {
 } from "#/infrastructure/persistence/prisma/generated/models.js";
 import NotFound from "#/domain/errors/NotFound.js";
 import BadRequest from "#/domain/errors/BadRequest.js";
+import type { TSafeUserWithRoles } from "#/application/user/dtos/IUserRepository.js";
 
 export default class InventoryService implements IInventoryService {
   constructor(private readonly InventoryModel: IInventoryModel) {}
@@ -44,8 +44,8 @@ export default class InventoryService implements IInventoryService {
 
   async getInventories(
     sortOrder?: EnumInventorySortOrder,
-    ownerId?: number,
-    allowedUserId?: number,
+    ownerId?: string,
+    allowedUserId?: string,
     isPublic?: boolean,
   ): Promise<TInventory[]> {
     return await this.InventoryModel.getAll(
@@ -60,8 +60,8 @@ export default class InventoryService implements IInventoryService {
     tags: TagCreateWithoutInventoriesInput[],
   ): TagCreateOrConnectWithoutInventoriesInput[] {
     return tags.map((tag) => ({
-      where: { name: tag.name },
-      create: { name: tag.name },
+      where: { name: tag.name, id: tag.id },
+      create: { name: tag.name, id: tag.id },
     }));
   }
 
@@ -156,7 +156,7 @@ export default class InventoryService implements IInventoryService {
   }
 
   async createInventory(
-    userId: number,
+    userId: string,
     inventoryData: IInventoryData,
   ): Promise<TInventory> {
     const inventoryCreateData: InventoryCreateInput = {

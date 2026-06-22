@@ -41,8 +41,8 @@ export default class InventoryModel
 
   async getAll(
     sortOrder?: EnumInventorySortOrder,
-    ownerId?: number,
-    allowedUserId?: number,
+    ownerId?: string,
+    allowedUserId?: string,
     isPublic?: boolean,
   ): Promise<TInventory[]> {
     return await this.prisma.client.inventory.findMany({

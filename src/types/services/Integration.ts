@@ -33,8 +33,8 @@ export interface IIntegrationService {
   ): Promise<UploadApiResponse>;
   getLocationFromSalesForce(): Promise<ILocations>;
   addAdditionalInfoToSalesForce(
-    userId: number,
+    userId: string,
     additionalData: IAdditionalData,
   ): Promise<IAddInfoCompositeResponse>;
-  getAdditionalInfoFromSalesForce(userId: number): Promise<IGetInfoResponse>;
+  getAdditionalInfoFromSalesForce(userId: string): Promise<IGetInfoResponse>;
 }

@@ -7,8 +7,8 @@ import type Comment from "#/domain/entities/Comment.js";
 @singleton()
 export class CommentCreatedHandler {
   constructor(
-    @inject("IEventBus") private readonly eventBus: IEventBus,
-    @inject("IRealtimePublisher")
+    @inject("EventBus") private readonly eventBus: IEventBus,
+    @inject("RealtimePublisher")
     private readonly publisher: IRealtimePublisher<Comment>,
   ) {
     this.init();

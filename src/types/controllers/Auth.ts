@@ -1,5 +1,5 @@
+import type { TSafeUserWithRoles } from "#/application/user/dtos/IUserRepository.js";
 import type { Handler } from "express";
-import type { TSafeUserWithRoles } from "../models/User.js";
 
 export interface IChangePasswordData {
   token: string;

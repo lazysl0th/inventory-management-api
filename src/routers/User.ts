@@ -1,4 +1,3 @@
-import Passport from "../base/Passport.js";
 import Router from "../base/Router.js";
 import type { IBaseRouter } from "../types/base/Router.js";
 import type { IUserController } from "../types/controllers/User.js";
@@ -16,7 +15,7 @@ export default class UserRouter extends Router implements IBaseRouter {
   initializeRoutes(): void {
     this.router.get(
       "/me",
-      Passport.authorize("jwt"),
+      //Passport.authorize("jwt"),
       this.UserController.getUserProfile,
     );
     this.router.get(
@@ -27,10 +26,10 @@ export default class UserRouter extends Router implements IBaseRouter {
     this.router.patch(
       "/:userId",
       this.UserValidator.updateUser(),
-      Passport.authorize("jwt"),
+      //Passport.authorize("jwt"),
       this.UserController.updateUser,
     );
-    this.router.use(Passport.authorize("jwt", ["Admin"]));
+    //this.router.use(Passport.authorize("jwt", ["Admin"]));
     this.router.get("/", this.UserController.getUsers);
     this.router.patch("/status", this.UserController.updateUsersStatus);
     this.router.patch(

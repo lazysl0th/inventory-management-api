@@ -7,10 +7,9 @@ import {
   getCommentsSchema,
 } from "#/application/comment/dtos/CommentDto.js";
 
-export interface ICommentValidations {
-  getComments: RequestHandler;
-  addComment: RequestHandler;
-}
+export type TCommentRoutes = "getComments" | "addComment";
+
+export type ICommentValidations = Record<TCommentRoutes, RequestHandler>;
 
 const commentValidations: ICommentValidations = {
   getComments: validate(getCommentsSchema),

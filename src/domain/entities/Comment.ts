@@ -1,24 +1,26 @@
-import type { IUserData } from "./User.js";
+import type { TCreateCommentDto } from "#/application/comment/dtos/CommentDto.js";
+import type { ICreateUserProps } from "./User.js";
+import { v7 } from "uuid";
 
-type TAuthor = Pick<IUserData, "id" | "name">;
+type TAuthor = Pick<ICreateUserProps, "id" | "name">;
 
 export interface ICommentProps {
   id: string;
   content: string;
-  user: TAuthor | { id: number };
-  inventoryId: number | null;
+  user: TAuthor | { id: string };
+  inventoryId: number;
   createdAt: Date;
 }
 
-function isTAuthor(user: unknown): user is IUserData {
+function isTAuthor(user: unknown): user is ICreateUserProps {
   return typeof user === "object" && user !== null && "name" in user;
 }
 
 export default class Comment {
   readonly id: string;
   readonly content: string;
-  private readonly user: TAuthor | { id: number };
-  readonly inventoryId: number | null;
+  private readonly user: TAuthor | { id: string };
+  readonly inventoryId: number;
   readonly createdAt: Date;
 
   constructor(props: ICommentProps) {
@@ -29,7 +31,16 @@ export default class Comment {
     this.createdAt = props.createdAt;
   }
 
-  get author(): TAuthor | { id: number } {
+  public static create(props: TCreateCommentDto): Comment {
+    return new Comment({
+      ...props,
+      user: { id: props.userId },
+      id: v7(),
+      createdAt: new Date(),
+    });
+  }
+
+  get author(): TAuthor | { id: string } {
     return this.user;
   }
 

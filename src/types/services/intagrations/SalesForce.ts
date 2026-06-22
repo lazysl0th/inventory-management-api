@@ -1,4 +1,4 @@
-import type { IUserData } from "../Auth.js";
+import type { TSafeUser } from "#/application/user/dtos/IUserRepository.js";
 
 export interface IAccessInfo {
   access_token: string;
@@ -19,10 +19,6 @@ export interface IField {
 
 export interface IAddressDescribe {
   fields: IField[];
-}
-
-export interface IContact extends IUserData {
-  id: number;
 }
 
 export interface IAdditionalData {
@@ -67,8 +63,8 @@ export interface IGetInfoResponse {
 export interface ISalesForceApi {
   getAddress(): Promise<IAddressDescribe>;
   createAccountWithContact(
-    contactData: IContact,
+    contactData: TSafeUser,
     additionalData: IAdditionalData,
   ): Promise<IAddInfoCompositeResponse>;
-  getInfoById(id: number): Promise<IGetInfoResponse>;
+  getInfoById(id: string): Promise<IGetInfoResponse>;
 }

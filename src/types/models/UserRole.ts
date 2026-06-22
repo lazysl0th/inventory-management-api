@@ -6,7 +6,7 @@ export type TUserRole = UserRoleGetPayload<true>;
 export interface IUserRoleModel {
   createUsersRoles(userRoleIds: TUserRole[]): Promise<BatchPayload>;
   deleteUsersRoles(
-    usersIds: number[],
+    usersIds: string[],
     rolesIds: number[],
   ): Promise<BatchPayload>;
 }

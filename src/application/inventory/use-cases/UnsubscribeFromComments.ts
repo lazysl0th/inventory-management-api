@@ -7,9 +7,9 @@ import type { ISessionRepository } from "#/application/realtime/interfaces/ISess
 @injectable()
 export default class UnsubscribeFromComments {
   constructor(
-    @inject("ISubscriptionManager")
+    @inject("SubscriptionManager")
     private readonly subscriptionManager: ISubscriptionManager,
-    @inject("ISessionRepository")
+    @inject("SessionRepository")
     private readonly sessionRepository: ISessionRepository,
   ) {}
 

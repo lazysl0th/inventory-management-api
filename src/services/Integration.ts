@@ -69,7 +69,7 @@ export default class IntegrationService implements IIntegrationService {
   }
 
   async addAdditionalInfoToSalesForce(
-    userId: number,
+    userId: string,
     additionalData: IAdditionalData,
   ): Promise<IAddInfoCompositeResponse> {
     const user = await this.UserService.getUserById(userId);
@@ -81,7 +81,7 @@ export default class IntegrationService implements IIntegrationService {
   }
 
   async getAdditionalInfoFromSalesForce(
-    userId: number,
+    userId: string,
   ): Promise<IGetInfoResponse> {
     return await this.SalesForceApi.getInfoById(userId);
   }

@@ -8,7 +8,7 @@ import type { IConnectUserCommand } from "../../dtos/ConnectionManagementDto.js"
 @injectable()
 export default class ConnectUser {
   constructor(
-    @inject("ISessionRepository") private sessionRepository: ISessionRepository,
+    @inject("SessionRepository") private sessionRepository: ISessionRepository,
   ) {}
 
   async execute(command: IConnectUserCommand): Promise<void> {

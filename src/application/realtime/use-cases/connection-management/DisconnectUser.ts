@@ -5,7 +5,7 @@ import type { IDisconnectUserCommand } from "../../dtos/ConnectionManagementDto.
 @injectable()
 export default class DisconnectUser {
   constructor(
-    @inject("ISessionRepository") private sessionRepository: ISessionRepository,
+    @inject("SessionRepository") private sessionRepository: ISessionRepository,
   ) {}
 
   async execute(command: IDisconnectUserCommand): Promise<void> {

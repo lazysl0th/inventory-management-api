@@ -1,11 +1,19 @@
 import { container, inject, injectable } from "tsyringe";
 import Prisma from "../prisma/prisma.js";
-import type {
-  ICommentRepository,
-  TComment,
-} from "#/application/comment/interfaces/ICommentRepository.js";
+import type { ICommentRepository } from "#/application/comment/interfaces/ICommentRepository.js";
 import Comment from "#/domain/entities/Comment.js";
-import type { TCreateCommentDto } from "#/application/comment/dtos/CommentDto.js";
+import type { CommentGetPayload } from "../prisma/generated/models.js";
+
+export type TComment = CommentGetPayload<{
+  include: {
+    user: {
+      select: {
+        id: true;
+        name: true;
+      };
+    };
+  };
+}>;
 
 @injectable()
 export default class PrismaCommentRepository implements ICommentRepository {
@@ -26,6 +34,7 @@ export default class PrismaCommentRepository implements ICommentRepository {
       include: {
         user: {
           select: {
+            id: true,
             name: true,
           },
         },
@@ -34,18 +43,18 @@ export default class PrismaCommentRepository implements ICommentRepository {
     return commentsData.map(this.createComment);
   }
 
-  async create(commentData: TCreateCommentDto): Promise<Comment> {
-    const newCommentData = await this.prisma.client.comment.create({
-      data: commentData,
-      include: {
-        user: {
-          select: {
-            name: true,
-          },
-        },
+  async save(comment: Comment): Promise<void> {
+    await this.prisma.client.comment.upsert({
+      where: { id: comment.id },
+      create: {
+        ...comment,
+        userId: comment.author.id,
       },
+      update: {
+        ...comment,
+        userId: comment.author.id,
+      },
+      include: { user: true },
     });
-
-    return this.createComment(newCommentData);
   }
 }

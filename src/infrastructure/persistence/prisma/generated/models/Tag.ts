@@ -193,13 +193,13 @@ export type TagScalarWhereWithAggregatesInput = {
 }
 
 export type TagCreateInput = {
-  id?: string
+  id: string
   name: string
   inventories?: Prisma.InventoryCreateNestedManyWithoutTagsInput
 }
 
 export type TagUncheckedCreateInput = {
-  id?: string
+  id: string
   name: string
   inventories?: Prisma.InventoryUncheckedCreateNestedManyWithoutTagsInput
 }
@@ -217,7 +217,7 @@ export type TagUncheckedUpdateInput = {
 }
 
 export type TagCreateManyInput = {
-  id?: string
+  id: string
   name: string
 }
 
@@ -301,12 +301,12 @@ export type TagUncheckedUpdateManyWithoutInventoriesNestedInput = {
 }
 
 export type TagCreateWithoutInventoriesInput = {
-  id?: string
+  id: string
   name: string
 }
 
 export type TagUncheckedCreateWithoutInventoriesInput = {
-  id?: string
+  id: string
   name: string
 }
 

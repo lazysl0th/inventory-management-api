@@ -99,7 +99,7 @@ export default class ItemService implements IItemService {
   }
 
   async createItem(
-    userId: number,
+    userId: string,
     inventoryId: number,
     itemValues: IItemValue[],
   ): Promise<TItem> {
@@ -130,11 +130,11 @@ export default class ItemService implements IItemService {
     return await this.ItemModel.deleteByIds(ids);
   }
 
-  async addLike(userId: number, itemId: number): Promise<TLike> {
+  async addLike(userId: string, itemId: number): Promise<TLike> {
     return await this.ItemModel.addLike(userId, itemId);
   }
 
-  async deleteLike(userId: number, itemId: number): Promise<TLike> {
+  async deleteLike(userId: string, itemId: number): Promise<TLike> {
     return await this.ItemModel.deleteLike(userId, itemId);
   }
 
@@ -142,7 +142,7 @@ export default class ItemService implements IItemService {
     return await this.ItemModel.countLike(itemId);
   }
 
-  async getLike(userId: number, itemId: number): Promise<TLike | null> {
+  async getLike(userId: string, itemId: number): Promise<TLike | null> {
     return await this.ItemModel.getLike(userId, itemId);
   }
 }

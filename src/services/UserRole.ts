@@ -5,7 +5,7 @@ import type { IUserRoleService } from "../types/services/UserRole.js";
 export default class UserRoleService implements IUserRoleService {
   constructor(private readonly UserRoleModel: IUserRoleModel) {}
 
-  async addRoles(userIds: number[], roleIds: number[]): Promise<BatchPayload> {
+  async addRoles(userIds: string[], roleIds: number[]): Promise<BatchPayload> {
     const userRoleIds = userIds.flatMap((userId) =>
       roleIds.map((roleId) => ({ userId, roleId })),
     );
@@ -13,7 +13,7 @@ export default class UserRoleService implements IUserRoleService {
   }
 
   async deleteRoles(
-    userIds: number[],
+    userIds: string[],
     roleIds: number[],
   ): Promise<BatchPayload> {
     return this.UserRoleModel.deleteUsersRoles(userIds, roleIds);

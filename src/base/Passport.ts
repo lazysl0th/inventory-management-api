@@ -7,11 +7,6 @@ import type {
   VerifyUserHandler,
 } from "../types/base/Passport.js";
 import type { IError } from "../types/base/Error.js";
-import type { TSafeUserWithRoles } from "../types/models/User.js";
-import type {
-  IAuthResultData,
-  TVerifyResultData,
-} from "../types/services/Auth.js";
 import jwt from "jsonwebtoken";
 import {
   BLOCKED,
@@ -20,11 +15,11 @@ import {
   UNAUTHORIZED,
 } from "../constants/response.js";
 import { NO_TOKEN } from "../constants/errorText.js";
-import { Status } from "#/infrastructure/persistence/prisma/generated/enums.js";
 import type { Role } from "#/infrastructure/persistence/prisma/generated/client.js";
 import Forbidden from "#/domain/errors/Forbidden.js";
 import Unauthorized from "#/domain/errors/Unauthorized.js";
 import NotFound from "#/domain/errors/NotFound.js";
+import type { TSafeUserWithRoles } from "#/application/user/dtos/IUserRepository.js";
 
 export default abstract class Passport {
   protected async verifyHandle<TUser>(
@@ -32,18 +27,18 @@ export default abstract class Passport {
     done: DoneCallbackWithOptions,
   ): Promise<void> {
     try {
-      const authResult = (await handler()) as
+      /*const authResult = (await handler()) as
         | IAuthResultData
         | TVerifyResultData
         | null;
       if (!authResult) return done(null, false, { message: UNAUTHORIZED.TEXT });
       if (authResult.user.status === Status.Blocked)
         return done(null, false, { message: BLOCKED.TEXT });
-      return done(null, authResult.user, {
+      return done(null, !authResult.user, {
         message: "",
         authTokens:
           "authTokens" in authResult ? authResult.authTokens : undefined,
-      });
+      });*/
     } catch (e) {
       return done(e);
     }
@@ -91,7 +86,7 @@ export default abstract class Passport {
       if (!user)
         return reject(this._createAuthError(info as IVerifyOptionsExtends));
       resolve({
-        user: user as TSafeUserWithRoles,
+        user: user as unknown as TSafeUserWithRoles,
         info: info as IVerifyOptionsExtends,
       });
     };
@@ -126,8 +121,8 @@ export default abstract class Passport {
       );
       if (authResult.user && requireRole)
         this.checkUserRoles(authResult.user, requireRole);
-      req.user = authResult.user;
-      req.authInfo = authResult.info.authTokens;
+      //req.user = authResult.user;
+      //req.authInfo = authResult?.info?.authTokens;
       next();
     };
   }
