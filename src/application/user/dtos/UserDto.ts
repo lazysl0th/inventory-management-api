@@ -6,6 +6,12 @@ export const getUserSchema = z.object({
   }),
 });
 
+export const getUsersSchema = z.object({
+  query: z.object({
+    query: z.string().optional(),
+  }),
+});
+
 export const updateUserSchema = z.object({
   params: getUserSchema.shape.params,
   body: z.object({
@@ -36,4 +42,11 @@ export const userSchema = z.object({
 
 export type TUserDto = z.infer<typeof userSchema>;
 
-//type TGetUserDto = z.infer<typeof getUserSchema>["params"];
+export type TGetUserParamsDto = z.infer<typeof getUserSchema>["params"];
+
+export type TGetUsersQueryDto = z.infer<typeof getUsersSchema>["query"];
+
+export type TUpdateUserParamsDto = z.infer<typeof updateUserSchema>["params"];
+export type TUpdateUserBodyDto = z.infer<typeof updateUserSchema>["body"];
+export type TUpdateUsersBodyDto = z.infer<typeof updateUsersSchema>["body"];
+export type TDeleteUsersBodyDto = z.infer<typeof deleteUsersSchema>["body"];

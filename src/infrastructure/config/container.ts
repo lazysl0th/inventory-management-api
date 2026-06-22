@@ -47,7 +47,7 @@ import userValidations, {
 import userRoutes from "../transport/http/modules/user/userRoutes.js";
 import UserService from "../../services/User.js";
 import PrismaUserRepository from "../persistence/repositories/PrismaUserRepository.js";
-import UserController from "../../controllers/User.js";
+import UserController from "../transport/http/modules/user/userController.js";
 
 const createContainer = () => {
   container.register(CONFIG_TOKEN, { useValue: config });
@@ -123,7 +123,7 @@ const createContainer = () => {
       const userValidations = container.resolve(USER_VALIDATIONS_TOKEN);
       const service = new UserService(new PrismaUserRepository());
       const controller = new UserController(service);
-      //const routesController = container.resolve(AuthController);
+      //const routesController = container.resolve(UserController);
       //const authService = container.resolve(PassportService);
       return {
         path: "/users",
