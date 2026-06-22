@@ -22,10 +22,7 @@ export default class LoginWithCredentials {
   ) {}
 
   async execute(authData: TLocalLoginBodyDto): Promise<TAuthTokens> {
-    //console.log(authData);
     const user = await this.authRepository.getUserByEmail(authData.email);
-    //console.log(user);
-    //console.log(user?.localCredentials?.passwordHash);
     if (!user || !user?.localCredentials?.passwordHash)
       throw new InvalidCredentialsError();
 

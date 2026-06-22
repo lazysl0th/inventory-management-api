@@ -19,6 +19,9 @@ export default class ResetPassword {
     private readonly tokenGenerateService: TTokenGenerateService,
     @inject("EmailService")
     private readonly EmailService: IEmailService,
+    @inject(ResetPasswordUserMessage)
+    private readonly resetPasswordMessage: ResetPasswordUserMessage,
+
     @inject(CONFIG_TOKEN) private readonly config: TJwtExpiresConfig,
   ) {}
 
@@ -42,11 +45,11 @@ export default class ResetPassword {
       ResetPasswordUserMessage.getContent({
         html: {
           userName: user.name,
-          url: ResetPasswordUserMessage.getUrl(resetPasswordToken),
+          url: this.resetPasswordMessage.getUrl(resetPasswordToken),
         },
         text: {
           userName: user.name,
-          url: ResetPasswordUserMessage.getUrl(resetPasswordToken),
+          url: this.resetPasswordMessage.getUrl(resetPasswordToken),
         },
       }),
     );

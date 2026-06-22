@@ -12,9 +12,7 @@ import type {
   TUserBySafeMode,
   TUserCreateData,
   TUserUpdateData,
-  TUserWithRoles,
 } from "#/application/user/dtos/IUserRepository.js";
-import type { TSocialProvider } from "#/application/auth/dtos/AuthDto.js";
 
 export default class UserService implements IUserService {
   constructor(private readonly UserModel: IUserRepository) {}
@@ -26,19 +24,6 @@ export default class UserService implements IUserService {
     const user = await this.UserModel.getById(id, safeMode);
     if (!user) throw new NotFound(NOT_FOUND.TEXT);
     return user;
-  }
-
-  async getUserByEmail(email: string): Promise<TUserWithRoles> {
-    const user = await this.UserModel.getByEmail(email);
-    if (!user) throw new NotFound(NOT_FOUND.TEXT);
-    return user;
-  }
-
-  async getUserBySocialId(
-    provider: TSocialProvider,
-    socialId: string,
-  ): Promise<TSafeUserWithRoles | null> {
-    return await this.UserModel.getBySocialId(provider, socialId);
   }
 
   async getUsers(query?: string): Promise<TSafeUserWithRoles[]> {
