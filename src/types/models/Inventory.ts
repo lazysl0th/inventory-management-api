@@ -9,7 +9,7 @@ import type {
 } from "#/infrastructure/persistence/prisma/generated/models.js";
 import type { Category } from "#/infrastructure/persistence/prisma/generated/enums.js";
 import type { InputJsonValue } from "#/infrastructure/persistence/prisma/generated/internal/prismaNamespace.js";
-import type { TUserWithRoles } from "#/application/user/dtos/IUserRepository.js";
+import type { TUserWithRoles } from "#/application/user/interfaces/IUserRepository.js";
 
 export type TInventorySelect = Settings["selects"]["inventory"];
 

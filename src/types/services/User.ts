@@ -4,7 +4,7 @@ import type {
   TUserBySafeMode,
   TUserCreateData,
   TUserUpdateData,
-} from "#/application/user/dtos/IUserRepository.js";
+} from "#/application/user/interfaces/IUserRepository.js";
 import type { Status } from "#/infrastructure/persistence/prisma/generated/enums.js";
 
 export interface IUserService {

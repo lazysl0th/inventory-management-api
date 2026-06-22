@@ -1,5 +1,5 @@
 import type { TAuthTokens } from "#/application/auth/dtos/AuthDto.js";
-import type { TSafeUserWithRoles } from "#/application/user/dtos/IUserRepository.js";
+import type { TSafeUserWithRoles } from "#/application/user/interfaces/IUserRepository.js";
 import type { Strategy } from "passport";
 import type { Profile, VerifyCallback } from "passport-google-oauth20";
 import type { IVerifyOptions } from "passport-local";

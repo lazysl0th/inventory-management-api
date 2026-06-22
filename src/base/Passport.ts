@@ -19,7 +19,7 @@ import type { Role } from "#/infrastructure/persistence/prisma/generated/client.
 import Forbidden from "#/domain/errors/Forbidden.js";
 import Unauthorized from "#/domain/errors/Unauthorized.js";
 import NotFound from "#/domain/errors/NotFound.js";
-import type { TSafeUserWithRoles } from "#/application/user/dtos/IUserRepository.js";
+import type { TSafeUserWithRoles } from "#/application/user/interfaces/IUserRepository.js";
 
 export default abstract class Passport {
   protected async verifyHandle<TUser>(

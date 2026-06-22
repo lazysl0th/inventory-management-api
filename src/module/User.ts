@@ -2,7 +2,6 @@ import PrismaUserRepository from "#/infrastructure/persistence/repositories/Pris
 import UserController from "../controllers/User.js";
 import UserRouter from "../routers/User.js";
 import UserService from "../services/User.js";
-import UserValidator from "../validators/User.js";
 
 export default class UserModule {
   public readonly service: UserService;
@@ -17,7 +16,7 @@ export default class UserModule {
   private init() {
     const service = new UserService(new PrismaUserRepository());
     const controller = new UserController(service);
-    const router = new UserRouter(controller, new UserValidator());
+    const router = new UserRouter(controller);
     return { service, router };
   }
 }

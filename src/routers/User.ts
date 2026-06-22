@@ -1,12 +1,12 @@
+import userValidations from "#/infrastructure/transport/http/modules/user/userValidations.js";
 import Router from "../base/Router.js";
 import type { IBaseRouter } from "../types/base/Router.js";
 import type { IUserController } from "../types/controllers/User.js";
-import type { IUserValidator } from "../types/validators/User.js";
 
 export default class UserRouter extends Router implements IBaseRouter {
   constructor(
     private readonly UserController: IUserController,
-    private readonly UserValidator: IUserValidator,
+    //private readonly UserValidator: IUserValidator,
   ) {
     super();
     this.initializeRoutes();
@@ -20,12 +20,12 @@ export default class UserRouter extends Router implements IBaseRouter {
     );
     this.router.get(
       "/:userId",
-      this.UserValidator.getUser(),
+      userValidations.getUser,
       this.UserController.getUser,
     );
     this.router.patch(
       "/:userId",
-      this.UserValidator.updateUser(),
+      userValidations.updateUser,
       //Passport.authorize("jwt"),
       this.UserController.updateUser,
     );
@@ -34,12 +34,12 @@ export default class UserRouter extends Router implements IBaseRouter {
     this.router.patch("/status", this.UserController.updateUsersStatus);
     this.router.patch(
       "/",
-      this.UserValidator.updateUsers(),
+      userValidations.updateUsers,
       this.UserController.updateUsers,
     );
     this.router.delete(
       "/",
-      this.UserValidator.deleteUsers(),
+      userValidations.deleteUsers,
       this.UserController.deleteUsers,
     );
   }

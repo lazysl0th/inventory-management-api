@@ -1,4 +1,4 @@
-import type { TSafeUser } from "#/application/user/dtos/IUserRepository.js";
+import type { TSafeUser } from "#/application/user/interfaces/IUserRepository.js";
 import IntegrationApi from "../../base/IntegrationApi.js";
 import { SALES_FORCE } from "../../constants/integration.js";
 import type {

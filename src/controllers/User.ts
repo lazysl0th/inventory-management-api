@@ -17,7 +17,7 @@ import BadRequest from "#/domain/errors/BadRequest.js";
 import type {
   TSafeUserWithRoles,
   TUserUpdateData,
-} from "#/application/user/dtos/IUserRepository.js";
+} from "#/application/user/interfaces/IUserRepository.js";
 
 export default class UserController
   extends Controller

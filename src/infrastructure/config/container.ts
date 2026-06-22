@@ -41,6 +41,9 @@ import PassportGoogleStrategy from "../services/passport/strategies/Google.js";
 import type { IAuthStrategy } from "#/application/auth/interfaces/IAuthStrategy.js";
 import PassportFacebookStrategy from "../services/passport/strategies/Facebook.js";
 import PassportJwtStrategy from "../services/passport/strategies/Jwt.js";
+import userValidations, {
+  USER_VALIDATIONS_TOKEN,
+} from "../transport/http/modules/user/userValidations.js";
 
 const createContainer = () => {
   container.register(CONFIG_TOKEN, { useValue: config });
@@ -105,6 +108,10 @@ const createContainer = () => {
         router: authRoutes(routesController, authValidations, authService),
       };
     },
+  });
+
+  container.register(USER_VALIDATIONS_TOKEN, {
+    useValue: userValidations,
   });
 
   container.register("AuthRepository", {

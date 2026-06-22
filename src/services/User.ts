@@ -12,7 +12,7 @@ import type {
   TUserBySafeMode,
   TUserCreateData,
   TUserUpdateData,
-} from "#/application/user/dtos/IUserRepository.js";
+} from "#/application/user/interfaces/IUserRepository.js";
 
 export default class UserService implements IUserService {
   constructor(private readonly UserModel: IUserRepository) {}
