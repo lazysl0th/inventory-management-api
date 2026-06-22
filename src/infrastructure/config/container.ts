@@ -44,6 +44,10 @@ import PassportJwtStrategy from "../services/passport/strategies/Jwt.js";
 import userValidations, {
   USER_VALIDATIONS_TOKEN,
 } from "../transport/http/modules/user/userValidations.js";
+import userRoutes from "../transport/http/modules/user/userRoutes.js";
+import UserService from "../../services/User.js";
+import PrismaUserRepository from "../persistence/repositories/PrismaUserRepository.js";
+import UserController from "../../controllers/User.js";
 
 const createContainer = () => {
   container.register(CONFIG_TOKEN, { useValue: config });
@@ -112,6 +116,20 @@ const createContainer = () => {
 
   container.register(USER_VALIDATIONS_TOKEN, {
     useValue: userValidations,
+  });
+
+  container.register<IRoute>("IRoute", {
+    useFactory: () => {
+      const userValidations = container.resolve(USER_VALIDATIONS_TOKEN);
+      const service = new UserService(new PrismaUserRepository());
+      const controller = new UserController(service);
+      //const routesController = container.resolve(AuthController);
+      //const authService = container.resolve(PassportService);
+      return {
+        path: "/users",
+        router: userRoutes(controller, userValidations),
+      };
+    },
   });
 
   container.register("AuthRepository", {

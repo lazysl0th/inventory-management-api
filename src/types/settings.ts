@@ -61,8 +61,8 @@ export interface Settings {
       id: boolean;
       name: boolean;
       email: boolean;
-      googleId: boolean;
-      facebookId: boolean;
+      google: boolean;
+      facebook: boolean;
       status: boolean;
       password: boolean;
       resetPasswordToken: boolean;
