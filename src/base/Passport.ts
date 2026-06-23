@@ -8,12 +8,7 @@ import type {
 } from "../types/base/Passport.js";
 import type { IError } from "../types/base/Error.js";
 import jwt from "jsonwebtoken";
-import {
-  BLOCKED,
-  INSUFFICIENT_PERMISSION,
-  NOT_FOUND,
-  UNAUTHORIZED,
-} from "../constants/response.js";
+import { BLOCKED, NOT_FOUND, UNAUTHORIZED } from "../constants/response.js";
 import { NO_TOKEN } from "../constants/errorText.js";
 import type { Role } from "#/infrastructure/persistence/prisma/generated/client.js";
 import Forbidden from "#/domain/errors/Forbidden.js";
@@ -53,13 +48,12 @@ export default abstract class Passport {
     return passport.initialize();
   }
 
-  static checkUserRoles(
-    user: TSafeUserWithRoles,
-    requireRoles: Role["name"][],
-  ): IError | void {
-    const userRoles = user.roles.map((role) => role.role.name);
-    const hasRole = requireRoles.some((role) => userRoles.includes(role));
-    if (!hasRole) return new Forbidden(INSUFFICIENT_PERMISSION.TEXT);
+  static checkUserRoles() //user: TSafeUserWithRoles,
+  //requireRoles: Role["name"][],
+  : IError | void {
+    //const userRoles = user.roles.map((role) => role.role.name);
+    //const hasRole = requireRoles.some((role) => userRoles.includes(role));
+    //if (!hasRole) return new Forbidden(INSUFFICIENT_PERMISSION.TEXT);
   }
 
   private static _createAuthError(info: IVerifyOptionsExtends): IError | void {
@@ -120,10 +114,10 @@ export default abstract class Passport {
         strategyParams,
       );
       if (authResult.user && requireRole)
-        this.checkUserRoles(authResult.user, requireRole);
-      //req.user = authResult.user;
-      //req.authInfo = authResult?.info?.authTokens;
-      next();
+        //this.checkUserRoles(authResult.user, requireRole);
+        //req.user = authResult.user;
+        //req.authInfo = authResult?.info?.authTokens;
+        next();
     };
   }
 }

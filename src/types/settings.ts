@@ -52,33 +52,7 @@ export interface Settings {
       text: string;
     };
   };
-  crypto: {
-    saltRounds: number;
-    jwtSecret: string;
-  };
   selects: {
-    user: {
-      id: boolean;
-      name: boolean;
-      email: boolean;
-      google: boolean;
-      facebook: boolean;
-      status: boolean;
-      password: boolean;
-      resetPasswordToken: boolean;
-      refreshToken: boolean;
-      createdAt: boolean;
-      roles: {
-        select: {
-          role: {
-            select: {
-              id: boolean;
-              name: boolean;
-            };
-          };
-        };
-      };
-    };
     inventory: {
       id: boolean;
       title: boolean;
@@ -128,11 +102,6 @@ export interface Settings {
   };
   authSettings: {
     google: {
-      clientID: string;
-      clientSecret: string;
-      callbackURL: string;
-    };
-    facebook: {
       clientID: string;
       clientSecret: string;
       callbackURL: string;

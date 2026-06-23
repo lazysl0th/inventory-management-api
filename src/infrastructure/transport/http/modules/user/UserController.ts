@@ -11,7 +11,6 @@ import type {
   TUpdateUserParamsDto,
   TUpdateUsersBodyDto,
 } from "#/application/user/dtos/UserDto.js";
-import type { TSafeUserWithRoles } from "#/application/user/interfaces/IUserRepository.js";
 import ForbiddenError from "#/domain/errors/ForbiddenError.js";
 import GetUser from "#/application/user/use-cases/GetUser.js";
 import GetUsers from "#/application/user/use-cases/GetUsers.js";
@@ -38,45 +37,37 @@ export default class UserController {
     }
   };
 
-  getUser: RequestHandler<TGetUserParamsDto, TSafeUserWithRoles> = async (
-    req,
-    res,
-  ) => {
+  getUser: RequestHandler<TGetUserParamsDto, User> = async (req, res) => {
     const { userId } = req.params;
     const user = await this.getUserById.execute({ userId });
     res.status(HttpStatusCode.Ok).json(user);
   };
 
-  getUsers: RequestHandler<
-    never,
-    TSafeUserWithRoles[],
-    never,
-    TGetUsersQueryDto
-  > = async (req, res) => {
+  getUsers: RequestHandler<never, User[], never, TGetUsersQueryDto> = async (
+    req,
+    res,
+  ) => {
     const { query } = req.query;
     const users = await this.getUsersByCondition.execute({ query });
     res.status(HttpStatusCode.Ok).json(users);
   };
 
-  updateUser: RequestHandler<
-    TUpdateUserParamsDto,
-    TSafeUserWithRoles,
-    TUpdateUserBodyDto
-  > = async (req, res) => {
-    if (req.isAuthenticated() && req.user.id === req.params.userId) {
-      // || Passport.checkUserRoles(currentUser, ["Admin"])
+  updateUser: RequestHandler<TUpdateUserParamsDto, User, TUpdateUserBodyDto> =
+    async (req, res) => {
+      if (req.isAuthenticated() && req.user.id === req.params.userId) {
+        // || Passport.checkUserRoles(currentUser, ["Admin"])
 
-      const userId = req.params.userId;
-      const userData = req.body;
-      const updatedUser = await this.updateUserById.execute({
-        userId,
-        ...userData,
-      });
-      res.status(HttpStatusCode.Ok).json(updatedUser);
-    } else {
-      throw new ForbiddenError("Insufficient permission");
-    }
-  };
+        const userId = req.params.userId;
+        const userData = req.body;
+        const updatedUser = await this.updateUserById.execute({
+          userId,
+          ...userData,
+        });
+        res.status(HttpStatusCode.Ok).json(updatedUser);
+      } else {
+        throw new ForbiddenError("Insufficient permission");
+      }
+    };
 
   updateUsers: RequestHandler<never, { count: number }, TUpdateUsersBodyDto> =
     async (req, res) => {
