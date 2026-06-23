@@ -23,10 +23,19 @@ export default class PrismaUserRepository implements IUserRepository {
     return User.restore({ ...userData, passwordHash: userData.password });
   }
 
-  async getAll(query?: string): Promise<User[]> {
+  async saveUser(user: User): Promise<User> {
+    const userData = await this.prisma.client.user.upsert({
+      where: { id: user.id },
+      create: user.toPersistence(),
+      update: user.toPersistence(),
+    });
+    return this.createUser(userData);
+  }
+
+  async getAll(searchQuery?: string): Promise<User[]> {
     const usersData = await this.prisma.client.user.findMany({
-      ...(query && {
-        where: { email: { contains: query, mode: "insensitive" } },
+      ...(searchQuery && {
+        where: { email: { contains: searchQuery, mode: "insensitive" } },
       }),
     });
     return usersData.map(this.createUser);

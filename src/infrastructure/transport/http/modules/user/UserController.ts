@@ -47,10 +47,15 @@ export default class UserController {
     req,
     res,
   ) => {
-    const { query } = req.query;
-    const users = await this.getUsersByCondition.execute({ query });
+    const { searchQuery } = req.query;
+    const users = await this.getUsersByCondition.execute({ searchQuery });
     res.status(HttpStatusCode.Ok).json(users);
   };
+
+  /*getUsersList: RequestHandler<never, User[]> = async (req, res) => {
+    const users = await this.getUsersByCondition.execute({ query: "" });
+    res.status(HttpStatusCode.Ok).json(users);
+  }*/
 
   updateUser: RequestHandler<TUpdateUserParamsDto, User, TUpdateUserBodyDto> =
     async (req, res) => {
@@ -59,11 +64,11 @@ export default class UserController {
 
         const userId = req.params.userId;
         const userData = req.body;
-        const updatedUser = await this.updateUserById.execute({
+        const user = await this.updateUserById.execute({
           userId,
           ...userData,
         });
-        res.status(HttpStatusCode.Ok).json(updatedUser);
+        res.status(HttpStatusCode.Ok).json(user);
       } else {
         throw new ForbiddenError("Insufficient permission");
       }

@@ -10,6 +10,6 @@ export default class GetUsers {
   ) {}
 
   async execute(query: TGetUsersQueryDto): Promise<User[]> {
-    return await this.userRepository.getAll(query.query);
+    return await this.userRepository.getAll(query.searchQuery);
   }
 }

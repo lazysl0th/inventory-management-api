@@ -7,13 +7,13 @@ import type { TTokenVerifyService } from "#/application/token/interfaces/ITokenS
 import NotFoundError from "#/domain/errors/NotFoundError.js";
 import LocalCredentials from "#/domain/value-objects/LocalCredentials.js";
 import type { THashGeneratorService } from "#/application/hash/interfaces/IHashService.js";
-import type { IAuthRepository } from "../interfaces/IAuthRepository.js";
+import type { IUserRepository } from "#/application/user/interfaces/IUserRepository.js";
 
 @injectable()
 export default class ChangePassword {
   constructor(
-    @inject("AuthRepository")
-    private readonly authRepository: IAuthRepository,
+    @inject("UserRepository")
+    private readonly userRepository: IUserRepository,
     @inject("HashService")
     private readonly hashGeneratorService: THashGeneratorService,
     @inject("TokenService")
@@ -24,7 +24,7 @@ export default class ChangePassword {
     const tokenInfo = this.tokenVerifyService.verify(changePasswordData.token);
     const jwtResetPasswordPayload =
       jwtResetPasswordPayloadSchema.parse(tokenInfo);
-    const user = await this.authRepository.getUserById(
+    const user = await this.userRepository.getById(
       jwtResetPasswordPayload.userId,
     );
     if (!user) throw new NotFoundError("User");
@@ -34,6 +34,6 @@ export default class ChangePassword {
     });
 
     user.setLocalCredentials(localCredentials);
-    await this.authRepository.saveUser(user);
+    await this.userRepository.saveUser(user);
   }
 }

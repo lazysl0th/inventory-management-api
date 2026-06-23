@@ -9,11 +9,13 @@ import {
   CONFIG_TOKEN,
   type TJwtExpiresConfig,
 } from "#/application/configuration/interfaces/IConfig.js";
+import type { IUserRepository } from "#/application/user/interfaces/IUserRepository.js";
 
 @injectable()
 export default class LoginWithOAuth {
   constructor(
     @inject("AuthRepository") private readonly authRepository: IAuthRepository,
+    @inject("UserRepository") private readonly userRepository: IUserRepository,
     @inject("TokenService")
     private readonly tokenGenerateService: TTokenGenerateService,
     @inject("IdService") private readonly idService: IIdService,
@@ -60,7 +62,7 @@ export default class LoginWithOAuth {
     );
 
     user.setRefreshToken(refreshToken);
-    await this.authRepository.saveUser(user);
+    await this.userRepository.saveUser(user);
 
     return { user, authTokens: { accessToken, refreshToken } };
   }

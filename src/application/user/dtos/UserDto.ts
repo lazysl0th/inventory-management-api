@@ -8,7 +8,7 @@ export const getUserSchema = z.object({
 
 export const getUsersSchema = z.object({
   query: z.object({
-    query: z.string().optional(),
+    searchQuery: z.string().optional(),
   }),
 });
 

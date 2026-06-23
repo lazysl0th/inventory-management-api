@@ -23,9 +23,9 @@ export type TSafeUserWithRoles = Omit<
 >;
 
 export interface IUserRepository {
-  getAll(query?: string): Promise<User[]>;
+  saveUser(user: User): Promise<User>;
+  getAll(searchQuery?: string): Promise<User[]>;
   getById(id: string): Promise<User | null>;
-  updateById(id: string, data: TUserUpdateData): Promise<User>;
   updateByIds(
     ids: string[],
     data: Partial<TSafeUserWithRoles>,

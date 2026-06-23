@@ -9,12 +9,15 @@ import {
 import NotFoundError from "#/domain/errors/NotFoundError.js";
 import type { IEmailService } from "#/application/email/interfaces/IEmailService.js";
 import ResetPasswordUserMessage from "../../../services/messages/ResetPasswordUser.js";
+import type { IUserRepository } from "#/application/user/interfaces/IUserRepository.js";
 
 @injectable()
 export default class ResetPassword {
   constructor(
     @inject("AuthRepository")
     private readonly authRepository: IAuthRepository,
+    @inject("UserRepository")
+    private readonly userRepository: IUserRepository,
     @inject("TokenService")
     private readonly tokenGenerateService: TTokenGenerateService,
     @inject("EmailService")
@@ -38,7 +41,7 @@ export default class ResetPassword {
 
     user.setResetPasswordToken(resetPasswordToken);
 
-    await this.authRepository.saveUser(user);
+    await this.userRepository.saveUser(user);
 
     await this.EmailService.sendMessage(
       user.email,

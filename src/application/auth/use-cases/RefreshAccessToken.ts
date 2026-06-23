@@ -8,15 +8,15 @@ import {
   CONFIG_TOKEN,
   type TJwtExpiresConfig,
 } from "#/application/configuration/interfaces/IConfig.js";
-import type { IAuthRepository } from "../interfaces/IAuthRepository.js";
 import NotFoundError from "#/domain/errors/NotFoundError.js";
 import ForbiddenError from "#/domain/errors/ForbiddenError.js";
+import type { IUserRepository } from "#/application/user/interfaces/IUserRepository.js";
 
 @injectable()
 export default class RefreshAccessToken {
   constructor(
-    @inject("AuthRepository")
-    private readonly authRepository: IAuthRepository,
+    @inject("UserRepository")
+    private readonly userRepository: IUserRepository,
     @inject("TokenService")
     private readonly tokenGenerateService: TTokenGenerateService,
     @inject("TokenService")
@@ -27,9 +27,7 @@ export default class RefreshAccessToken {
   async execute(refreshToken: string): Promise<string> {
     const tokenInfo = this.tokenVerifyService.verify(refreshToken);
     const jwtRefreshPayload = jwtRefreshPayloadSchema.parse(tokenInfo);
-    const user = await this.authRepository.getUserById(
-      jwtRefreshPayload.userId,
-    );
+    const user = await this.userRepository.getById(jwtRefreshPayload.userId);
     if (!user) throw new NotFoundError("User");
     if (user.equialRefreshToken(refreshToken)) throw new ForbiddenError();
     return this.tokenGenerateService.generate(
