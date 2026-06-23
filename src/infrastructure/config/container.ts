@@ -121,10 +121,10 @@ const createContainer = () => {
     useFactory: () => {
       const userValidations = container.resolve(USER_VALIDATIONS_TOKEN);
       const routesController = container.resolve(UserController);
-      //const authService = container.resolve(PassportService);
+      const authService = container.resolve(PassportService);
       return {
         path: "/users",
-        router: userRoutes(routesController, userValidations),
+        router: userRoutes(routesController, userValidations, authService),
       };
     },
   });
