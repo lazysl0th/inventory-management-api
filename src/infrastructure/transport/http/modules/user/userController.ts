@@ -1,9 +1,8 @@
 import type { RequestHandler } from "express";
-import { injectable } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 import HttpStatusCode from "../../constants/httpStatusCode.js";
 import type User from "#/domain/entities/User.js";
 import UnauthorizedError from "#/domain/errors/UnauthorizedError.js";
-import type { IUserService } from "../../../../../types/services/User.js";
 import type {
   TDeleteUsersBodyDto,
   TGetUserParamsDto,
@@ -14,10 +13,21 @@ import type {
 } from "#/application/user/dtos/UserDto.js";
 import type { TSafeUserWithRoles } from "#/application/user/interfaces/IUserRepository.js";
 import ForbiddenError from "#/domain/errors/ForbiddenError.js";
+import GetUser from "#/application/user/use-cases/GetUser.js";
+import GetUsers from "#/application/user/use-cases/GetUsers.js";
+import UpdateUser from "#/application/user/use-cases/UpdateUser.js";
+import UpdateUsers from "#/application/user/use-cases/UpdateUsers.js";
+import DeleteUsers from "#/application/user/use-cases/DeleteUsers.js";
 
 @injectable()
 export default class UserController {
-  constructor(private readonly userService: IUserService) {}
+  constructor(
+    @inject(GetUser) private readonly getUserById: GetUser,
+    @inject(GetUsers) private readonly getUsersByCondition: GetUsers,
+    @inject(UpdateUser) private readonly updateUserById: UpdateUser,
+    @inject(UpdateUsers) private readonly updateUsersById: UpdateUsers,
+    @inject(DeleteUsers) private readonly deleteUsersById: DeleteUsers,
+  ) {}
 
   getUserProfile: RequestHandler<never, User> = async (req, res) => {
     if (req.isAuthenticated()) {
@@ -33,7 +43,7 @@ export default class UserController {
     res,
   ) => {
     const { userId } = req.params;
-    const user = await this.userService.getUserById(userId);
+    const user = await this.getUserById.execute({ userId });
     res.status(HttpStatusCode.Ok).json(user);
   };
 
@@ -44,7 +54,7 @@ export default class UserController {
     TGetUsersQueryDto
   > = async (req, res) => {
     const { query } = req.query;
-    const users = await this.userService.getUsers(query);
+    const users = await this.getUsersByCondition.execute({ query });
     res.status(HttpStatusCode.Ok).json(users);
   };
 
@@ -58,7 +68,10 @@ export default class UserController {
 
       const userId = req.params.userId;
       const userData = req.body;
-      const updatedUser = await this.userService.updateUser(userId, userData);
+      const updatedUser = await this.updateUserById.execute({
+        userId,
+        ...userData,
+      });
       res.status(HttpStatusCode.Ok).json(updatedUser);
     } else {
       throw new ForbiddenError("Insufficient permission");
@@ -69,14 +82,17 @@ export default class UserController {
     async (req, res) => {
       const userIds = req.body.ids;
       const usedData = req.body.data;
-      const result = await this.userService.updateUsers(userIds, usedData);
+      const result = await this.updateUsersById.execute({
+        ids: userIds,
+        data: usedData,
+      });
       res.status(HttpStatusCode.Ok).json(result);
     };
 
   deleteUsers: RequestHandler<never, { count: number }, TDeleteUsersBodyDto> =
     async (req, res) => {
       const userIds = req.body.userIds;
-      const result = await this.userService.deleteUsers(userIds);
+      const result = await this.deleteUsersById.execute({ userIds });
       res.status(HttpStatusCode.Ok).json(result);
     };
   /*

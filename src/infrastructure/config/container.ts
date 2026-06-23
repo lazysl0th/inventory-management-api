@@ -45,9 +45,8 @@ import userValidations, {
   USER_VALIDATIONS_TOKEN,
 } from "../transport/http/modules/user/userValidations.js";
 import userRoutes from "../transport/http/modules/user/userRoutes.js";
-import UserService from "../../services/User.js";
+import UserController from "../transport/http/modules/user/UserController.js";
 import PrismaUserRepository from "../persistence/repositories/PrismaUserRepository.js";
-import UserController from "../transport/http/modules/user/userController.js";
 
 const createContainer = () => {
   container.register(CONFIG_TOKEN, { useValue: config });
@@ -121,19 +120,21 @@ const createContainer = () => {
   container.register<IRoute>("IRoute", {
     useFactory: () => {
       const userValidations = container.resolve(USER_VALIDATIONS_TOKEN);
-      const service = new UserService(new PrismaUserRepository());
-      const controller = new UserController(service);
-      //const routesController = container.resolve(UserController);
+      const routesController = container.resolve(UserController);
       //const authService = container.resolve(PassportService);
       return {
         path: "/users",
-        router: userRoutes(controller, userValidations),
+        router: userRoutes(routesController, userValidations),
       };
     },
   });
 
   container.register("AuthRepository", {
     useClass: PrismaAuthRepository,
+  });
+
+  container.register("UserRepository", {
+    useClass: PrismaUserRepository,
   });
 
   container.register("InventoryRepository", {

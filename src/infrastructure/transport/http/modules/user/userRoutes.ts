@@ -1,6 +1,6 @@
 import { type IUserValidations } from "#/infrastructure/transport/http/modules/user/userValidations.js";
 import { Router } from "express";
-import type UserController from "./userController.js";
+import type UserController from "./UserController.js";
 
 const userRoutes = (
   userController: UserController,

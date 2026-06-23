@@ -50,3 +50,5 @@ export type TUpdateUserParamsDto = z.infer<typeof updateUserSchema>["params"];
 export type TUpdateUserBodyDto = z.infer<typeof updateUserSchema>["body"];
 export type TUpdateUsersBodyDto = z.infer<typeof updateUsersSchema>["body"];
 export type TDeleteUsersBodyDto = z.infer<typeof deleteUsersSchema>["body"];
+
+export type TUpdateUserDto = TUpdateUserBodyDto & TUpdateUserParamsDto;

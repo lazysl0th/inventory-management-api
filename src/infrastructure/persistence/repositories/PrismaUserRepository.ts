@@ -1,5 +1,5 @@
 import { USER_SELECT } from "../../../constants/selects.js";
-import { container } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 import Prisma from "#/infrastructure/persistence/prisma/prisma.js";
 import type { Status } from "#/infrastructure/persistence/prisma/generated/enums.js";
 import type { UserWhereInput } from "#/infrastructure/persistence/prisma/generated/models.js";
@@ -13,12 +13,10 @@ import type {
   TUserUpdateData,
 } from "#/application/user/interfaces/IUserRepository.js";
 
+@injectable()
 export default class PrismaUserRepository implements IUserRepository {
-  prisma: Prisma;
   private userSelect = USER_SELECT;
-  constructor(/*@inject(Prisma) private readonly prisma: Prisma*/) {
-    this.prisma = container.resolve(Prisma);
-  }
+  constructor(@inject(Prisma) private readonly prisma: Prisma) {}
 
   get userSelectSafe(): TSafeUserSelect {
     const {
