@@ -45,8 +45,8 @@ import userValidations, {
   USER_VALIDATIONS_TOKEN,
 } from "../transport/http/modules/user/userValidations.js";
 import userRoutes from "../transport/http/modules/user/userRoutes.js";
-import UserController from "../transport/http/modules/user/UserController.js";
 import PrismaUserRepository from "../persistence/repositories/PrismaUserRepository.js";
+import UserController from "../transport/http/modules/user/UserController.js";
 
 const createContainer = () => {
   container.register(CONFIG_TOKEN, { useValue: config });
