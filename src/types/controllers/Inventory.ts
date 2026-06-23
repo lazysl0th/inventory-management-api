@@ -5,6 +5,10 @@ export interface IParamInventoryId {
   inventoryId: number;
 }
 
+export type TParamInventoryId = {
+  inventoryId: string;
+};
+
 export interface IBodyInventoryIds {
   inventoryIds: number[];
 }
@@ -12,6 +16,10 @@ export interface IBodyInventoryIds {
 export interface IParamInventoryToken {
   token: string;
 }
+
+export type TParamInventoryToken = {
+  token: string;
+};
 
 export interface IQueryInventorySort {
   sort?: EnumInventorySortOrder;
@@ -23,6 +31,10 @@ export interface IQueryInventorySort {
 export interface IQueryInventorySearch {
   query: string;
 }
+
+export type TQueryInventorySearch = {
+  query: string;
+};
 
 export interface IInventoryController {
   getInventoryById: Handler;

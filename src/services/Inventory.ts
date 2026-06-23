@@ -217,7 +217,7 @@ export default class InventoryService implements IInventoryService {
     return await this.InventoryModel.search(formattedQuery);
   }
 
-  async getInventoryByToken(token: string) {
+  async getInventoryByToken(token: string): Promise<void> {
     const inventory = await this.InventoryModel.getByToken(token);
     if (!inventory) throw new NotFound(NOT_FOUND.TEXT);
     //const stats = await getStats(inventory, prisma);

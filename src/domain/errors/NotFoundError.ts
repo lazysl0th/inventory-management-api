@@ -1,6 +1,6 @@
 import DomainError from "./DomainError.js";
 
-export type TEntity = "User";
+export type TEntity = "User" | "Inventory";
 
 export default class NotFoundError extends DomainError {
   readonly code: string;

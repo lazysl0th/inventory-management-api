@@ -30,11 +30,10 @@ export default class UserController {
 
   getUserProfile: RequestHandler<never, User> = async (req, res) => {
     if (req.isAuthenticated()) {
-      const user = req.user;
-      res.status(HttpStatusCode.Ok).json(user);
-    } else {
       throw new UnauthorizedError();
     }
+    const user = req.user;
+    res.status(HttpStatusCode.Ok).json(user);
   };
 
   getUser: RequestHandler<TGetUserParamsDto, User> = async (req, res) => {

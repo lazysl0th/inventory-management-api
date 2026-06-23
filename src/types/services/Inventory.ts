@@ -13,7 +13,7 @@ export interface IInventoryService {
     isPublic?: boolean,
   ): Promise<TInventory[]>;
   getInventoryById(id: number): Promise<TInventory>;
-  getInventoryByToken(apiToken: string): Promise<unknown>;
+  getInventoryByToken(apiToken: string): Promise<void>;
   createInventory(
     userId: string,
     inventoryData: IInventoryData,

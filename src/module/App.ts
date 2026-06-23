@@ -21,7 +21,7 @@ export default class AppModule {
 
     const indexRouter = new IndexRouter(
       userRole.router,
-      inventory.router,
+      //inventory.router,
       item.router,
       integration.router,
     );
