@@ -31,7 +31,7 @@ import type {
 } from "#/infrastructure/persistence/prisma/generated/models.js";
 import NotFound from "#/domain/errors/NotFound.js";
 import BadRequest from "#/domain/errors/BadRequest.js";
-import type { TSafeUserWithRoles } from "#/application/user/dtos/IUserRepository.js";
+import type { TSafeUserWithRoles } from "#/application/user/interfaces/IUserRepository.js";
 
 export default class InventoryService implements IInventoryService {
   constructor(private readonly InventoryModel: IInventoryModel) {}

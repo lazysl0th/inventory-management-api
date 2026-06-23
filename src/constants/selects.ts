@@ -1,26 +1,3 @@
-export const USER_SELECT = {
-  id: true,
-  name: true,
-  email: true,
-  googleId: true,
-  facebookId: true,
-  status: true,
-  password: true,
-  resetPasswordToken: true,
-  refreshToken: true,
-  createdAt: true,
-  roles: {
-    select: {
-      role: {
-        select: {
-          id: true,
-          name: true,
-        },
-      },
-    },
-  },
-} as const;
-
 export const INVENTORY_SELECT = {
   id: true,
   title: true,

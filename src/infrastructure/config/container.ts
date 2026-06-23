@@ -41,6 +41,12 @@ import PassportGoogleStrategy from "../services/passport/strategies/Google.js";
 import type { IAuthStrategy } from "#/application/auth/interfaces/IAuthStrategy.js";
 import PassportFacebookStrategy from "../services/passport/strategies/Facebook.js";
 import PassportJwtStrategy from "../services/passport/strategies/Jwt.js";
+import userValidations, {
+  USER_VALIDATIONS_TOKEN,
+} from "../transport/http/modules/user/userValidations.js";
+import userRoutes from "../transport/http/modules/user/userRoutes.js";
+import PrismaUserRepository from "../persistence/repositories/PrismaUserRepository.js";
+import UserController from "../transport/http/modules/user/UserController.js";
 
 const createContainer = () => {
   container.register(CONFIG_TOKEN, { useValue: config });
@@ -107,8 +113,28 @@ const createContainer = () => {
     },
   });
 
+  container.register(USER_VALIDATIONS_TOKEN, {
+    useValue: userValidations,
+  });
+
+  container.register<IRoute>("IRoute", {
+    useFactory: () => {
+      const userValidations = container.resolve(USER_VALIDATIONS_TOKEN);
+      const routesController = container.resolve(UserController);
+      const authService = container.resolve(PassportService);
+      return {
+        path: "/users",
+        router: userRoutes(routesController, userValidations, authService),
+      };
+    },
+  });
+
   container.register("AuthRepository", {
     useClass: PrismaAuthRepository,
+  });
+
+  container.register("UserRepository", {
+    useClass: PrismaUserRepository,
   });
 
   container.register("InventoryRepository", {

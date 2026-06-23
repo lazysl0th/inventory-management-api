@@ -15,11 +15,11 @@ import type {
   IAdditionalData,
   IGetInfoResponse,
 } from "../types/services/intagrations/SalesForce.js";
-import type { IParamUserId } from "../types/controllers/User.js";
 import { BAD_REQUEST, INSUFFICIENT_PERMISSION } from "../constants/response.js";
 import { MULTER_OPTIONS } from "../constants/multer.js";
 import BadRequest from "#/domain/errors/BadRequest.js";
 import Forbidden from "#/domain/errors/Forbidden.js";
+import type { TGetUserParamsDto } from "#/application/user/dtos/UserDto.js";
 
 export default class IntegrationController
   extends Controller
@@ -65,7 +65,7 @@ export default class IntegrationController
   });
 
   addAdditionalInfoToSalesForce: Handler = this.handle<
-    IParamUserId,
+    TGetUserParamsDto,
     IAdditionalData
   >(async (req, res) => {
     const userId = req.params.userId;
@@ -83,7 +83,7 @@ export default class IntegrationController
     this.ok<IAddInfoCompositeResponse>(res, result);
   });
 
-  getAdditionalInfoFromSalesForce: Handler = this.handle<IParamUserId>(
+  getAdditionalInfoFromSalesForce: Handler = this.handle<TGetUserParamsDto>(
     async (req, res) => {
       const userId = req.params.userId;
       const additionalInfo =

@@ -15,14 +15,16 @@ import type {
   ISalesForceApi,
   IGetInfoResponse,
 } from "../types/services/intagrations/SalesForce.js";
-import type { IUserService } from "../types/services/User.js";
 import { NOT_FOUND } from "../constants/response.js";
 import NotFound from "#/domain/errors/NotFound.js";
+import type GetEmailAdmins from "#/application/user/use-cases/GetEmailAdmins.js";
+import type GetUser from "#/application/user/use-cases/GetUser.js";
 
 export default class IntegrationService implements IIntegrationService {
   constructor(
     private readonly CloudinaryApi: CloudinaryApi,
-    private readonly UserService: IUserService,
+    private readonly getEmailAdmins: GetEmailAdmins,
+    private readonly getUser: GetUser,
     private readonly DropboxApi: IDropboxApi,
     private readonly SalesForceApi: ISalesForceApi,
   ) {}
@@ -42,7 +44,7 @@ export default class IntegrationService implements IIntegrationService {
   async uploadJsonToDropbox(
     data: IUploadDataDropbox,
   ): Promise<IUploadResultDropbox> {
-    const emailAdmins = await this.UserService.getEmailAdmins();
+    const emailAdmins = await this.getEmailAdmins.execute();
     const fileName = `support_${new Date().toISOString()}.json`;
     const reportData = {
       reportedBy: { name: data.userName, email: data.userEmail },
@@ -72,7 +74,7 @@ export default class IntegrationService implements IIntegrationService {
     userId: string,
     additionalData: IAdditionalData,
   ): Promise<IAddInfoCompositeResponse> {
-    const user = await this.UserService.getUserById(userId);
+    const user = await this.getUser.execute({ userId });
     if (!user) throw new NotFound(NOT_FOUND.TEXT);
     return await this.SalesForceApi.createAccountWithContact(
       user,

@@ -8,12 +8,15 @@ import {
 } from "#/application/configuration/interfaces/IConfig.js";
 import type { IAuthRepository } from "../interfaces/IAuthRepository.js";
 import InvalidCredentialsError from "#/domain/errors/InvalidCredentialsError.js";
+import type { IUserRepository } from "#/application/user/interfaces/IUserRepository.js";
 
 @injectable()
 export default class LoginWithCredentials {
   constructor(
     @inject("AuthRepository")
     private readonly authRepository: IAuthRepository,
+    @inject("AuthRepository")
+    private readonly userRepository: IUserRepository,
     @inject("HashService")
     private readonly hashComparerService: THashComparerService,
     @inject("TokenService")
@@ -57,7 +60,7 @@ export default class LoginWithCredentials {
 
     user.setRefreshToken(refreshToken);
 
-    await this.authRepository.saveUser(user);
+    await this.userRepository.saveUser(user);
 
     return { accessToken, refreshToken };
   }

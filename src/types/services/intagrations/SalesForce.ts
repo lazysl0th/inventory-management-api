@@ -1,4 +1,4 @@
-import type { TSafeUser } from "#/application/user/dtos/IUserRepository.js";
+import type User from "#/domain/entities/User.js";
 
 export interface IAccessInfo {
   access_token: string;
@@ -63,7 +63,7 @@ export interface IGetInfoResponse {
 export interface ISalesForceApi {
   getAddress(): Promise<IAddressDescribe>;
   createAccountWithContact(
-    contactData: TSafeUser,
+    contactData: User,
     additionalData: IAdditionalData,
   ): Promise<IAddInfoCompositeResponse>;
   getInfoById(id: string): Promise<IGetInfoResponse>;

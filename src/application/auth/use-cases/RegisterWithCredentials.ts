@@ -3,19 +3,19 @@ import type { TAuthTokens, TRegisterBodyDto } from "../dtos/AuthDto.js";
 import type { THashGeneratorService } from "#/application/hash/interfaces/IHashService.js";
 import LocalCredentials from "#/domain/value-objects/LocalCredentials.js";
 import User from "#/domain/entities/User.js";
-import type { IAuthRepository } from "../interfaces/IAuthRepository.js";
 import type { TTokenGenerateService } from "#/application/token/interfaces/ITokenService.js";
 import {
   CONFIG_TOKEN,
   type TJwtExpiresConfig,
 } from "#/application/configuration/interfaces/IConfig.js";
 import type IIdService from "#/application/IdService/interfaces/IIdService.js";
+import type { IUserRepository } from "#/application/user/interfaces/IUserRepository.js";
 
 @injectable()
 export default class RegisterWithCredentials {
   constructor(
-    @inject("AuthRepository")
-    private readonly registerRepository: IAuthRepository,
+    @inject("UserRepository")
+    private readonly userRepository: IUserRepository,
     @inject("HashService")
     private readonly hashGeneratorService: THashGeneratorService,
     @inject("TokenService")
@@ -61,7 +61,7 @@ export default class RegisterWithCredentials {
 
     user.setRefreshToken(refreshToken);
 
-    await this.registerRepository.saveUser(user);
+    await this.userRepository.saveUser(user);
 
     console.log(user);
 

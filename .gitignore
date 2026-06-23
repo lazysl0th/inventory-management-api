@@ -1,6 +1,6 @@
 node_modules
 .env
-/generated/prisma
+src/infrastructure/persistence/prisma/generated
 .DS_Store
 .vscode
 .prisma/client/

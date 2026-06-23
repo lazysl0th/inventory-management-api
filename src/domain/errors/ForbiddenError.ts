@@ -3,8 +3,8 @@ import DomainError from "./DomainError.js";
 export default class ForbiddenError extends DomainError {
   readonly code: string;
 
-  constructor() {
-    super(`Access denied`);
+  constructor(message = "Access denied") {
+    super(message);
     this.code = `FORBIDDEN`;
   }
 }
