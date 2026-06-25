@@ -1,4 +1,5 @@
-import type { IItemData, IItemValue, TItem, TLike } from "../models/Item.js";
+import type { TCreateItemDto } from "#/application/item/dtos/ItemDto.js";
+import type { IItemData, TItem, TLike } from "../models/Item.js";
 
 export interface IPartIdData {
   partId: number | string | bigint;
@@ -19,11 +20,7 @@ export interface ICustomIdData {
 export interface IItemService {
   getItems(inventoryId: number): Promise<TItem[]>;
   getItem(id: number): Promise<TItem>;
-  createItem(
-    userId: string,
-    inventoryId: number,
-    itemValues: IItemValue[],
-  ): Promise<TItem>;
+  createItem(itemData: TCreateItemDto): Promise<TItem>;
   updateItem(id: number, itemData: Partial<IItemData>): Promise<TItem>;
   deleteItems(ids: number[]): Promise<{ count: number }>;
   addLike(userId: string, itemId: number): Promise<TLike>;

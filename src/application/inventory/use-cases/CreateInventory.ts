@@ -1,9 +1,4 @@
 import { inject, injectable } from "tsyringe";
-/*import type {
-  InventoryFieldCreateNestedManyWithoutInventoryInput,
-  InventoryFieldCreateWithoutInventoryInput,
-  InventoryFieldUncheckedCreateWithoutInventoryInput,
-} from "#/infrastructure/persistence/prisma/generated/models.js";*/
 import type { IInventoryRepository } from "../interfaces/IInventoryRepository.js";
 import Inventory, {
   type TCreateInventoryProps,
