@@ -24,11 +24,16 @@ export const updateItemSchema = z.object({
 });
 
 export const deleteItemsSchema = z.object({
-  params: getItemSchema.shape.params,
+  params: getItemsSchema.shape.params,
   body: z.object({
     itemsId: z.array(itemSchema.shape.id),
   }),
 });
-//type TGetItemsParams = z.infer<typeof getItemsSchema>["params"];
-//type TGetItemParams = z.infer<typeof getItemSchema>["params"];
-//type TCreateItemParams = z.infer<typeof getItemsSchema>["params"];
+export type TGetItemsParams = z.infer<typeof getItemsSchema>["params"];
+export type TGetItemParams = z.infer<typeof getItemSchema>["params"];
+export type TCreateItemParams = z.infer<typeof createItemSchema>["params"];
+export type TCreateItemBody = z.infer<typeof createItemSchema>["body"];
+export type TUpdateItemParams = z.infer<typeof updateItemSchema>["params"];
+export type TUpdateItemBody = z.infer<typeof updateItemSchema>["body"];
+export type TDeleteItemsParams = z.infer<typeof deleteItemsSchema>["params"];
+export type TDeleteItemsBody = z.infer<typeof deleteItemsSchema>["body"];

@@ -54,6 +54,7 @@ import inventoryRoutes from "../transport/http/modules/inventory/inventoryRoutes
 import PrismaInventoryRepository from "../persistence/repositories/PrismaInventoryRepository.js";
 import { ITEM_VALIDATIONS_TOKEN } from "../transport/http/modules/item/itemValidations.js";
 import itemRoutes from "../transport/http/modules/item/itemRoutes.js";
+import ItemController from "../../controllers/Item.js";
 
 const createContainer = () => {
   container.register(CONFIG_TOKEN, { useValue: config });
@@ -173,7 +174,7 @@ const createContainer = () => {
   container.register<IRoute>("IRoute", {
     useFactory: (container) => {
       const itemValidations = container.resolve(ITEM_VALIDATIONS_TOKEN);
-      //const routesController = container.resolve(CommentController);
+      const routesController = container.resolve(ItemController);
       return {
         path: "/inventories/:inventoryId/items",
         router: itemRoutes(routesController, itemValidations),
