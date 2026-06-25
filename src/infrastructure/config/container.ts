@@ -52,6 +52,8 @@ import inventoryValidations, {
 import InventoryController from "../transport/http/modules/inventory/InventoryController.js";
 import inventoryRoutes from "../transport/http/modules/inventory/inventoryRoutes.js";
 import PrismaInventoryRepository from "../persistence/repositories/PrismaInventoryRepository.js";
+import { ITEM_VALIDATIONS_TOKEN } from "../transport/http/modules/item/itemValidations.js";
+import itemRoutes from "../transport/http/modules/item/itemRoutes.js";
 
 const createContainer = () => {
   container.register(CONFIG_TOKEN, { useValue: config });
@@ -166,6 +168,17 @@ const createContainer = () => {
 
   container.register("InventoryRepository", {
     useClass: PrismaInventoryRepository,
+  });
+
+  container.register<IRoute>("IRoute", {
+    useFactory: (container) => {
+      const itemValidations = container.resolve(ITEM_VALIDATIONS_TOKEN);
+      //const routesController = container.resolve(CommentController);
+      return {
+        path: "/inventories/:inventoryId/items",
+        router: itemRoutes(routesController, itemValidations),
+      };
+    },
   });
 
   container.register("IWsValidationRegistry", {

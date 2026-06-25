@@ -27,7 +27,7 @@ const itemValidations: IItemValidations = {
   deleteItems: validate(deleteItemsSchema),
 };
 
-export const INVENTORY_VALIDATIONS_TOKEN: InjectionToken<IItemValidations> =
+export const ITEM_VALIDATIONS_TOKEN: InjectionToken<IItemValidations> =
   Symbol("ITEM_VALIDATIONS");
 
 export default itemValidations;

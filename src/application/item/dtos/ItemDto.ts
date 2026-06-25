@@ -29,7 +29,6 @@ export const deleteItemsSchema = z.object({
     itemsId: z.array(itemSchema.shape.id),
   }),
 });
-
 //type TGetItemsParams = z.infer<typeof getItemsSchema>["params"];
 //type TGetItemParams = z.infer<typeof getItemSchema>["params"];
 //type TCreateItemParams = z.infer<typeof getItemsSchema>["params"];
