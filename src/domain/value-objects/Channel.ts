@@ -3,7 +3,7 @@ type TScope = "comments";
 
 interface IChannelProps {
   resource: TResource;
-  resourceId: number | null;
+  resourceId: string | null;
   scope: TScope;
 }
 
@@ -14,7 +14,7 @@ export default class Channel {
 
   constructor(props: IChannelProps) {
     this.resource = props.resource;
-    this.resourceId = props.resourceId ? props.resourceId.toString() : null;
+    this.resourceId = props.resourceId ? props.resourceId : null;
     this.scope = props.scope;
   }
 

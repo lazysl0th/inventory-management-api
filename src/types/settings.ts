@@ -1,6 +1,3 @@
-import type { InventoryOrderByWithRelationInput } from "#/infrastructure/persistence/prisma/generated/models.js";
-import type { EnumInventorySortOrder } from "./services/Inventory.js";
-
 export interface Settings {
   response: {
     ok: {
@@ -53,25 +50,6 @@ export interface Settings {
     };
   };
   selects: {
-    inventory: {
-      id: boolean;
-      title: boolean;
-      description: boolean;
-      category: boolean;
-      image: boolean;
-      ownerId: boolean;
-      isPublic: boolean;
-      customIdFormat: boolean;
-      version: boolean;
-      createdAt: boolean;
-      updatedAt: boolean;
-      token: boolean;
-      owner: { select: { id: boolean; name: boolean; email: boolean } };
-      //items: boolean;
-      tags: boolean;
-      fields: boolean;
-      allowedUsers: { select: { id: boolean; name: boolean; email: boolean } };
-    };
     item: {
       id: boolean;
       inventoryId: boolean;
@@ -83,12 +61,6 @@ export interface Settings {
       updatedAt: boolean;
       values: { select: { id: boolean; field: boolean; value: boolean } };
     };
-  };
-  sortOrder: {
-    inventory: Record<
-      EnumInventorySortOrder,
-      InventoryOrderByWithRelationInput
-    >;
   };
   url: {
     frontend: string;

@@ -3,7 +3,7 @@ interface ISignOptions {
 }
 
 export default interface ITokenService {
-  generate: (payload: object, expiresIn?: ISignOptions) => string;
+  generate: (payload: object | string, expiresIn?: ISignOptions) => string;
   verify: (token: string) => string | object;
 }
 

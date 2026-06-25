@@ -1,10 +1,10 @@
 import { inject, injectable } from "tsyringe";
-import type { ISubscriptionManager } from "../../realtime/interfaces/ISubscriptionManager.js";
-import type { IInventoryModel } from "../../../types/models/Inventory.js";
 import type { ISubscribeToCommentsCommand } from "../dtos/WSInventoryDto.js";
 import NotFound from "#/domain/errors/NotFound.js";
 import Channel from "#/domain/value-objects/Channel.js";
 import type { ISessionRepository } from "#/application/realtime/interfaces/ISessionRepository.js";
+import type { IInventoryRepository } from "../interfaces/IInventoryRepository.js";
+import type { ISubscriptionManager } from "#/application/realtime/interfaces/ISubscriptionManager.js";
 
 @injectable()
 export default class SubscribeToComments {
@@ -12,14 +12,14 @@ export default class SubscribeToComments {
     @inject("SubscriptionManager")
     private readonly subscriptionManager: ISubscriptionManager,
     @inject("InventoryRepository")
-    private readonly inventoryRepository: IInventoryModel,
+    private readonly inventoryRepository: IInventoryRepository,
     @inject("SessionRepository")
     private readonly sessionRepository: ISessionRepository,
   ) {}
 
   async execute(command: ISubscribeToCommentsCommand): Promise<Channel> {
     const inventory = await this.inventoryRepository.getById(
-      Number(command.inventoryId),
+      command.inventoryId,
     );
     if (!inventory) {
       throw new NotFound("Inventory not found");

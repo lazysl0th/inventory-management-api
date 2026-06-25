@@ -8,9 +8,9 @@ import type {
 } from "../types/models/Item.js";
 import Prisma from "../infrastructure/persistence/prisma/prisma.js";
 import type IdGeneratorService from "../services/IdGenerator.js";
-import type { ICustomIdFormatPart } from "../types/models/Inventory.js";
 import { ITEM_SELECT } from "../constants/selects.js";
 import { container } from "tsyringe";
+import type CustomIdFormatPart from "#/domain/value-objects/CustomIdFormatPart.js";
 
 export default class ItemModel
   extends Model<TItem, TItemCreateData, TItemUpdateData>
@@ -29,7 +29,7 @@ export default class ItemModel
 
   async getAll(inventoryId: number): Promise<TItem[]> {
     return await this.prisma.client.item.findMany({
-      where: { inventoryId },
+      where: { inventoryId: inventoryId.toString() },
       select: this.itemSelect,
       orderBy: { createdAt: "desc" },
     });
@@ -44,7 +44,7 @@ export default class ItemModel
 
   async create(
     data: TItemCreateData,
-    customIdFormatParts: ICustomIdFormatPart[],
+    customIdFormatParts: CustomIdFormatPart[],
   ): Promise<TItem> {
     return await this.prisma.client.$transaction(async (tx) => {
       data.customId = await this.IdGenerator.generateCustomId(

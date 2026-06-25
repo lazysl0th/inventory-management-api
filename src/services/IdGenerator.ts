@@ -1,22 +1,22 @@
-import {
-  EnumCustomIdPartType,
-  type ICustomIdFormatPart,
-  type TCustomIdPartFormat,
-} from "../types/models/Inventory.js";
 import type { IPartIdGenerator } from "../types/services/PartIdGenerator.js";
 import type { IIdGenerator } from "../types/services/IdGenerator.js";
 import type { IPartIdFormatter } from "../types/services/PartIdFormatter.js";
 import type { TransactionClient } from "#/infrastructure/persistence/prisma/generated/internal/prismaNamespace.js";
+import type {
+  TCustomIdPartFormat,
+  TCustomIdPartType,
+} from "#/domain/value-objects/CustomIdFormatPart.js";
+import type CustomIdFormatPart from "#/domain/value-objects/CustomIdFormatPart.js";
 
 export default class IdGeneratorService implements IIdGenerator {
   private readonly partIdFormatters: Map<string, IPartIdFormatter>;
   private readonly partIdGenerators: Record<
-    EnumCustomIdPartType,
+    TCustomIdPartType,
     IPartIdGenerator
   >;
 
   constructor(
-    partIdGenerators: Record<EnumCustomIdPartType, IPartIdGenerator>,
+    partIdGenerators: Record<TCustomIdPartType, IPartIdGenerator>,
     partIdFormatters: IPartIdFormatter[],
   ) {
     this.partIdGenerators = partIdGenerators;
@@ -28,14 +28,13 @@ export default class IdGeneratorService implements IIdGenerator {
   }
 
   async _generatePartId(
-    part: ICustomIdFormatPart,
+    part: CustomIdFormatPart,
     tx: TransactionClient,
   ): Promise<string | number | bigint | Date> {
-    if (part.type === EnumCustomIdPartType.TEXT && part.format)
-      return part.format;
+    if (part.type === "TEXT" && part.format) return part.format;
     const idGenerator = this.partIdGenerators[part.type];
-    return part.type === EnumCustomIdPartType.SEQUENCE
-      ? await idGenerator.generate(part.guid, tx)
+    return part.type === "SEQUENCE"
+      ? await idGenerator.generate(part.id, tx)
       : await idGenerator.generate();
   }
 
@@ -49,7 +48,7 @@ export default class IdGeneratorService implements IIdGenerator {
   }
 
   async generateCustomId(
-    customIdParts: ICustomIdFormatPart[],
+    customIdParts: CustomIdFormatPart[],
     tx: TransactionClient,
   ): Promise<string> {
     const generatedParts = await Promise.all(

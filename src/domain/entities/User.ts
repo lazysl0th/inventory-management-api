@@ -1,21 +1,26 @@
+import z from "zod";
 import LocalCredentials from "../value-objects/LocalCredentials.js";
 import type { SocialAccount } from "./SocialAccount.js";
+import { v7 } from "uuid";
 
-type TStatus = "Active" | "Blocked";
+export const userSchema = z.object({
+  id: z.string(),
+  email: z.string(),
+  name: z.string(),
+  status: z.enum(["Active", "Blocked"]),
+  createdAt: z.date(),
+  refreshToken: z.string().nullable().optional(),
+  resetPasswordToken: z.string().nullable().optional(),
+  passwordHash: z.string().nullable().optional(),
+});
 
-export interface ICreateUserProps {
-  id: string;
-  email: string;
-  name: string;
-}
+type TUserProps = z.infer<typeof userSchema>;
 
-export interface IUserProps extends ICreateUserProps {
-  status: TStatus;
-  refreshToken: string | null;
-  resetPasswordToken: string | null;
-  createdAt: Date;
-  passwordHash: string | null;
-}
+type TStatus = z.infer<typeof userSchema>["status"];
+
+type TCreateUserProps = Pick<TUserProps, "email" | "name">;
+
+//type TUpdateUserProps = Partial<Pick<TUserProps, "email" | "name" | "status">>;
 
 export default class User {
   public readonly id: string;
@@ -30,22 +35,23 @@ export default class User {
 
   #socialAccounts: SocialAccount[] = [];
 
-  constructor(props: IUserProps) {
+  constructor(props: TUserProps) {
     this.id = props.id;
     this.#name = props.name;
     this.#email = props.email;
     this.#status = props.status;
     this.#createdAt = props.createdAt;
-    this.#refreshToken = props.refreshToken;
-    this.#resetPasswordToken = props.resetPasswordToken;
+    this.#refreshToken = props.refreshToken ?? null;
+    this.#resetPasswordToken = props.resetPasswordToken ?? null;
     this.#localCredentials = props.passwordHash
       ? LocalCredentials.restore({ password: props.passwordHash })
       : null;
   }
 
-  public static create(props: ICreateUserProps): User {
+  public static create(props: TCreateUserProps): User {
     return new User({
       ...props,
+      id: v7(),
       status: "Active",
       refreshToken: null,
       resetPasswordToken: null,
@@ -54,7 +60,7 @@ export default class User {
     });
   }
 
-  public static restore(props: IUserProps): User {
+  public static restore(props: TUserProps): User {
     return new User(props);
   }
 
@@ -144,7 +150,7 @@ export default class User {
     return this.#socialAccounts;
   }
 
-  public toJSON() {
+  public toJSON(): TUserProps {
     return {
       id: this.id,
       email: this.email,

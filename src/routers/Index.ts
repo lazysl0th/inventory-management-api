@@ -6,7 +6,7 @@ import type { IBaseRouter } from "../types/base/Router.js";
 export default class IndexRouter extends Router {
   constructor(
     private readonly UserRoleRouter: IBaseRouter,
-    private readonly InventoryRouter: IBaseRouter,
+    //private readonly InventoryRouter: IBaseRouter,
     private readonly ItemRouter: IBaseRouter,
     private readonly IntegrationRouter: IBaseRouter,
   ) {
@@ -15,7 +15,7 @@ export default class IndexRouter extends Router {
   }
 
   initializeRoutes(): void {
-    this.router.use("/inventories", this.InventoryRouter.router);
+    //this.router.use("/inventories", this.InventoryRouter.router);
     this.router.use("/inventories/:inventoryId/items", this.ItemRouter.router);
     this.router.use("/integration", this.IntegrationRouter.router);
     this.router.use("/roles", this.UserRoleRouter.router);

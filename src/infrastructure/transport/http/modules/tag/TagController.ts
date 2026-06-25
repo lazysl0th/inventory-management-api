@@ -2,7 +2,7 @@ import type { RequestHandler } from "express";
 import { inject, injectable } from "tsyringe";
 import HttpStatusCode from "../../constants/httpStatusCode.js";
 import GetTags from "#/application/tag/use-cases/GetTags.js";
-import type Tag from "#/domain/entities/Tag.js";
+import type Tag from "#/domain/value-objects/Tag.js";
 
 @injectable()
 export default class TagController {

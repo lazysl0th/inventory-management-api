@@ -22,25 +22,24 @@ export default class CommentController {
     req,
     res,
   ) => {
-    const inventoryId = Number(req.params.inventoryId);
+    const { inventoryId } = req.params;
     const comments = await this.getAll.execute(inventoryId);
     res.status(HttpStatusCode.Ok).json(comments);
   };
 
   addComment: RequestHandler<TAddCommentParams, Comment, TAddCommentBody> =
     async (req, res) => {
-      if (req.isAuthenticated()) {
-        const inventoryId = Number(req.params.inventoryId);
-        const content = req.body.content;
-        const userId = req.user.id;
-        const comment = await this.create.execute({
-          content,
-          inventoryId,
-          userId,
-        });
-        res.status(HttpStatusCode.Ok).json(comment);
-      } else {
+      if (!req.isAuthenticated()) {
         throw new UnauthorizedError();
       }
+      const { inventoryId } = req.params;
+      const content = req.body.content;
+      const userId = req.user.id;
+      const comment = await this.create.execute({
+        content,
+        inventoryId,
+        user: userId,
+      });
+      res.status(HttpStatusCode.Ok).json(comment);
     };
 }

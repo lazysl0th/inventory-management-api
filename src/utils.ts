@@ -1,5 +1,5 @@
+import type CustomIdFormat from "./domain/value-objects/CustomIdFormat.js";
 import type { IError } from "./types/base/Error.js";
-import type { ICustomIdFormat } from "./types/models/Inventory.js";
 
 export function replaceParamsInTemplate(
   params: Record<string, string>,
@@ -12,9 +12,9 @@ export function replaceParamsInTemplate(
   );
 }
 
-export function isCustomIdFormatObject(obj: unknown): obj is ICustomIdFormat {
+export function isCustomIdFormatObject(obj: unknown): obj is CustomIdFormat {
   if (typeof obj !== "object" || obj === null) return false;
-  const { parts, summary } = obj as unknown as ICustomIdFormat;
+  const { parts, summary } = obj as unknown as CustomIdFormat;
   return Array.isArray(parts) && typeof summary === "string";
 }
 

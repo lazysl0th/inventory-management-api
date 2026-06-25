@@ -7,7 +7,7 @@ import type {
 } from "../types/controllers/Item.js";
 import type { IItemService } from "../types/services/Item.js";
 import type { IItemData, TItem, TLike } from "../types/models/Item.js";
-import type { IParamInventoryId } from "../types/controllers/Inventory.js";
+import type { TGetInventoryParamsDto } from "#/application/inventory/dtos/InventoryDto.js";
 
 export default class ItemController
   extends Controller
@@ -17,9 +17,9 @@ export default class ItemController
     super();
   }
 
-  getItems: Handler = this.handle<IParamInventoryId>(async (req, res) => {
-    const inventoryId = req.params.inventoryId;
-    const items = await this.ItemService.getItems(inventoryId);
+  getItems: Handler = this.handle<TGetInventoryParamsDto>(async (req, res) => {
+    const { inventoryId } = req.params;
+    const items = await this.ItemService.getItems(Number(inventoryId));
     this.ok<TItem[]>(res, items);
   });
 
@@ -29,14 +29,14 @@ export default class ItemController
     this.ok<TItem>(res, inventory);
   });
 
-  createItem: Handler = this.handle<IParamInventoryId, IItemData>(
+  createItem: Handler = this.handle<TGetInventoryParamsDto, IItemData>(
     async (req, res) => {
       const userId = req.user.id;
       const inventoryId = req.params.inventoryId;
       const itemData = req.body.values;
       const item = await this.ItemService.createItem(
         userId,
-        inventoryId,
+        Number(inventoryId),
         itemData,
       );
       this.ok<TItem>(res, item);

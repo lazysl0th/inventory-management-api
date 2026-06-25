@@ -1,22 +1,3 @@
-export const INVENTORY_SELECT = {
-  id: true,
-  title: true,
-  description: true,
-  category: true,
-  image: true,
-  ownerId: true,
-  isPublic: true,
-  customIdFormat: true,
-  version: true,
-  createdAt: true,
-  updatedAt: true,
-  token: true,
-  owner: { select: { id: true, name: true, email: true } },
-  tags: true,
-  fields: true,
-  allowedUsers: { select: { id: true, name: true, email: true } },
-} as const;
-
 export const ITEM_SELECT = {
   id: true,
   inventoryId: true,

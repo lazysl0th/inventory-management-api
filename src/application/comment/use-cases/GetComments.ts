@@ -9,7 +9,7 @@ export default class GetComments {
     private readonly commentsRepository: ICommentRepository,
   ) {}
 
-  async execute(inventoryId: number): Promise<Comment[]> {
+  async execute(inventoryId: string): Promise<Comment[]> {
     return await this.commentsRepository.getAll(inventoryId);
   }
 }

@@ -8,7 +8,6 @@ import {
   CONFIG_TOKEN,
   type TJwtExpiresConfig,
 } from "#/application/configuration/interfaces/IConfig.js";
-import type IIdService from "#/application/IdService/interfaces/IIdService.js";
 import type { IUserRepository } from "#/application/user/interfaces/IUserRepository.js";
 
 @injectable()
@@ -20,15 +19,11 @@ export default class RegisterWithCredentials {
     private readonly hashGeneratorService: THashGeneratorService,
     @inject("TokenService")
     private readonly tokenGenerateService: TTokenGenerateService,
-    @inject("IdService")
-    private readonly idService: IIdService,
     @inject(CONFIG_TOKEN) private readonly config: TJwtExpiresConfig,
   ) {}
 
   async execute(regData: TRegisterBodyDto): Promise<TAuthTokens> {
-    const userId = this.idService.generate();
     const user = User.create({
-      id: userId,
       email: regData.email,
       name: regData.name,
     });
@@ -62,8 +57,6 @@ export default class RegisterWithCredentials {
     user.setRefreshToken(refreshToken);
 
     await this.userRepository.saveUser(user);
-
-    console.log(user);
 
     return { accessToken, refreshToken };
   }

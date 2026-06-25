@@ -1,6 +1,5 @@
 import IndexRouter from "../routers/Index.js";
 import IntegrationModule from "./Integration.js";
-import InventoryModule from "./Inventory.js";
 import ItemModule from "./Item.js";
 import UserRoleModule from "./UserRole.js";
 import type { IRouter } from "express";
@@ -16,12 +15,11 @@ export default class AppModule {
   private init() {
     const userRole = new UserRoleModule();
     const integration = new IntegrationModule();
-    const inventory = new InventoryModule();
-    const item = new ItemModule(inventory.service);
+    const item = new ItemModule();
 
     const indexRouter = new IndexRouter(
       userRole.router,
-      inventory.router,
+      //inventory.router,
       item.router,
       integration.router,
     );
