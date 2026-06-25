@@ -21,7 +21,7 @@ export default class CreateComment {
 
     await this.eventBus.publish<TCommentsProrps>({
       eventName: "COMMENT_CREATED",
-      payload: comment.toJSON(),
+      payload: savedComment.toJSON(),
     });
 
     return savedComment;

@@ -49,19 +49,6 @@ export interface Settings {
       text: string;
     };
   };
-  selects: {
-    item: {
-      id: boolean;
-      inventoryId: boolean;
-      customId: boolean;
-      ownerId: boolean;
-      owner: { select: { id: boolean; name: boolean; email: boolean } };
-      version: boolean;
-      createdAt: boolean;
-      updatedAt: boolean;
-      values: { select: { id: boolean; field: boolean; value: boolean } };
-    };
-  };
   url: {
     frontend: string;
     backend: string;

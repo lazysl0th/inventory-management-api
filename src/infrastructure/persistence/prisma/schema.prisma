@@ -117,7 +117,7 @@ enum Category {
 }
 
 model Item {
-    id          Int         @id @default(autoincrement())
+    id          String      @id @db.Uuid
     inventoryId String      @db.Uuid
     inventory   Inventory   @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
     customId    String
@@ -126,15 +126,15 @@ model Item {
     values      ItemValue[]
     likes       Like[]
     version     Int         @default(1)
-    createdAt   DateTime    @default(now())
+    createdAt   DateTime
     updatedAt   DateTime    @updatedAt
 
     @@unique([inventoryId, customId])
 }
 
 model ItemValue {
-    id      Int            @id @default(autoincrement())
-    itemId  Int
+    id      String         @id @db.Uuid
+    itemId  String         @db.Uuid
     item    Item           @relation(fields: [itemId], references: [id], onDelete: Cascade)
     fieldId String         @db.Uuid
     field   InventoryField @relation("InventoryFieldToItemValue", fields: [fieldId], references: [id], onDelete: Cascade)
@@ -154,10 +154,10 @@ model Comment {
 }
 
 model Like {
-    id     Int  @id @default(autoincrement())
+    id     String      @id @default(uuid(7)) @db.Uuid
     userId String      @db.Uuid
     user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-    itemId Int
+    itemId String      @db.Uuid
     item   Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
 
     @@unique([userId, itemId])
