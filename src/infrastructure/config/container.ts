@@ -52,9 +52,18 @@ import inventoryValidations, {
 import InventoryController from "../transport/http/modules/inventory/InventoryController.js";
 import inventoryRoutes from "../transport/http/modules/inventory/inventoryRoutes.js";
 import PrismaInventoryRepository from "../persistence/repositories/PrismaInventoryRepository.js";
-import { ITEM_VALIDATIONS_TOKEN } from "../transport/http/modules/item/itemValidations.js";
+import itemValidations, {
+  ITEM_VALIDATIONS_TOKEN,
+} from "../transport/http/modules/item/itemValidations.js";
 import itemRoutes from "../transport/http/modules/item/itemRoutes.js";
-import ItemController from "../../controllers/Item.js";
+import ItemController from "../transport/http/modules/item/ItemController.js";
+import PrismaItemRepository from "../persistence/repositories/PrismaItemRepository.js";
+import likeValidations, {
+  LIKE_VALIDATIONS_TOKEN,
+} from "../transport/http/modules/like/likeValidations.js";
+import LikeController from "../transport/http/modules/like/LikeController.js";
+import likeRoutes from "../transport/http/modules/like/likeRoutes.js";
+import PrismaLikeRepository from "../persistence/repositories/PrismaLikeRepository.js";
 
 const createContainer = () => {
   container.register(CONFIG_TOKEN, { useValue: config });
@@ -171,6 +180,10 @@ const createContainer = () => {
     useClass: PrismaInventoryRepository,
   });
 
+  container.register(ITEM_VALIDATIONS_TOKEN, {
+    useValue: itemValidations,
+  });
+
   container.register<IRoute>("IRoute", {
     useFactory: (container) => {
       const itemValidations = container.resolve(ITEM_VALIDATIONS_TOKEN);
@@ -180,6 +193,29 @@ const createContainer = () => {
         router: itemRoutes(routesController, itemValidations),
       };
     },
+  });
+
+  container.register("ItemRepository", {
+    useClass: PrismaItemRepository,
+  });
+
+  container.register(LIKE_VALIDATIONS_TOKEN, {
+    useValue: likeValidations,
+  });
+
+  container.register<IRoute>("IRoute", {
+    useFactory: (container) => {
+      const itemValidations = container.resolve(LIKE_VALIDATIONS_TOKEN);
+      const routesController = container.resolve(LikeController);
+      return {
+        path: "/likes",
+        router: likeRoutes(routesController, itemValidations),
+      };
+    },
+  });
+
+  container.register("LikeRepository", {
+    useClass: PrismaLikeRepository,
   });
 
   container.register("IWsValidationRegistry", {

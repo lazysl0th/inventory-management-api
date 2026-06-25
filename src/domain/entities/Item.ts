@@ -21,7 +21,7 @@ export const itemSchema = z.object({
 export const createItemSchema = itemSchema
   .pick({ owner: true, values: true })
   .extend({
-    inventoryId: itemSchema.shape.inventory.options[0],
+    inventoryId: z.uuid(),
     owner: itemSchema.shape.owner.options[0],
   });
 
@@ -29,11 +29,11 @@ type TItemProps = z.infer<typeof itemSchema>;
 
 export type TCreateItemProps = Pick<
   TItemProps,
-  "customId" | "owner" | "inventory" | "values"
+  "customId" | "owner" | "values" | "inventory"
 >;
 
 export type TUpdateItemProps = Partial<
-  Omit<TItemProps, "id | createdAt | owner | inventory">
+  Omit<TItemProps, "id | createdAt | owner">
 >;
 
 export default class Item {
@@ -104,6 +104,12 @@ export default class Item {
   public toPersistence() {
     return {
       id: this.id,
+      owner: this.owner.id,
+      values: this.values.map((value) => value.toPersistence()),
+      customId: this.customId,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+      inventory: this.inventory.id,
     };
   }
 

@@ -3,7 +3,7 @@ import type { InjectionToken } from "tsyringe";
 
 import validate from "../../middlewares/validation.js";
 import {
-  createItemSchema,
+  createItemRequestSchema,
   deleteItemsSchema,
   getItemSchema,
   getItemsSchema,
@@ -22,7 +22,7 @@ export type IItemValidations = Record<TItemRoutes, RequestHandler>;
 const itemValidations: IItemValidations = {
   getItems: validate(getItemsSchema),
   getItem: validate(getItemSchema),
-  createItem: validate(createItemSchema),
+  createItem: validate(createItemRequestSchema),
   updateItem: validate(updateItemSchema),
   deleteItems: validate(deleteItemsSchema),
 };

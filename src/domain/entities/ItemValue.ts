@@ -34,6 +34,14 @@ export default class ItemValue {
     return new ItemValue(props);
   }
 
+  public toPersistence() {
+    return {
+      id: this.id,
+      value: this.value,
+      field: this.field.id,
+    };
+  }
+
   public toJSON(): TItemValueProps {
     return {
       id: this.id,
