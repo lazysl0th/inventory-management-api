@@ -14,7 +14,7 @@ export default class JwtService implements ITokenService {
     @inject(CONFIG_TOKEN) private readonly config: TJwtServiceConfig,
   ) {}
 
-  generate(payload: object, signOptions?: SignOptions): string {
+  generate(payload: object | string, signOptions?: SignOptions): string {
     return jwt.sign(payload, this.config.JWT_SECRET, signOptions);
   }
 

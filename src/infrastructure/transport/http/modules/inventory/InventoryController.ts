@@ -1,18 +1,6 @@
 import { inject, injectable } from "tsyringe";
 import type { RequestHandler } from "express";
 import HttpStatusCode from "../../constants/httpStatusCode.js";
-import type {
-  IBodyInventoryIds,
-  IQueryInventorySort,
-  TParamInventoryId,
-  TParamInventoryToken,
-  TQueryInventorySearch,
-} from "../../../../../types/controllers/Inventory.js";
-import type {
-  IInventoryData,
-  TInventory,
-  TUpdateInventoryData,
-} from "../../../../../types/models/Inventory.js";
 import UnauthorizedError from "#/domain/errors/UnauthorizedError.js";
 import GetInventories from "#/application/inventory/use-cases/GetInventories.js";
 import SearchInventories from "#/application/inventory/use-cases/SearchInventories.js";
@@ -23,6 +11,19 @@ import UpdateInventory from "#/application/inventory/use-cases/UpdateInventory.j
 import GetInventoryToken from "#/application/inventory/use-cases/GetInventoryToken.js";
 import DeleteInventories from "#/application/inventory/use-cases/DeleteInventories.js";
 import { Category } from "#/infrastructure/persistence/prisma/generated/enums.js";
+import type {
+  TCreateInventoryBodyDto,
+  TDeleteInventoriesBodyRequestDto,
+  TDeleteInventoriesBodyResponseDto,
+  TGetInventoriesQueryDto,
+  TGetInventoryByTokenParamsDto,
+  TGetInventoryParamsDto,
+  TGetInventoryTokenBodyResponseDto,
+  TSearchInventoriesQueryDto,
+  TUpdateInventoryBodyDto,
+  TUpdateInventoryParamsDto,
+} from "#/application/inventory/dtos/InventoryDto.js";
+import type Inventory from "#/domain/entities/Inventory.js";
 
 @injectable()
 export default class InventoryController {
@@ -46,109 +47,111 @@ export default class InventoryController {
   ) {}
   getInventories: RequestHandler<
     never,
-    TInventory[],
+    Inventory[],
     never,
-    IQueryInventorySort
+    TGetInventoriesQueryDto
   > = async (req, res) => {
-    const sortOrder = req.query.sort;
-    const ownerId = req.query.ownerId;
+    const { sort, ownerId } = req.query;
     const { allowedUserId, isPublic } = req.query;
-    const inventories = await this.getByConditions.execute(
-      sortOrder,
+    const inventories = await this.getByConditions.execute({
+      sort,
       ownerId,
       allowedUserId,
       isPublic,
-    );
+    });
     res.status(HttpStatusCode.Ok).json(inventories);
   };
 
   searchInventories: RequestHandler<
     never,
-    TInventory[],
+    Inventory[],
     never,
-    TQueryInventorySearch
+    TSearchInventoriesQueryDto
   > = async (req, res) => {
-    const { query } = req.query;
-    const result = await this.fullTextSearch.execute(query);
-    res.status(HttpStatusCode.Ok).json(result);
+    const { searchQuery } = req.query;
+    const searchResult = await this.fullTextSearch.execute({ searchQuery });
+    res.status(HttpStatusCode.Ok).json(searchResult);
   };
 
-  getInventoryById: RequestHandler<TParamInventoryId, TInventory> = async (
+  getInventoryById: RequestHandler<TGetInventoryParamsDto, Inventory> = async (
     req,
     res,
   ) => {
     const { inventoryId } = req.params;
-    const inventory = await this.getById.execute(Number(inventoryId));
+    const inventory = await this.getById.execute(inventoryId);
     res.status(HttpStatusCode.Ok).json(inventory);
   };
 
-  getInventoryByToken: RequestHandler<TParamInventoryToken, TInventory> =
-    async (req, res) => {
-      const token = req.params.token;
-      await this.getByToken.execute(token);
-      res.status(HttpStatusCode.Ok).json();
-    };
+  getInventoryByToken: RequestHandler<
+    TGetInventoryByTokenParamsDto,
+    Inventory
+  > = async (req, res) => {
+    const { token } = req.params;
+    await this.getByToken.execute(token);
+    res.status(HttpStatusCode.Ok).json();
+  };
 
   getInventoryCategories: RequestHandler<never, Category[]> = async (
-    req,
+    _,
     res,
   ) => {
     const categories = Object.values(Category);
     res.status(HttpStatusCode.Ok).json(categories);
   };
 
-  createInventory: RequestHandler<never, TInventory, IInventoryData> = async (
-    req,
-    res,
-  ) => {
-    if (!req.isAuthenticated()) {
+  createInventory: RequestHandler<never, Inventory, TCreateInventoryBodyDto> =
+    async (req, res) => {
+      /*if (!req.isAuthenticated()) {
+        throw new UnauthorizedError();
+      }*/
+      const inventoryData = req.body;
+      const userId = req.user?.id;
+      const inventory = await this.create.execute({
+        ...inventoryData,
+        owner: userId || "019efd6f-7555-7053-b1ca-3381791381cd",
+      });
+      res.status(HttpStatusCode.Ok).json(inventory);
+    };
+
+  updateInventory: RequestHandler<
+    TUpdateInventoryParamsDto,
+    Inventory,
+    TUpdateInventoryBodyDto
+  > = async (req, res) => {
+    /*if (!req.isAuthenticated()) {
       throw new UnauthorizedError();
-    }
+    }*/
+    const { inventoryId } = req.params;
     const inventoryData = req.body;
-    const userId = req.user.id;
-    const inventory = await this.create.execute(userId, inventoryData);
+    const inventory = await this.update.execute({
+      id: inventoryId,
+      ...inventoryData,
+    });
     res.status(HttpStatusCode.Ok).json(inventory);
   };
 
-  updateInventory: RequestHandler<
-    TParamInventoryId,
-    TInventory,
-    TUpdateInventoryData
+  getInventoryToken: RequestHandler<
+    TGetInventoryParamsDto,
+    TGetInventoryTokenBodyResponseDto
   > = async (req, res) => {
     if (!req.isAuthenticated()) {
       throw new UnauthorizedError();
     }
-    const inventoryId = req.params.inventoryId;
-    const inventoryData = req.body;
-    const inventory = await this.update.execute(
-      Number(inventoryId),
-      inventoryData,
-    );
-    res.status(HttpStatusCode.Ok).json(inventory);
-  };
-
-  getInventoryToken: RequestHandler<TParamInventoryId, string> = async (
-    req,
-    res,
-  ) => {
-    if (!req.isAuthenticated()) {
-      throw new UnauthorizedError();
-    }
-    const inventoryId = req.params.inventoryId;
-    const inventoryToken = await this.getToken.execute(Number(inventoryId));
-    res.status(HttpStatusCode.Ok).json(inventoryToken);
+    const { inventoryId } = req.params;
+    const inventoryToken = await this.getToken.execute(inventoryId);
+    res.status(HttpStatusCode.Ok).json({ inventoryToken });
   };
 
   deleteInventories: RequestHandler<
     object,
-    { count: number },
-    IBodyInventoryIds
+    TDeleteInventoriesBodyResponseDto,
+    TDeleteInventoriesBodyRequestDto
   > = async (req, res) => {
     if (!req.isAuthenticated()) {
       throw new UnauthorizedError();
     }
-    const inventoryIds = req.body.inventoryIds;
-    const result = await this.deleteInventoriesById.execute(inventoryIds);
+    const { inventoriesIds } = req.body;
+    const result = await this.deleteInventoriesById.execute(inventoriesIds);
     res.status(HttpStatusCode.Ok).json(result);
   };
 }

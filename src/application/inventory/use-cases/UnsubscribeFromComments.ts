@@ -16,7 +16,7 @@ export default class UnsubscribeFromComments {
   async execute(command: TUnsubscribeFromCommentsCommand): Promise<void> {
     const channel = new Channel({
       resource: "inventory",
-      resourceId: Number(command.inventoryId),
+      resourceId: command.inventoryId,
       scope: "comments",
     });
     await this.subscriptionManager.unsubscribe(command.sessionId, channel.name);

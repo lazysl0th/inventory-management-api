@@ -7,7 +7,7 @@ type TInventoryEvent =
 type TInventoryValidationRegistry = Record<TInventoryEvent, z.ZodSchema>;
 
 const inventoryCommentsSubscribeSchema = z.object({
-  inventoryId: z.number().positive().int(),
+  inventoryId: z.uuid(),
 });
 
 const inventoryCommentsUnsubscribeSchema = inventoryCommentsSubscribeSchema;

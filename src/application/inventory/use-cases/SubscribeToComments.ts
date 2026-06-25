@@ -19,7 +19,7 @@ export default class SubscribeToComments {
 
   async execute(command: ISubscribeToCommentsCommand): Promise<Channel> {
     const inventory = await this.inventoryRepository.getById(
-      Number(command.inventoryId),
+      command.inventoryId,
     );
     if (!inventory) {
       throw new NotFound("Inventory not found");

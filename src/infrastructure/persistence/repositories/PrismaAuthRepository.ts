@@ -15,14 +15,6 @@ export default class PrismaAuthRepository implements IAuthRepository {
     return User.restore({ ...userData, passwordHash: userData.password });
   }
 
-  /*async saveUser(user: User): Promise<void> {
-    await this.prisma.client.user.upsert({
-      where: { id: user.id },
-      create: user.toPersistence(),
-      update: user.toPersistence(),
-    });
-  }*/
-
   async getUserByEmail(email: string): Promise<User | null> {
     const userData = await this.prisma.client.user.findUnique({
       where: { email },
@@ -43,11 +35,4 @@ export default class PrismaAuthRepository implements IAuthRepository {
     });
     return userData ? this.createUser(userData) : null;
   }
-  /*
-  async getUserById(id: string): Promise<User | null> {
-    const userData = await this.prisma.client.user.findUnique({
-      where: { id },
-    });
-    return userData ? this.createUser(userData) : null;
-  }*/
 }

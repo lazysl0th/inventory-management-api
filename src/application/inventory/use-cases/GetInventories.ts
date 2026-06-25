@@ -1,7 +1,7 @@
 import { inject, injectable } from "tsyringe";
-import type { EnumInventorySortOrder } from "../../../types/services/Inventory.js";
-import type { TInventory } from "../../../types/models/Inventory.js";
 import type { IInventoryRepository } from "../interfaces/IInventoryRepository.js";
+import type { TGetInventoriesQueryDto } from "../dtos/InventoryDto.js";
+import type Inventory from "#/domain/entities/Inventory.js";
 
 @injectable()
 export default class GetInventories {
@@ -10,17 +10,17 @@ export default class GetInventories {
     private readonly inventoryRepository: IInventoryRepository,
   ) {}
 
-  async execute(
-    sortOrder?: EnumInventorySortOrder,
-    ownerId?: string,
-    allowedUserId?: string,
-    isPublic?: boolean,
-  ): Promise<TInventory[]> {
-    return await this.inventoryRepository.getAll(
-      sortOrder,
+  async execute({
+    sort,
+    ownerId,
+    allowedUserId,
+    isPublic,
+  }: TGetInventoriesQueryDto): Promise<Inventory[]> {
+    return await this.inventoryRepository.getAll({
+      sort,
       ownerId,
       allowedUserId,
       isPublic,
-    );
+    });
   }
 }

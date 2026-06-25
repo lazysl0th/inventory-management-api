@@ -38,7 +38,6 @@ export default class LoginWithOAuth {
         user.linkSocialAccount(socialAccount);
       } else {
         user = User.create({
-          id: this.idService.generate(),
           email: authData.email,
           name: authData.name,
         });

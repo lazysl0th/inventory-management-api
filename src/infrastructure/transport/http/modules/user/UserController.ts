@@ -29,7 +29,7 @@ export default class UserController {
   ) {}
 
   getUserProfile: RequestHandler<never, User> = async (req, res) => {
-    if (req.isAuthenticated()) {
+    if (!req.isAuthenticated()) {
       throw new UnauthorizedError();
     }
     const user = req.user;

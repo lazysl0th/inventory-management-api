@@ -3,7 +3,8 @@ import type { InjectionToken } from "tsyringe";
 
 import validate from "../../middlewares/validation.js";
 import {
-  deleteInventoriesSchema,
+  createInventoryBodySchema,
+  deleteInventoriesBodyRequestSchema,
   getInventoriesSchema,
   getInventoryByTokenSchema,
   getInventorySchema,
@@ -16,6 +17,7 @@ export type TInventoryRoutes =
   | "searchInventories"
   | "getInventory"
   | "getInventoryByToken"
+  | "createInventory"
   | "updateInventory"
   | "deleteInventories";
 
@@ -26,8 +28,9 @@ const inventoryValidations: IInventoryValidations = {
   searchInventories: validate(searchInventoriesSchema),
   getInventory: validate(getInventorySchema),
   getInventoryByToken: validate(getInventoryByTokenSchema),
+  createInventory: validate(createInventoryBodySchema),
   updateInventory: validate(updateInventorySchema),
-  deleteInventories: validate(deleteInventoriesSchema),
+  deleteInventories: validate(deleteInventoriesBodyRequestSchema),
 };
 
 export const INVENTORY_VALIDATIONS_TOKEN: InjectionToken<IInventoryValidations> =

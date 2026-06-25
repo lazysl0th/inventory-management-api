@@ -7,7 +7,6 @@ import type {
   TItem,
   TLike,
 } from "../types/models/Item.js";
-import type { IInventoryService } from "../types/services/Inventory.js";
 import { BAD_REQUEST, NOT_FOUND } from "../constants/response.js";
 import type {
   ItemUpdateInput,
@@ -18,11 +17,12 @@ import type {
 } from "#/infrastructure/persistence/prisma/generated/models.js";
 import BadRequest from "#/domain/errors/BadRequest.js";
 import NotFound from "#/domain/errors/NotFound.js";
+import type { IInventoryRepository } from "#/application/inventory/interfaces/IInventoryRepository.js";
 
 export default class ItemService implements IItemService {
   constructor(
     private readonly ItemModel: IItemModel,
-    private readonly InventoryService: IInventoryService,
+    private readonly InventoryService: IInventoryRepository,
   ) {}
 
   async getItems(inventoryId: number): Promise<TItem[]> {
@@ -103,18 +103,20 @@ export default class ItemService implements IItemService {
     inventoryId: number,
     itemValues: IItemValue[],
   ): Promise<TItem> {
-    const inventory = await this.InventoryService.getInventoryById(inventoryId);
-    if (!isCustomIdFormatObject(inventory.customIdFormat))
+    const inventory = await this.InventoryService.getById(
+      inventoryId.toString(),
+    );
+    if (!isCustomIdFormatObject(inventory?.customIdFormat))
       throw new BadRequest(BAD_REQUEST.TEXT);
     const itemCreateData = {
       customId: "",
-      inventory: { connect: { id: inventoryId } },
-      owner: { connect: { id: userId } },
+      inventory: { connect: { id: inventoryId.toString() } },
+      owner: { connect: { id: userId.toString() } },
       values: this._valuesForCreateItem(itemValues),
     };
     return await this.ItemModel.create(
       itemCreateData,
-      inventory.customIdFormat.parts,
+      inventory?.customIdFormat.parts || [],
     );
   }
 

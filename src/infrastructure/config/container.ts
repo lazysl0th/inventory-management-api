@@ -16,7 +16,6 @@ import { InMemorySessionRepository } from "../persistence/repositories/InMemoryS
 import wsInventoryRoutes from "../transport/ws/socketio/modules/inventory/wsInventoryRoutes.js";
 import WsCommentController from "../transport/ws/socketio/modules/inventory/WSInventoryController.js";
 import { SocketIoSubscriptionManager } from "../transport/ws/socketio/adapters/SocketIoSubscriptionManager.js";
-import InventoryModel from "../../models/Inventory.js";
 import { SocketIoPublisher } from "../transport/ws/socketio/adapters/SocketIoPublisher.js";
 import { EventEmitterBus } from "../transport/ws/events/EventEmitterBus.js";
 import { CommentCreatedHandler } from "../transport/ws/events/handlers/CommentCreatedHandler.js";
@@ -52,6 +51,7 @@ import inventoryValidations, {
 } from "../transport/http/modules/inventory/inventoryValidations.js";
 import InventoryController from "../transport/http/modules/inventory/InventoryController.js";
 import inventoryRoutes from "../transport/http/modules/inventory/inventoryRoutes.js";
+import PrismaInventoryRepository from "../persistence/repositories/PrismaInventoryRepository.js";
 
 const createContainer = () => {
   container.register(CONFIG_TOKEN, { useValue: config });
@@ -165,7 +165,7 @@ const createContainer = () => {
   });
 
   container.register("InventoryRepository", {
-    useClass: InventoryModel,
+    useClass: PrismaInventoryRepository,
   });
 
   container.register("IWsValidationRegistry", {

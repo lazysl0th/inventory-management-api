@@ -15,7 +15,7 @@ export default class LoginWithCredentials {
   constructor(
     @inject("AuthRepository")
     private readonly authRepository: IAuthRepository,
-    @inject("AuthRepository")
+    @inject("UserRepository")
     private readonly userRepository: IUserRepository,
     @inject("HashService")
     private readonly hashComparerService: THashComparerService,

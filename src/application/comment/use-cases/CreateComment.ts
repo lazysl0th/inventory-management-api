@@ -1,9 +1,10 @@
 import { inject, injectable } from "tsyringe";
 import type { ICommentRepository } from "../interfaces/ICommentRepository.js";
-import type { TCreateCommentDto } from "../dtos/CommentDto.js";
 import type { IEventBus } from "#/application/realtime/interfaces/IEventBus.js";
-import Comment from "#/domain/entities/Comment.js";
-import type { ICommentProps } from "#/domain/entities/Comment.js";
+import Comment, {
+  type TCommentCreateProps,
+  type TCommentsProrps,
+} from "#/domain/entities/Comment.js";
 
 @injectable()
 export default class CreateComment {
@@ -13,16 +14,16 @@ export default class CreateComment {
     @inject("EventBus") private readonly eventBus: IEventBus,
   ) {}
 
-  async execute(createCommentDto: TCreateCommentDto): Promise<Comment> {
+  async execute(createCommentDto: TCommentCreateProps): Promise<Comment> {
     const comment = Comment.create(createCommentDto);
 
-    await this.commentRepository.save(comment);
+    const savedComment = await this.commentRepository.save(comment);
 
-    await this.eventBus.publish<ICommentProps>({
+    await this.eventBus.publish<TCommentsProrps>({
       eventName: "COMMENT_CREATED",
       payload: comment.toJSON(),
     });
 
-    return comment;
+    return savedComment;
   }
 }

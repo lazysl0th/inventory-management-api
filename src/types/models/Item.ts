@@ -1,4 +1,3 @@
-import type { ICustomIdFormatPart } from "./Inventory.js";
 import type { Settings } from "../settings.js";
 import type {
   ItemCreateInput,
@@ -6,6 +5,7 @@ import type {
   ItemUpdateInput,
   LikeGetPayload,
 } from "#/infrastructure/persistence/prisma/generated/models.js";
+import type CustomIdFormatPart from "#/domain/value-objects/CustomIdFormatPart.js";
 
 export type TItem = ItemGetPayload<{
   select: Settings["selects"]["item"];
@@ -25,7 +25,7 @@ export interface IItemData {
 export interface IItemValue {
   id: number;
   value: string;
-  fieldId: number;
+  fieldId: string;
 }
 
 export interface IItemModel {
@@ -33,7 +33,7 @@ export interface IItemModel {
   getById(id: number): Promise<TItem | null>;
   create(
     data: TItemCreateData,
-    customIdFormatParts: ICustomIdFormatPart[],
+    customIdFormatParts: CustomIdFormatPart[],
   ): Promise<TItem>;
   updateById(id: number, data: TItemUpdateData): Promise<TItem>;
   deleteByIds(ids: number[]): Promise<{ count: number }>;

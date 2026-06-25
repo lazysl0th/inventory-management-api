@@ -55,7 +55,7 @@ enum Status {
 }
 
 model Inventory {
-    id             Int              @id @default(autoincrement())
+    id             String           @id @db.Uuid
     title          String
     description    String?
     category       Category
@@ -70,8 +70,8 @@ model Inventory {
     fields         InventoryField[]
     items          Item[]
     comments       Comment[]
-    createdAt      DateTime         @default(now())
-    updatedAt      DateTime         @updatedAt
+    createdAt      DateTime
+    updatedAt      DateTime
     token       String?             @unique
 
     searchVector Unsupported("tsvector")?
@@ -87,8 +87,8 @@ model Sequence {
 }
 
 model InventoryField {
-    id          Int         @id @default(autoincrement())
-    inventoryId Int
+    id          String      @id @db.Uuid
+    inventoryId String      @db.Uuid
     inventory   Inventory   @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
     title       String
     type        FieldType
@@ -118,7 +118,7 @@ enum Category {
 
 model Item {
     id          Int         @id @default(autoincrement())
-    inventoryId Int
+    inventoryId String      @db.Uuid
     inventory   Inventory   @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
     customId    String
     ownerId     String      @db.Uuid
@@ -136,7 +136,7 @@ model ItemValue {
     id      Int            @id @default(autoincrement())
     itemId  Int
     item    Item           @relation(fields: [itemId], references: [id], onDelete: Cascade)
-    fieldId Int
+    fieldId String         @db.Uuid
     field   InventoryField @relation("InventoryFieldToItemValue", fields: [fieldId], references: [id], onDelete: Cascade)
     value   String
 
@@ -146,9 +146,9 @@ model ItemValue {
 model Comment {
     id          String     @id @db.Uuid
     content     String
-    userId      String      @db.Uuid
+    userId      String     @db.Uuid
     user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-    inventoryId Int
+    inventoryId String     @db.Uuid
     inventory   Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
     createdAt   DateTime
 }
@@ -164,7 +164,7 @@ model Like {
 }
 
 model Tag {
-    id          String     @id @db.Uuid
+    id          String     @id @default(uuid(7)) @db.Uuid
     name        String      @unique
     inventories Inventory[] @relation("InventoryTags")
 }

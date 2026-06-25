@@ -5,29 +5,29 @@ import type InventoryController from "./InventoryController.js";
 
 const inventoryRoutes = (
   inventoryController: InventoryController,
-  inventoryValidator: IInventoryValidations,
+  inventoryValidations: IInventoryValidations,
   authService: PassportService,
 ) => {
   const router = Router();
   router.get(
     "/",
-    inventoryValidator.getInventories,
+    inventoryValidations.getInventories,
     inventoryController.getInventories,
   );
   router.get(
     "/search",
-    inventoryValidator.searchInventories,
+    inventoryValidations.searchInventories,
     inventoryController.searchInventories,
   );
   router.get(
     "/:inventoryId",
-    inventoryValidator.getInventory,
+    inventoryValidations.getInventory,
     inventoryController.getInventoryById,
   );
 
   router.get(
     "/token/:inventoryToken",
-    inventoryValidator.getInventoryByToken,
+    inventoryValidations.getInventoryByToken,
     inventoryController.getInventoryByToken,
   );
 
@@ -35,20 +35,24 @@ const inventoryRoutes = (
 
   authService.passport.authenticate("jwt", { session: false });
   //this.router.use(Passport.authorize("jwt"));
-  router.post("/", inventoryController.createInventory);
+  router.post(
+    "/",
+    inventoryValidations.createInventory,
+    inventoryController.createInventory,
+  );
   router.patch(
     "/:inventoryId",
-    inventoryValidator.updateInventory,
+    inventoryValidations.updateInventory,
     inventoryController.updateInventory,
   );
   router.get(
     "/:inventoryId/getToken",
-    inventoryValidator.getInventory,
+    inventoryValidations.getInventory,
     inventoryController.getInventoryToken,
   );
   router.delete(
     "/",
-    inventoryValidator.deleteInventories,
+    inventoryValidations.deleteInventories,
     inventoryController.deleteInventories,
   );
   //this.router.post('/:inventoryToken/items', this.ItemRouter.router);

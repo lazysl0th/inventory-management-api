@@ -1,6 +1,6 @@
 import { inject, injectable } from "tsyringe";
 import type { ITagRepository } from "../interfaces/ITagRepository.js";
-import Tag from "#/domain/entities/Tag.js";
+import Tag from "#/domain/value-objects/Tag.js";
 
 @injectable()
 export default class GetTags {

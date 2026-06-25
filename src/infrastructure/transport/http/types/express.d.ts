@@ -1,5 +1,6 @@
 import type { TAuthTokens } from "#/application/auth/dtos/AuthDto.ts";
 import type DomainUser from "#/domain/entities/User.ts";
+import "qs";
 
 declare global {
   namespace Express {

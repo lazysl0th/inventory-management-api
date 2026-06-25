@@ -1,9 +1,9 @@
+import type CustomIdFormatPart from "#/domain/value-objects/CustomIdFormatPart.js";
 import type { TransactionClient } from "#/infrastructure/persistence/prisma/generated/internal/prismaNamespace.js";
-import type { ICustomIdFormatPart } from "../models/Inventory.js";
 
 export interface IIdGenerator {
   generateCustomId(
-    customIdParts: ICustomIdFormatPart[],
+    customIdParts: CustomIdFormatPart[],
     tx: TransactionClient,
   ): Promise<string>;
 }

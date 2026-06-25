@@ -1,35 +1,26 @@
 import { inject, injectable } from "tsyringe";
-import type { TInventory } from "../../../types/models/Inventory.js";
 import NotFoundError from "#/domain/errors/NotFoundError.js";
-import { randomBytes } from "node:crypto";
-import BadRequestError from "#/domain/errors/BadRequestError.js";
 import type { IInventoryRepository } from "../interfaces/IInventoryRepository.js";
+import type { TTokenGenerateService } from "#/application/token/interfaces/ITokenService.js";
 
 @injectable()
 export default class GetInventoryToken {
   constructor(
     @inject("InventoryRepository")
     private readonly inventoryRepository: IInventoryRepository,
+    @inject("TokenService")
+    private readonly tokenGenerateService: TTokenGenerateService,
   ) {}
 
-  async execute(id: number): Promise<string> {
-    const inventory = await this.inventoryRepository.getById(id);
+  async execute(inventoryId: string): Promise<string> {
+    const inventory = await this.inventoryRepository.getById(inventoryId);
     if (!inventory) throw new NotFoundError("Inventory");
-    if (!inventory.token) return await this.createTokenInventory(inventory);
-    else return inventory.token;
-  }
-
-  async createTokenInventory(inventory: TInventory): Promise<string> {
-    const inventoryData = {
-      version: inventory.version,
-      token: randomBytes(32).toString("hex"),
-    };
-    const { token } = await this.inventoryRepository.updateById(
-      inventory.id,
-      inventoryData,
-      inventory.version++,
-    );
-    if (!token) throw new BadRequestError();
-    return token;
+    if (!inventory.token) {
+      const token = this.tokenGenerateService.generate(inventoryId);
+      inventory.update({ id: inventoryId, token: token });
+      await this.inventoryRepository.save(inventory);
+      return token;
+    }
+    return inventory.token;
   }
 }
