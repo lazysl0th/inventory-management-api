@@ -74,14 +74,33 @@ import { DigitFormatter } from "../services/customId/formatters/DigitFormatter.j
 import { HexFormatter } from "../services/customId/formatters/HexFormatter.js";
 import { CustomIdService } from "../services/customId/CustomIdService.js";
 import PrismaSequenceRepository from "../persistence/repositories/PrismaSequenceRepository.js";
+import integrationRoutes from "../transport/http/modules/integration/integrationRoutes.js";
+import salesForceRoutes from "../transport/http/modules/integration/salesForce/salesForceRoutes.js";
+import SalesForceController from "../transport/http/modules/integration/salesForce/SalesForceController.js";
+import salesForceValidations, {
+  SALES_FORCE_VALIDATIONS_TOKEN,
+} from "../transport/http/modules/integration/salesForce/salesForceValidations.js";
+import CloudinaryService from "../services/CloudinaryService.js";
+import MulterConfig from "./multer.js";
+import CloudinaryController from "../transport/http/modules/integration/cloudinary/CloudinaryController.js";
+import cloudinaryRoutes from "../transport/http/modules/integration/cloudinary/cloudinaryRoutes.js";
+import DropboxController from "../transport/http/modules/integration/dropbox/DropboxController.js";
+import dropboxRoutes from "../transport/http/modules/integration/dropbox/dropboxRoutes.js";
+import SalesForceService from "../services/SalesForceService.js";
+import DropboxService from "../services/DropboxService.js";
 
 const createContainer = () => {
   container.register(CONFIG_TOKEN, { useValue: config });
   container.registerSingleton(CorsConfig);
+  container.registerSingleton(MulterConfig);
   container.register<ILogger>("ILogger", { useClass: LoggerService });
   container.register("HashService", { useClass: BcryptService });
   container.register("TokenService", { useClass: JwtService });
   container.register("EmailService", { useClass: EmailService });
+  container.register("MediaStorageService", { useClass: CloudinaryService });
+  container.register("SalesForceService", { useClass: SalesForceService });
+  container.register("CloudStorageService", { useClass: DropboxService });
+
   container.register<IAuthStrategy>("AuthStrategy", {
     useClass: PassportGoogleStrategy,
   });
@@ -268,6 +287,53 @@ const createContainer = () => {
 
   container.register("LikeRepository", {
     useClass: PrismaLikeRepository,
+  });
+
+  container.register(SALES_FORCE_VALIDATIONS_TOKEN, {
+    useValue: salesForceValidations,
+  });
+
+  container.register<IRoute>("IntegrationRoutes", {
+    useFactory: (container) => {
+      const salesForceValidations = container.resolve(
+        SALES_FORCE_VALIDATIONS_TOKEN,
+      );
+      const routesController = container.resolve(SalesForceController);
+      return {
+        path: "/salesforce",
+        router: salesForceRoutes(routesController, salesForceValidations),
+      };
+    },
+  });
+
+  container.register<IRoute>("IntegrationRoutes", {
+    useFactory: (container) => {
+      const routesController = container.resolve(CloudinaryController);
+      return {
+        path: "/cloudinary",
+        router: cloudinaryRoutes(routesController),
+      };
+    },
+  });
+
+  container.register<IRoute>("IntegrationRoutes", {
+    useFactory: (container) => {
+      const routesController = container.resolve(DropboxController);
+      return {
+        path: "/dropbox",
+        router: dropboxRoutes(routesController),
+      };
+    },
+  });
+
+  container.register<IRoute>("IRoute", {
+    useFactory: (container) => {
+      const routes = container.resolveAll<IRoute>("IntegrationRoutes");
+      return {
+        path: "/integrations",
+        router: integrationRoutes(routes),
+      };
+    },
   });
 
   container.register("IWsValidationRegistry", {

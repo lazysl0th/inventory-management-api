@@ -30,10 +30,15 @@ export interface IUploadResultDropbox {
   content_hash: string;
 }
 
-export interface IDropboxApi {
-  getDropboxTokens(authCode: string): Promise<unknown>;
-  uploadJsonToDropbox(
-    data: IReportData,
-    fileName: string,
-  ): Promise<IUploadResultDropbox>;
+export interface IUploadDataDropbox {
+  userName: string;
+  userEmail: string;
+  inventory: string;
+  link: string;
+  priority: string;
+  request: string;
+}
+
+export interface IAuthCodeDropbox {
+  code: string;
 }

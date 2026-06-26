@@ -1,17 +1,15 @@
-import type User from "#/domain/entities/User.js";
-
 export interface IAccessInfo {
   access_token: string;
   instance_url: string;
 }
 
-export interface IPicklistValue {
+interface IPicklistValue {
   value: string;
   label: string;
   active: boolean;
 }
 
-export interface IField {
+interface IField {
   name: string;
   type: string;
   picklistValues: IPicklistValue[];
@@ -30,8 +28,6 @@ export interface IAdditionalData {
   ShippingStreet: string;
 }
 
-type TReferenceId = "account" | "contact";
-
 interface IBodySuccess {
   id: string;
   success: boolean;
@@ -43,6 +39,8 @@ interface IBodyError {
   errorCode: string;
   message: string;
 }
+
+type TReferenceId = "account" | "contact";
 
 export interface IResponse {
   body: IBodySuccess | IBodyError;
@@ -60,11 +58,7 @@ export interface IGetInfoResponse {
   records: IAdditionalData[];
 }
 
-export interface ISalesForceApi {
-  getAddress(): Promise<IAddressDescribe>;
-  createAccountWithContact(
-    contactData: User,
-    additionalData: IAdditionalData,
-  ): Promise<IAddInfoCompositeResponse>;
-  getInfoById(id: string): Promise<IGetInfoResponse>;
+export interface ILocations {
+  countries: IPicklistValue[] | undefined;
+  states: IPicklistValue[] | undefined;
 }

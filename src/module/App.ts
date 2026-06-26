@@ -1,5 +1,4 @@
 import IndexRouter from "../routers/Index.js";
-import IntegrationModule from "./Integration.js";
 import UserRoleModule from "./UserRole.js";
 import type { IRouter } from "express";
 
@@ -13,9 +12,8 @@ export default class AppModule {
 
   private init() {
     const userRole = new UserRoleModule();
-    const integration = new IntegrationModule();
 
-    const indexRouter = new IndexRouter(userRole.router, integration.router);
+    const indexRouter = new IndexRouter(userRole.router);
     return { indexRouter };
   }
 }

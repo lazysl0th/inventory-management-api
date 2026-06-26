@@ -18,10 +18,13 @@ import type { IRoute } from "./types/types.js";
 import SocketIO from "../ws/socketio/socketio.js";
 import { CommentCreatedHandler } from "../ws/events/handlers/CommentCreatedHandler.js";
 import type { IAuthStrategy } from "#/application/auth/interfaces/IAuthStrategy.js";
+import multer from "multer";
+import MulterConfig from "#/infrastructure/config/multer.js";
 
 const bootstrap = () => {
   const config = container.resolve(CONFIG_TOKEN);
   const corsConfig = container.resolve(CorsConfig);
+  const multerConfig = container.resolve(MulterConfig);
   const routes = container.resolveAll<IRoute>("IRoute");
   const authStrategies = container.resolveAll<IAuthStrategy>("AuthStrategy");
   const app = express();
@@ -29,6 +32,7 @@ const bootstrap = () => {
   app.use(helmet());
   app.use(cors(corsConfig.options));
   app.use(rateLimit(LIMITER_OPTIONS));
+  app.use(multer(multerConfig.options).single("image"));
   app.use(cookieParser());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
