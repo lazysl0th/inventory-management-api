@@ -2,7 +2,7 @@ import type {
   ISession,
   ISessionRepository,
   TSessionValue,
-} from "#/application/realtime/interfaces/ISessionRepository.js";
+} from "#/application/services/realtime/interfaces/ISessionRepository.js";
 import { singleton } from "tsyringe";
 
 @singleton()

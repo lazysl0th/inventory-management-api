@@ -1,6 +1,6 @@
-import type { ISubscriptionManager } from "#/application/realtime/interfaces/ISubscriptionManager.js";
 import { inject, injectable } from "tsyringe";
 import SocketIO from "../socketio.js";
+import type { ISubscriptionManager } from "#/application/services/realtime/interfaces/ISubscriptionManager.js";
 
 @injectable()
 export class SocketIoSubscriptionManager implements ISubscriptionManager {

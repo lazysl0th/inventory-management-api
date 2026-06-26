@@ -1,10 +1,10 @@
 import { inject, injectable } from "tsyringe";
 import type { ICommentRepository } from "../interfaces/ICommentRepository.js";
-import type { IEventBus } from "#/application/realtime/interfaces/IEventBus.js";
 import Comment, {
   type TCommentCreateProps,
   type TCommentsProrps,
 } from "#/domain/entities/Comment.js";
+import type { IEventBus } from "#/application/services/realtime/interfaces/IEventBus.js";
 
 @injectable()
 export default class CreateComment {

@@ -1,9 +1,9 @@
 import { inject, injectable } from "tsyringe";
 import type { TAuthTokens, TRegisterBodyDto } from "../dtos/AuthDto.js";
-import type { THashGeneratorService } from "#/application/hash/interfaces/IHashService.js";
+import type { THashGeneratorService } from "#/application/services/hash/interfaces/IHashService.js";
 import LocalCredentials from "#/domain/value-objects/LocalCredentials.js";
 import User from "#/domain/entities/User.js";
-import type { TTokenGenerateService } from "#/application/token/interfaces/ITokenService.js";
+import type { TTokenGenerateService } from "#/application/services/token/interfaces/ITokenService.js";
 import {
   CONFIG_TOKEN,
   type TJwtExpiresConfig,

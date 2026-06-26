@@ -1,8 +1,8 @@
 import { inject, injectable } from "tsyringe";
-import type { IEventBus } from "#/application/realtime/interfaces/IEventBus.js";
 import type { ILikeRepository } from "../interfaces/ILikeRepository.js";
 import type { TDeleteItemLikeDto } from "../dtos/LikeDtos.js";
 import Like, { type TLikeProps } from "#/domain/value-objects/Like.js";
+import type { IEventBus } from "#/application/services/realtime/interfaces/IEventBus.js";
 
 @injectable()
 export default class DeleteItemLike {

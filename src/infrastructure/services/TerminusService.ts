@@ -7,7 +7,7 @@ import {
 } from "#/application/configuration/interfaces/IConfig.js";
 
 //import type { ITranslator } from "#/application/interfaces/ITranslator.js";
-import type ILogger from "#/application/logger/interfaces/ILogger.js";
+import type ILogger from "#/application/services/logger/interfaces/ILogger.js";
 //import ShutdownService from "./ShutdownService.js";
 
 @injectable()

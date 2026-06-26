@@ -1,6 +1,6 @@
 import z from "zod";
 
-const customIdFormatPartType = z.enum([
+export const customIdFormatPartType = z.enum([
   "TEXT",
   "RANDOM6",
   "RANDOM9",
@@ -16,6 +16,8 @@ const customIdFormatPartFormatEnum = z.enum([
   "D2",
   "D3",
   "D4",
+  "D6",
+  "D10",
   "X5",
   "X8",
   "YYYY",
@@ -44,7 +46,9 @@ export type TCustomIdPartType = z.infer<
   typeof customIdFormatPartSchema
 >["type"];
 
-export type TCustomIdPartFormat = z.infer<
+export type TCustomIdPartFormat = z.infer<typeof customIdFormatPartFormatEnum>;
+
+type TCustomIdPartFormatProp = z.infer<
   typeof customIdFormatPartSchema
 >["format"];
 
@@ -64,7 +68,7 @@ export default class CustomIdFormatPart {
   type: TCustomIdPartType;
   order: number;
   value: string;
-  format: TCustomIdPartFormat;
+  format: TCustomIdPartFormatProp;
   position: TPartSeparatorPosition;
   separator: string;
   currentSequence: number;

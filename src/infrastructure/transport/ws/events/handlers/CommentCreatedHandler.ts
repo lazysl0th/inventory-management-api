@@ -1,8 +1,8 @@
 import { inject, singleton } from "tsyringe";
-import type { IEventBus } from "#/application/realtime/interfaces/IEventBus.js";
-import type { IRealtimePublisher } from "#/application/realtime/interfaces/IRealtimePublisher.js";
 import Channel from "#/domain/value-objects/Channel.js";
 import type Comment from "#/domain/entities/Comment.js";
+import type { IEventBus } from "#/application/services/realtime/interfaces/IEventBus.js";
+import type { IRealtimePublisher } from "#/application/services/realtime/interfaces/IRealtimePublisher.js";
 
 @singleton()
 export class CommentCreatedHandler {

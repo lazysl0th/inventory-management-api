@@ -6,7 +6,7 @@ import {
   CONFIG_TOKEN,
   type TJwtServiceConfig,
 } from "#/application/configuration/interfaces/IConfig.js";
-import type ITokenService from "#/application/token/interfaces/ITokenService.js";
+import type ITokenService from "#/application/services/token/interfaces/ITokenService.js";
 
 @injectable()
 export default class JwtService implements ITokenService {

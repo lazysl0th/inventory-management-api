@@ -2,9 +2,9 @@ import { inject, injectable } from "tsyringe";
 import type { ISubscribeToCommentsCommand } from "../dtos/WSInventoryDto.js";
 import NotFound from "#/domain/errors/NotFound.js";
 import Channel from "#/domain/value-objects/Channel.js";
-import type { ISessionRepository } from "#/application/realtime/interfaces/ISessionRepository.js";
 import type { IInventoryRepository } from "../interfaces/IInventoryRepository.js";
-import type { ISubscriptionManager } from "#/application/realtime/interfaces/ISubscriptionManager.js";
+import type { ISubscriptionManager } from "#/application/services/realtime/interfaces/ISubscriptionManager.js";
+import type { ISessionRepository } from "#/application/services/realtime/interfaces/ISessionRepository.js";
 
 @injectable()
 export default class SubscribeToComments {

@@ -1,7 +1,7 @@
 import { CONFIG_TOKEN } from "#/application/configuration/interfaces/IConfig.js";
 import { container } from "tsyringe";
 import config from "./env.js";
-import type ILogger from "#/application/logger/interfaces/ILogger.js";
+import type ILogger from "#/application/services/logger/interfaces/ILogger.js";
 import LoggerService from "../services/LoggerService.js";
 import CorsConfig from "./cors.js";
 import type { IRoute } from "../transport/http/types/types.js";
@@ -34,7 +34,6 @@ import AuthController from "../transport/http/modules/auth/AuthController.js";
 import BcryptService from "../services/BcryptService.js";
 import JwtService from "../services/JwtService.js";
 import PrismaAuthRepository from "../persistence/repositories/PrismaAuthRepository.js";
-import UuidService from "../services/UuidService.js";
 import PassportService from "../services/passport/PassportService.js";
 import PassportGoogleStrategy from "../services/passport/strategies/Google.js";
 import type { IAuthStrategy } from "#/application/auth/interfaces/IAuthStrategy.js";
@@ -64,6 +63,17 @@ import likeValidations, {
 import LikeController from "../transport/http/modules/like/LikeController.js";
 import likeRoutes from "../transport/http/modules/like/likeRoutes.js";
 import PrismaLikeRepository from "../persistence/repositories/PrismaLikeRepository.js";
+import { TextGenerator } from "../services/customId/generators/TextGenerator.js";
+import { RandomNumberGenerator } from "../services/customId/generators/RandomNumberGenerator.js";
+import { RandomBitsGenerator } from "../services/customId/generators/RandomBitsGenerator.js";
+import { UuidGenerator } from "../services/customId/generators/UuidGenerator.js";
+import { SequenceGenerator } from "../services/customId/generators/SequenceGenerator.js";
+import { DateTimeGenerator } from "../services/customId/generators/DateTimeGenerator.js";
+import { DateTimeFormatter } from "../services/customId/formatters/DateTimeFormatter.js";
+import { DigitFormatter } from "../services/customId/formatters/DigitFormatter.js";
+import { HexFormatter } from "../services/customId/formatters/HexFormatter.js";
+import { CustomIdService } from "../services/customId/CustomIdService.js";
+import PrismaSequenceRepository from "../persistence/repositories/PrismaSequenceRepository.js";
 
 const createContainer = () => {
   container.register(CONFIG_TOKEN, { useValue: config });
@@ -71,7 +81,6 @@ const createContainer = () => {
   container.register<ILogger>("ILogger", { useClass: LoggerService });
   container.register("HashService", { useClass: BcryptService });
   container.register("TokenService", { useClass: JwtService });
-  container.register("IdService", { useClass: UuidService });
   container.register("EmailService", { useClass: EmailService });
   container.register<IAuthStrategy>("AuthStrategy", {
     useClass: PassportGoogleStrategy,
@@ -82,6 +91,49 @@ const createContainer = () => {
   container.register<IAuthStrategy>("AuthStrategy", {
     useClass: PassportJwtStrategy,
   });
+
+  container.register("TextGenerator", {
+    useClass: TextGenerator,
+  });
+  container.register("RandomNumberGenerator", {
+    useClass: RandomNumberGenerator,
+  });
+  container.register("RandomBitsGenerator", {
+    useClass: RandomBitsGenerator,
+  });
+
+  container.register("UuidGenerator", {
+    useClass: UuidGenerator,
+  });
+
+  container.register("SequenceGenerator", {
+    useClass: SequenceGenerator,
+  });
+
+  container.register("DateTimeGenerator", {
+    useClass: DateTimeGenerator,
+  });
+
+  container.register("DateTimeFormatter", {
+    useClass: DateTimeFormatter,
+  });
+
+  container.register("DigitFormatter", {
+    useClass: DigitFormatter,
+  });
+
+  container.register("HexFormatter", {
+    useClass: HexFormatter,
+  });
+
+  container.register("CustomIdService", {
+    useClass: CustomIdService,
+  });
+
+  container.register("SequenceRepository", {
+    useClass: PrismaSequenceRepository,
+  });
+
   container.register<IRoute>("IRoute", {
     useFactory: (container) => {
       const routesController = container.resolve(TagController);

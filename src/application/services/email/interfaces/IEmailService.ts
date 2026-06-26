@@ -1,5 +1,5 @@
 import type { gmail_v1 } from "googleapis";
-import type { Content } from "../../../types/base/MessageContent.js";
+import type { Content } from "../../../../types/base/MessageContent.js";
 
 export interface IEmailService {
   sendMessage(

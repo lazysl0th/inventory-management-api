@@ -1,14 +1,14 @@
 import { google, type gmail_v1, type Auth } from "googleapis";
-import type {
-  IEmailService,
-  IEmailServiceOptions,
-} from "../../application/email/interfaces/IEmailService.js";
 
 import { replaceParamsInTemplate } from "../../utils.js";
 import type { Content } from "../../types/base/MessageContent.js";
 import { MESSAGE_TEMPLATE, SENDER_NAME } from "../../constants/email.js";
 import { GOOGLE } from "../../constants/integration.js";
 import { injectable } from "tsyringe";
+import type {
+  IEmailService,
+  IEmailServiceOptions,
+} from "#/application/services/email/interfaces/IEmailService.js";
 
 @injectable()
 export default class EmailService implements IEmailService {
