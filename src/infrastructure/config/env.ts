@@ -34,6 +34,27 @@ const env = {
   FACEBOOK_CALLBACK_URL:
     process.env.FACEBOOK_CALLBACK_URL ??
     "http://localhost:3001/signin/facebook/callback",
+  CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_NAME,
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_KEY,
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_KEY,
+  CLOUDINARY_UPLOAD_FOLDER:
+    process.env.CLOUDINARY_UPLOAD_FOLDER ?? "inventory-images",
+  SALES_FORCE_CLIENT_ID: process.env.SF_CONSUMER_KEY,
+  SALES_FORCE_CLIENT_SECRET: process.env.SF_CONSUMER_SECRET,
+  SALES_FORCE_BASE_URL:
+    process.env.SALES_FORCE_BASE_URL ??
+    "https://orgfarm-9325b65284-dev-ed.develop.my.salesforce.com/services",
+  DROPBOX_GRANT_TYPE: process.env.DROPBOX_GRANT_TYPE ?? "refresh_token",
+  DROPBOX_REFRESH_TOKEN: process.env.DROPBOX_REFRESH_TOKEN,
+  DROPBOX_CLIENT_ID: process.env.DROPBOX_APP_KEY,
+  DROPBOX_CLIENT_SECRET: process.env.DROPBOX_SECRET_KEY,
+  DROPBOX_REDIRECT_URI:
+    process.env.DROPBOX_CALLBACK_URL ??
+    "http://localhost:3001/signin/dropbox/callback",
+  DROPBOX_BASE_URL:
+    process.env.DROPBOX_BASE_URL ?? "https://api.dropboxapi.com",
+  DROPBOX_CONTENT_URL:
+    process.env.DROPBOX_CONTENT_URL ?? "https://content.dropboxapi.com",
 };
 
 const config: TConfig = envSchema.parse(env);

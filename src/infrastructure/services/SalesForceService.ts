@@ -1,48 +1,60 @@
+import type { ISalesForceService } from "#/application/integrations/SalesForce/interfaces/ISalesForceService.js";
 import type User from "#/domain/entities/User.js";
-import IntegrationApi from "../../base/IntegrationApi.js";
-import { SALES_FORCE } from "../../constants/integration.js";
+import { inject, injectable } from "tsyringe";
+import {
+  CONFIG_TOKEN,
+  type TSalesForceConfig,
+} from "#/application/configuration/interfaces/IConfig.js";
 import type {
   IAccessInfo,
-  IAddressDescribe,
-  ISalesForceApi,
-  IAdditionalData,
   IAddInfoCompositeResponse,
+  IAdditionalData,
+  IAddressDescribe,
   IGetInfoResponse,
-} from "../../types/services/intagrations/SalesForce.js";
+} from "#/application/integrations/SalesForce/dtos/SalesForceDto.js";
+import FetchService from "./FetchService.js";
 
-export default class SalesForceApi
-  extends IntegrationApi
-  implements ISalesForceApi
-{
+export type ErrorState = {
+  error: string;
+};
+
+@injectable()
+export default class SalesForceService implements ISalesForceService {
   readonly baseUrl: string;
   readonly options: Record<string, string>;
 
-  constructor(baseUrl: string) {
-    super();
-    this.baseUrl = baseUrl;
+  constructor(
+    @inject(CONFIG_TOKEN) private readonly config: TSalesForceConfig,
+    @inject(FetchService) private readonly fetchService: FetchService,
+  ) {
+    this.baseUrl = this.config.SALES_FORCE_BASE_URL;
     this.options = {
-      client_id: SALES_FORCE.CLIENT_ID,
-      client_secret: SALES_FORCE.CLIENT_SECRET,
+      client_id: this.config.SALES_FORCE_CLIENT_ID,
+      client_secret: this.config.SALES_FORCE_CLIENT_SECRET,
     };
   }
 
-  private async _getAccessInfo(): Promise<IAccessInfo> {
-    return await this._post<IAccessInfo>("/oauth2/token", {
-      body: new URLSearchParams({
-        grant_type: "client_credentials",
-        ...this.options,
-      }),
-    });
+  private async getAccessInfo(): Promise<IAccessInfo> {
+    return await this.fetchService.post<IAccessInfo>(
+      this.baseUrl,
+      "/oauth2/token",
+      {
+        body: new URLSearchParams({
+          grant_type: "client_credentials",
+          ...this.options,
+        }),
+      },
+    );
   }
 
   async getAddress(): Promise<IAddressDescribe> {
-    const accessInfo = await this._getAccessInfo();
-    return await this._get<IAddressDescribe>(
+    const accessInfo = await this.getAccessInfo();
+    return await this.fetchService.get<IAddressDescribe>(
+      accessInfo.instance_url,
       "/services/data/v64.0/sobjects/Address/describe",
       {
         headers: { Authorization: `Bearer ${accessInfo.access_token}` },
       },
-      accessInfo.instance_url,
     );
   }
 
@@ -50,8 +62,9 @@ export default class SalesForceApi
     contactData: User,
     additionalData: IAdditionalData,
   ): Promise<IAddInfoCompositeResponse> {
-    const accessInfo = await this._getAccessInfo();
-    return await this._post<IAddInfoCompositeResponse>(
+    const accessInfo = await this.getAccessInfo();
+    return await this.fetchService.post<IAddInfoCompositeResponse>(
+      accessInfo.instance_url,
       "/services/data/v64.0/composite",
       {
         headers: {
@@ -82,18 +95,17 @@ export default class SalesForceApi
           ],
         }),
       },
-      accessInfo.instance_url,
     );
   }
 
-  async getInfoById(id: number | string): Promise<IGetInfoResponse> {
-    const accessInfo = await this._getAccessInfo();
-    return await this._get<IGetInfoResponse>(
+  async getInfoById(id: string): Promise<IGetInfoResponse> {
+    const accessInfo = await this.getAccessInfo();
+    return await this.fetchService.get<IGetInfoResponse>(
+      accessInfo.instance_url,
       `/services/data/v64.0/query/?q=SELECT Phone, ShippingCity, ShippingCountryCode, ShippingPostalCode, ShippingStateCode, ShippingStreet FROM Account WHERE External_Id_c__c=${id}`,
       {
         headers: { Authorization: `Bearer ${accessInfo.access_token}` },
       },
-      accessInfo.instance_url,
     );
   }
 }

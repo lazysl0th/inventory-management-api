@@ -4,16 +4,12 @@ import { NOT_FOUND } from "../constants/response.js";
 import type { IBaseRouter } from "../types/base/Router.js";
 
 export default class IndexRouter extends Router {
-  constructor(
-    private readonly UserRoleRouter: IBaseRouter,
-    private readonly IntegrationRouter: IBaseRouter,
-  ) {
+  constructor(private readonly UserRoleRouter: IBaseRouter) {
     super();
     this.initializeRoutes();
   }
 
   initializeRoutes(): void {
-    this.router.use("/integration", this.IntegrationRouter.router);
     this.router.use("/roles", this.UserRoleRouter.router);
     this.router.use((req, res, next) => next(new NotFound(NOT_FOUND.TEXT)));
   }

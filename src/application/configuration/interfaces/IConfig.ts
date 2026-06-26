@@ -28,6 +28,20 @@ export const envSchema = z.object({
   FACEBOOK_CLIENT_ID: z.string().min(1),
   FACEBOOK_CLIENT_SECRET: z.string().min(1),
   FACEBOOK_CALLBACK_URL: z.url(),
+  CLOUDINARY_CLOUD_NAME: z.string().min(1),
+  CLOUDINARY_API_KEY: z.string().min(1),
+  CLOUDINARY_API_SECRET: z.string().min(1),
+  CLOUDINARY_UPLOAD_FOLDER: z.string().min(1),
+  SALES_FORCE_CLIENT_ID: z.string().min(1),
+  SALES_FORCE_CLIENT_SECRET: z.string().min(1),
+  SALES_FORCE_BASE_URL: z.url(),
+  DROPBOX_GRANT_TYPE: z.string().min(1),
+  DROPBOX_REFRESH_TOKEN: z.string().min(1),
+  DROPBOX_CLIENT_ID: z.string().min(1),
+  DROPBOX_CLIENT_SECRET: z.string().min(1),
+  DROPBOX_REDIRECT_URI: z.url(),
+  DROPBOX_BASE_URL: z.url(),
+  DROPBOX_CONTENT_URL: z.url(),
 });
 
 export type TConfig = z.infer<typeof envSchema>;
@@ -59,6 +73,30 @@ export type TGoogleConfig = Pick<
   | "GOOGLE_REDIRECT_URL"
   | "GOOGLE_REFRESH_TOKEN"
   | "GOOGLE_CALLBACK_URL"
+>;
+
+export type TCloudinaryConfig = Pick<
+  TConfig,
+  | "CLOUDINARY_CLOUD_NAME"
+  | "CLOUDINARY_API_KEY"
+  | "CLOUDINARY_API_SECRET"
+  | "CLOUDINARY_UPLOAD_FOLDER"
+>;
+
+export type TSalesForceConfig = Pick<
+  TConfig,
+  "SALES_FORCE_CLIENT_ID" | "SALES_FORCE_CLIENT_SECRET" | "SALES_FORCE_BASE_URL"
+>;
+
+export type TDropboxConfig = Pick<
+  TConfig,
+  | "DROPBOX_GRANT_TYPE"
+  | "DROPBOX_REFRESH_TOKEN"
+  | "DROPBOX_CLIENT_ID"
+  | "DROPBOX_CLIENT_SECRET"
+  | "DROPBOX_REDIRECT_URI"
+  | "DROPBOX_BASE_URL"
+  | "DROPBOX_CONTENT_URL"
 >;
 
 export type TFrontendUrlConfig = TCorsConfig;
