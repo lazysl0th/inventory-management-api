@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { inject, injectable } from "tsyringe";
 
-import type IHashService from "#/application/hash/interfaces/IHashService.js";
+import type IHashService from "#/application/services/hash/interfaces/IHashService.js";
 import {
   CONFIG_TOKEN,
   type THashServiceConfig,

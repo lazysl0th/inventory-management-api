@@ -1,7 +1,7 @@
 import { inject, injectable } from "tsyringe";
 import NotFoundError from "#/domain/errors/NotFoundError.js";
 import type { IInventoryRepository } from "../interfaces/IInventoryRepository.js";
-import type { TTokenGenerateService } from "#/application/token/interfaces/ITokenService.js";
+import type { TTokenGenerateService } from "#/application/services/token/interfaces/ITokenService.js";
 
 @injectable()
 export default class GetInventoryToken {

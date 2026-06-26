@@ -1,8 +1,8 @@
 import { inject, injectable } from "tsyringe";
 import type { TUnsubscribeFromCommentsCommand } from "../dtos/WSInventoryDto.js";
 import Channel from "#/domain/value-objects/Channel.js";
-import type { ISessionRepository } from "#/application/realtime/interfaces/ISessionRepository.js";
-import type { ISubscriptionManager } from "#/application/realtime/interfaces/ISubscriptionManager.js";
+import type { ISubscriptionManager } from "#/application/services/realtime/interfaces/ISubscriptionManager.js";
+import type { ISessionRepository } from "#/application/services/realtime/interfaces/ISessionRepository.js";
 
 @injectable()
 export default class UnsubscribeFromComments {

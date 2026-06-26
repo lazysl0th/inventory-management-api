@@ -1,7 +1,7 @@
 import { inject, injectable } from "tsyringe";
 import type { TAuthTokens, TLocalLoginBodyDto } from "../dtos/AuthDto.js";
-import type { THashComparerService } from "#/application/hash/interfaces/IHashService.js";
-import type { TTokenGenerateService } from "#/application/token/interfaces/ITokenService.js";
+import type { THashComparerService } from "#/application/services/hash/interfaces/IHashService.js";
+import type { TTokenGenerateService } from "#/application/services/token/interfaces/ITokenService.js";
 import {
   CONFIG_TOKEN,
   type TJwtExpiresConfig,

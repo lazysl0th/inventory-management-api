@@ -2,14 +2,14 @@ import { Server as HttpServer } from "http";
 import { Server as SocketIOServer, Socket } from "socket.io";
 import { container, inject, singleton } from "tsyringe";
 import CorsConfig from "#/infrastructure/config/cors.js";
-import ConnectUser from "#/application/realtime/use-cases/connection-management/ConnectUser.js";
-import DisconnectUser from "#/application/realtime/use-cases/connection-management/DisconnectUser.js";
 import {
   wsValidate,
   type TWsValidationRegistry,
 } from "./middlewares/wsValidation.js";
 import { randomUUID } from "crypto";
 import type { IWsRoute } from "./types/types.js";
+import ConnectUser from "#/application/services/realtime/use-cases/connection-management/ConnectUser.js";
+import DisconnectUser from "#/application/services/realtime/use-cases/connection-management/DisconnectUser.js";
 
 @singleton()
 export default class SocketIO {

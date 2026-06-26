@@ -1,6 +1,6 @@
-import type { IRealtimePublisher } from "#/application/realtime/interfaces/IRealtimePublisher.js";
 import { inject, singleton } from "tsyringe";
 import SocketIO from "#/infrastructure/transport/ws/socketio/socketio.js";
+import type { IRealtimePublisher } from "#/application/services/realtime/interfaces/IRealtimePublisher.js";
 
 @singleton()
 export class SocketIoPublisher<T> implements IRealtimePublisher<T> {

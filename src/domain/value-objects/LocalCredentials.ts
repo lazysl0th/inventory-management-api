@@ -1,7 +1,7 @@
 import type {
   THashComparerService,
   THashGeneratorService,
-} from "#/application/hash/interfaces/IHashService.js";
+} from "#/application/services/hash/interfaces/IHashService.js";
 import PasswordHash from "./PasswordHash.js";
 
 interface ILocalCredentialsProps {

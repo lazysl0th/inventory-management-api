@@ -1,6 +1,6 @@
-import type { ISessionRepository } from "#/application/realtime/interfaces/ISessionRepository.js";
 import { inject, injectable } from "tsyringe";
 import type { IGetSessionByUserIdParams } from "../../dtos/ConnectionManagementDto.js";
+import type { ISessionRepository } from "../../interfaces/ISessionRepository.js";
 
 @injectable()
 export class GetSessionByUserId {

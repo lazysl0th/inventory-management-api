@@ -1,9 +1,9 @@
+import { inject, injectable } from "tsyringe";
+import type { IConnectUserCommand } from "../../dtos/ConnectionManagementDto.js";
 import type {
   ISession,
   ISessionRepository,
-} from "#/application/realtime/interfaces/ISessionRepository.js";
-import { inject, injectable } from "tsyringe";
-import type { IConnectUserCommand } from "../../dtos/ConnectionManagementDto.js";
+} from "../../interfaces/ISessionRepository.js";
 
 @injectable()
 export default class ConnectUser {

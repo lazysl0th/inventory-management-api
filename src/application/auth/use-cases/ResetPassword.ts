@@ -1,15 +1,15 @@
 import { inject, injectable } from "tsyringe";
 import type { TResetPasswordBodyDto } from "../dtos/AuthDto.js";
 import type { IAuthRepository } from "../interfaces/IAuthRepository.js";
-import type { TTokenGenerateService } from "#/application/token/interfaces/ITokenService.js";
+import type { TTokenGenerateService } from "#/application/services/token/interfaces/ITokenService.js";
 import {
   CONFIG_TOKEN,
   type TJwtExpiresConfig,
 } from "#/application/configuration/interfaces/IConfig.js";
 import NotFoundError from "#/domain/errors/NotFoundError.js";
-import type { IEmailService } from "#/application/email/interfaces/IEmailService.js";
 import ResetPasswordUserMessage from "../../../services/messages/ResetPasswordUser.js";
 import type { IUserRepository } from "#/application/user/interfaces/IUserRepository.js";
+import type { IEmailService } from "#/application/services/email/interfaces/IEmailService.js";
 
 @injectable()
 export default class ResetPassword {

@@ -1,5 +1,5 @@
 import { inject, injectable } from "tsyringe";
-import type { TTokenVerifyService } from "#/application/token/interfaces/ITokenService.js";
+import type { TTokenVerifyService } from "#/application/services/token/interfaces/ITokenService.js";
 import NotFoundError from "#/domain/errors/NotFoundError.js";
 import { jwtRefreshPayloadSchema } from "../dtos/AuthDto.js";
 import type { IUserRepository } from "#/application/user/interfaces/IUserRepository.js";

@@ -1,7 +1,7 @@
 import type {
   IEvent,
   IEventBus,
-} from "#/application/realtime/interfaces/IEventBus.js";
+} from "#/application/services/realtime/interfaces/IEventBus.js";
 import { EventEmitter } from "node:events";
 import { singleton } from "tsyringe";
 

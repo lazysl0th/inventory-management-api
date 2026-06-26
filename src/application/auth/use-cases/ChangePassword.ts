@@ -3,10 +3,10 @@ import {
   jwtResetPasswordPayloadSchema,
   type TChangePasswordBodyDto,
 } from "../dtos/AuthDto.js";
-import type { TTokenVerifyService } from "#/application/token/interfaces/ITokenService.js";
+import type { TTokenVerifyService } from "#/application/services/token/interfaces/ITokenService.js";
 import NotFoundError from "#/domain/errors/NotFoundError.js";
 import LocalCredentials from "#/domain/value-objects/LocalCredentials.js";
-import type { THashGeneratorService } from "#/application/hash/interfaces/IHashService.js";
+import type { THashGeneratorService } from "#/application/services/hash/interfaces/IHashService.js";
 import type { IUserRepository } from "#/application/user/interfaces/IUserRepository.js";
 
 @injectable()

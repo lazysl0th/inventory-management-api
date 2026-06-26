@@ -3,7 +3,7 @@ import { jwtRefreshPayloadSchema } from "../dtos/AuthDto.js";
 import type {
   TTokenGenerateService,
   TTokenVerifyService,
-} from "#/application/token/interfaces/ITokenService.js";
+} from "#/application/services/token/interfaces/ITokenService.js";
 import {
   CONFIG_TOKEN,
   type TJwtExpiresConfig,
