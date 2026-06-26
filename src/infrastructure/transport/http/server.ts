@@ -5,7 +5,6 @@ import express from "express";
 import cors from "cors";
 import { container } from "tsyringe";
 import { CONFIG_TOKEN } from "#/application/configuration/interfaces/IConfig.js";
-import AppModule from "../../../module/App.js";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
@@ -41,10 +40,8 @@ const bootstrap = () => {
   const socketIo = container.resolve(SocketIO);
   socketIo.attach(httpServer);
   container.resolve(CommentCreatedHandler);
-  const appModule = new AppModule();
   authStrategies.forEach((strategy) => strategy.register());
   routes.forEach((route) => app.use(route.path, route.router));
-  app.use(appModule.router);
   app.use(errors());
   app.use(error);
 
