@@ -88,6 +88,12 @@ import DropboxController from "../transport/http/modules/integration/dropbox/Dro
 import dropboxRoutes from "../transport/http/modules/integration/dropbox/dropboxRoutes.js";
 import SalesForceService from "../services/SalesForceService.js";
 import DropboxService from "../services/DropboxService.js";
+import roleValidations, {
+  ROLE_VALIDATIONS_TOKEN,
+} from "../transport/http/modules/role/roleValidations.js";
+import RoleController from "../transport/http/modules/role/RoleController.js";
+import roleRoutes from "../transport/http/modules/role/roleRoutes.js";
+import PrismaRoleRepository from "../persistence/repositories/PrismaRoleRepository.js";
 
 const createContainer = () => {
   container.register(CONFIG_TOKEN, { useValue: config });
@@ -334,6 +340,25 @@ const createContainer = () => {
         router: integrationRoutes(routes),
       };
     },
+  });
+
+  container.register(ROLE_VALIDATIONS_TOKEN, {
+    useValue: roleValidations,
+  });
+
+  container.register<IRoute>("IRoute", {
+    useFactory: (container) => {
+      const roleValidations = container.resolve(ROLE_VALIDATIONS_TOKEN);
+      const routesController = container.resolve(RoleController);
+      return {
+        path: "/roles",
+        router: roleRoutes(routesController, roleValidations),
+      };
+    },
+  });
+
+  container.register("RoleRepository", {
+    useClass: PrismaRoleRepository,
   });
 
   container.register("IWsValidationRegistry", {
