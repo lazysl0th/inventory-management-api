@@ -1,9 +1,4 @@
 import type { RequestHandler } from "express";
-import {
-  CHANGE_PASSWORD,
-  LOGOUT,
-  RESET_PASSWORD,
-} from "../../../../../constants/response.js";
 import HttpStatusCode from "../../constants/httpStatusCode.js";
 import type {
   TAuthResponseDto,
@@ -98,7 +93,7 @@ export default class AuthController {
   > = async (req, res) => {
     const { email } = req.body;
     await this.resetPassword.execute({ email });
-    res.status(HttpStatusCode.Ok).json({ message: RESET_PASSWORD.TEXT });
+    res.status(HttpStatusCode.Ok).json({ message: "RESET_PASSWORD.TEXT" });
   };
 
   changeUserPassword: RequestHandler<
@@ -111,7 +106,7 @@ export default class AuthController {
       token,
       password,
     });
-    res.status(HttpStatusCode.Ok).json({ message: CHANGE_PASSWORD.TEXT });
+    res.status(HttpStatusCode.Ok).json({ message: "CHANGE_PASSWORD.TEXT" });
   };
 
   logoutUser: RequestHandler<never, TAuthTextResponseDto> = async (
@@ -122,7 +117,7 @@ export default class AuthController {
     if (!refreshToken) throw new ForbiddenError();
     await this.logout.execute(refreshToken);
     res.clearCookie("refreshToken");
-    res.status(HttpStatusCode.Ok).json({ message: LOGOUT.TEXT });
+    res.status(HttpStatusCode.Ok).json({ message: "LOGOUT.TEXT" });
   };
 
   refreshAccessToken: RequestHandler = async (req, res) => {

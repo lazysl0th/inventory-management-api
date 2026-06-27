@@ -25,6 +25,8 @@ export const envSchema = z.object({
   GOOGLE_REDIRECT_URL: z.url(),
   GOOGLE_REFRESH_TOKEN: z.string().min(1),
   GOOGLE_CALLBACK_URL: z.url(),
+  EMAIL_SENDER_NAME: z.string().min(1),
+  EMAIL_SENDER_EMAIL: z.email(),
   FACEBOOK_CLIENT_ID: z.string().min(1),
   FACEBOOK_CLIENT_SECRET: z.string().min(1),
   FACEBOOK_CALLBACK_URL: z.url(),
@@ -73,6 +75,11 @@ export type TGoogleConfig = Pick<
   | "GOOGLE_REDIRECT_URL"
   | "GOOGLE_REFRESH_TOKEN"
   | "GOOGLE_CALLBACK_URL"
+>;
+
+export type TEmailServiceConfig = Pick<
+  TConfig,
+  "EMAIL_SENDER_NAME" | "EMAIL_SENDER_EMAIL"
 >;
 
 export type TCloudinaryConfig = Pick<

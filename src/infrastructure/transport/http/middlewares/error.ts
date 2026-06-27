@@ -1,10 +1,9 @@
 import type { Request, Response, NextFunction } from "express";
-import type { IError } from "../../../../types/base/Error.js";
-import { INTERNAL_SERVER_ERROR } from "../../../../constants/response.js";
+import type DomainError from "#/domain/errors/DomainError.js";
 
 export default (
-  e: IError | Error,
-  req: Request,
+  e: DomainError | Error,
+  _: Request,
   res: Response,
   next: NextFunction,
 ) => {
@@ -12,12 +11,9 @@ export default (
 
   if (res.headersSent) return next(e);
 
-  const statusCode =
-    "statusCode" in e && e.statusCode
-      ? e.statusCode
-      : INTERNAL_SERVER_ERROR.STATUS_CODE;
+  const statusCode = 500;
 
-  const message = e.message || INTERNAL_SERVER_ERROR.TEXT;
+  const message = e.message || "INTERNAL_SERVER_ERROR.TEXT";
 
   res.status(statusCode).json({ message });
 };

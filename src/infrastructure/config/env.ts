@@ -55,6 +55,9 @@ const env = {
     process.env.DROPBOX_BASE_URL ?? "https://api.dropboxapi.com",
   DROPBOX_CONTENT_URL:
     process.env.DROPBOX_CONTENT_URL ?? "https://content.dropboxapi.com",
+  EMAIL_SENDER_NAME: process.env.SENDER_NAME ?? "Inventory management",
+  EMAIL_SENDER_EMAIL:
+    process.env.SENDER_EMAIL ?? "inventory_management@example.com",
 };
 
 const config: TConfig = envSchema.parse(env);
