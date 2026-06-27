@@ -28,9 +28,12 @@ export default class RegisterWithCredentials {
       name: regData.name,
     });
 
+    const passwordHash = await this.hashGeneratorService.generate(
+      regData.password,
+    );
+
     const localCredentials = await LocalCredentials.create({
-      password: regData.password,
-      hashGenerateService: this.hashGeneratorService,
+      password: passwordHash,
     });
 
     user.setLocalCredentials(localCredentials);

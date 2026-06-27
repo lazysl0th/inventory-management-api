@@ -1,9 +1,8 @@
 import { inject, singleton } from "tsyringe";
 
 import type ILogger from "#/application/services/logger/interfaces/ILogger.js";
-
-//import PrismaService from './PrismaService.js';
 import type { ITranslator } from "#/application/services/translator/interfaces/ITranslator.js";
+import Prisma from "../persistence/prisma/prisma.js";
 
 @singleton()
 export default class ShutdownService {
@@ -12,7 +11,7 @@ export default class ShutdownService {
   constructor(
     @inject("ITranslator") private i18n: ITranslator,
     @inject("ILogger") private logger: ILogger,
-    //@inject(PrismaService) private readonly prismaService: PrismaService,
+    @inject(Prisma) private readonly prisma: Prisma,
   ) {}
   public get isAppAvailable(): boolean {
     return this.isAvailable;
@@ -21,7 +20,7 @@ export default class ShutdownService {
   public async stop(): Promise<void> {
     this.isAvailable = false;
     try {
-      //this.prismaService.disconnect();
+      this.prisma.disconnect();
       this.logger.info(this.i18n.t("server.app_stop_safe"));
     } catch (err) {
       this.logger.error({ err }, this.i18n.t("server.app_stop_error"));

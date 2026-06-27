@@ -20,7 +20,7 @@ export default class PrismaUserRepository implements IUserRepository {
   constructor(@inject(Prisma) private readonly prisma: Prisma) {}
 
   createUser(userData: TUser): User {
-    return User.restore({ ...userData, passwordHash: userData.password });
+    return User.restore(userData);
   }
 
   async saveUser(user: User): Promise<User> {

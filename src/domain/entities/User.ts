@@ -11,7 +11,7 @@ export const userSchema = z.object({
   createdAt: z.date(),
   refreshToken: z.string().nullable().optional(),
   resetPasswordToken: z.string().nullable().optional(),
-  passwordHash: z.string().nullable().optional(),
+  password: z.string().nullable().optional(),
 });
 
 type TUserProps = z.infer<typeof userSchema>;
@@ -43,8 +43,8 @@ export default class User {
     this.#createdAt = props.createdAt;
     this.#refreshToken = props.refreshToken ?? null;
     this.#resetPasswordToken = props.resetPasswordToken ?? null;
-    this.#localCredentials = props.passwordHash
-      ? LocalCredentials.restore({ password: props.passwordHash })
+    this.#localCredentials = props.password
+      ? LocalCredentials.restore({ password: props.password })
       : null;
   }
 
@@ -56,7 +56,7 @@ export default class User {
       refreshToken: null,
       resetPasswordToken: null,
       createdAt: new Date(),
-      passwordHash: null,
+      password: null,
     });
   }
 
@@ -115,7 +115,7 @@ export default class User {
       refreshToken: this.#refreshToken,
       resetPasswordToken: this.#resetPasswordToken,
       createdAt: this.#createdAt,
-      password: this.#localCredentials?.passwordHash ?? null,
+      password: this.#localCredentials?.password ?? null,
       ...Object.fromEntries(
         this.#socialAccounts.map((socialAccount) => [
           socialAccount.provider,

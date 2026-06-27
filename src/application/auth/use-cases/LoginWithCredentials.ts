@@ -26,13 +26,13 @@ export default class LoginWithCredentials {
 
   async execute(authData: TLocalLoginBodyDto): Promise<TAuthTokens> {
     const user = await this.authRepository.getUserByEmail(authData.email);
-    if (!user || !user?.localCredentials?.passwordHash)
+    if (!user || !user?.localCredentials?.password)
       throw new InvalidCredentialsError();
 
     if (
-      !(await user.localCredentials.comparePassword(
+      !(await this.hashComparerService.compare(
         authData.password,
-        this.hashComparerService,
+        user.localCredentials.password,
       ))
     )
       throw new InvalidCredentialsError();
