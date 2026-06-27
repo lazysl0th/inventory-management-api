@@ -94,12 +94,15 @@ import roleValidations, {
 import RoleController from "../transport/http/modules/role/RoleController.js";
 import roleRoutes from "../transport/http/modules/role/roleRoutes.js";
 import PrismaRoleRepository from "../persistence/repositories/PrismaRoleRepository.js";
+import type { ITranslator } from "#/application/services/translator/interfaces/ITranslator.js";
+import { translator } from "../services/i18n/i18n.js";
 
 const createContainer = () => {
   container.register(CONFIG_TOKEN, { useValue: config });
   container.registerSingleton(CorsConfig);
   container.registerSingleton(MulterConfig);
   container.register<ILogger>("ILogger", { useClass: LoggerService });
+  container.register<ITranslator>("ITranslator", { useValue: translator });
   container.register("HashService", { useClass: BcryptService });
   container.register("TokenService", { useClass: JwtService });
   container.register("EmailService", { useClass: EmailService });

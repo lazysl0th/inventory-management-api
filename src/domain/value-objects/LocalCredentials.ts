@@ -1,11 +1,5 @@
-import type {
-  THashComparerService,
-  THashGeneratorService,
-} from "#/application/services/hash/interfaces/IHashService.js";
-import PasswordHash from "./PasswordHash.js";
-
 interface ILocalCredentialsProps {
-  passwordHash: PasswordHash;
+  password: string;
 }
 
 interface IRestoreLocalCredentialsProps {
@@ -14,41 +8,28 @@ interface IRestoreLocalCredentialsProps {
 
 interface ICreateLocalCredentials {
   password: string;
-  hashGenerateService: THashGeneratorService;
 }
 
 export default class LocalCredentials {
-  #passwordHash: PasswordHash;
+  #password: string;
 
-  constructor({ passwordHash }: ILocalCredentialsProps) {
-    this.#passwordHash = passwordHash;
+  constructor({ password }: ILocalCredentialsProps) {
+    this.#password = password;
   }
 
-  get passwordHash(): string {
-    return this.#passwordHash.value;
+  get password(): string {
+    return this.#password;
   }
 
   public static async create({
     password,
-    hashGenerateService,
   }: ICreateLocalCredentials): Promise<LocalCredentials> {
-    const hashedPasswordString = await hashGenerateService.generate(password);
-    const passwordHash = new PasswordHash(hashedPasswordString);
-    return new LocalCredentials({ passwordHash });
+    return new LocalCredentials({ password });
   }
 
   public static restore({
     password,
   }: IRestoreLocalCredentialsProps): LocalCredentials {
-    return new LocalCredentials({
-      passwordHash: new PasswordHash(password),
-    });
-  }
-
-  public async comparePassword(
-    password: string,
-    hashGenerateService: THashComparerService,
-  ): Promise<boolean> {
-    return hashGenerateService.compare(password, this.#passwordHash.value);
+    return new LocalCredentials({ password });
   }
 }

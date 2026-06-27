@@ -28,10 +28,10 @@ export default class ChangePassword {
       jwtResetPasswordPayload.userId,
     );
     if (!user) throw new NotFoundError("User");
-    const localCredentials = await LocalCredentials.create({
-      password: changePasswordData.password,
-      hashGenerateService: this.hashGeneratorService,
-    });
+    const password = await this.hashGeneratorService.generate(
+      changePasswordData.password,
+    );
+    const localCredentials = await LocalCredentials.create({ password });
 
     user.setLocalCredentials(localCredentials);
     await this.userRepository.saveUser(user);
