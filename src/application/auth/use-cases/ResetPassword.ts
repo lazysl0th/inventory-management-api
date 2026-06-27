@@ -4,12 +4,14 @@ import type { IAuthRepository } from "../interfaces/IAuthRepository.js";
 import type { TTokenGenerateService } from "#/application/services/token/interfaces/ITokenService.js";
 import {
   CONFIG_TOKEN,
+  type TEmailServiceConfig,
+  type TFrontendUrlConfig,
   type TJwtExpiresConfig,
 } from "#/application/configuration/interfaces/IConfig.js";
 import NotFoundError from "#/domain/errors/NotFoundError.js";
-import ResetPasswordUserMessage from "../../../services/messages/ResetPasswordUser.js";
 import type { IUserRepository } from "#/application/user/interfaces/IUserRepository.js";
 import type { IEmailService } from "#/application/services/email/interfaces/IEmailService.js";
+import ResetPasswordMessage from "#/domain/value-objects/ResetPasswordMessage.js";
 
 @injectable()
 export default class ResetPassword {
@@ -22,10 +24,11 @@ export default class ResetPassword {
     private readonly tokenGenerateService: TTokenGenerateService,
     @inject("EmailService")
     private readonly EmailService: IEmailService,
-    @inject(ResetPasswordUserMessage)
-    private readonly resetPasswordMessage: ResetPasswordUserMessage,
 
-    @inject(CONFIG_TOKEN) private readonly config: TJwtExpiresConfig,
+    @inject(CONFIG_TOKEN)
+    private readonly config: TJwtExpiresConfig &
+      TEmailServiceConfig &
+      TFrontendUrlConfig,
   ) {}
 
   async execute(resetPasswordData: TResetPasswordBodyDto): Promise<void> {
@@ -43,18 +46,15 @@ export default class ResetPassword {
 
     await this.userRepository.saveUser(user);
 
-    await this.EmailService.sendMessage(
+    const message = new ResetPasswordMessage(
       user.email,
-      ResetPasswordUserMessage.getContent({
-        html: {
-          userName: user.name,
-          url: this.resetPasswordMessage.getUrl(resetPasswordToken),
-        },
-        text: {
-          userName: user.name,
-          url: this.resetPasswordMessage.getUrl(resetPasswordToken),
-        },
-      }),
+      user.name,
+      resetPasswordToken,
+      this.config.FRONTEND_URL,
+      this.config.EMAIL_SENDER_NAME,
+      this.config.EMAIL_SENDER_EMAIL,
     );
+
+    await this.EmailService.sendMessage(message.html);
   }
 }

@@ -1,10 +1,7 @@
-import { BAD_REQUEST } from "../../constants/response.js";
-import type { IError } from "../../types/base/Error.js";
-
-export default class BadRequest extends Error implements IError {
+export default class BadRequest extends Error {
   statusCode: number;
   constructor(message: string) {
     super(message);
-    this.statusCode = BAD_REQUEST.STATUS_CODE;
+    this.statusCode = 400;
   }
 }
