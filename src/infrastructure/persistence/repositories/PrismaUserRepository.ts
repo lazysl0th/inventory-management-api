@@ -13,11 +13,27 @@ import type {
 } from "#/application/user/interfaces/IUserRepository.js";
 import User from "#/domain/entities/User.js";
 
-type TUser = UserGetPayload<true>;
+type TUser = UserGetPayload<{
+  include: {
+    roles: {
+      select: {
+        role: true;
+      };
+    };
+  };
+}>;
 
 @injectable()
 export default class PrismaUserRepository implements IUserRepository {
   constructor(@inject(Prisma) private readonly prisma: Prisma) {}
+
+  private include = {
+    roles: {
+      select: {
+        role: true,
+      },
+    },
+  };
 
   createUser(userData: TUser): User {
     return User.restore(userData);
@@ -26,8 +42,34 @@ export default class PrismaUserRepository implements IUserRepository {
   async saveUser(user: User): Promise<User> {
     const userData = await this.prisma.client.user.upsert({
       where: { id: user.id },
-      create: user.toPersistence(),
-      update: user.toPersistence(),
+      create: {
+        ...user.toPersistence(),
+        roles: {
+          create: user.roles.map((roleName) => ({
+            role: {
+              connectOrCreate: {
+                where: { name: roleName },
+                create: { name: roleName },
+              },
+            },
+          })),
+        },
+      },
+      update: {
+        ...user.toPersistence(),
+        roles: {
+          deleteMany: {},
+          create: user.roles.map((roleName) => ({
+            role: {
+              connectOrCreate: {
+                where: { name: roleName },
+                create: { name: roleName },
+              },
+            },
+          })),
+        },
+      },
+      include: this.include,
     });
     return this.createUser(userData);
   }
@@ -37,6 +79,7 @@ export default class PrismaUserRepository implements IUserRepository {
       ...(searchQuery && {
         where: { email: { contains: searchQuery, mode: "insensitive" } },
       }),
+      include: this.include,
     });
     return usersData.map(this.createUser);
   }
@@ -44,6 +87,7 @@ export default class PrismaUserRepository implements IUserRepository {
   async getById(id: string): Promise<User | null> {
     const userData = await this.prisma.client.user.findUnique({
       where: { id },
+      include: this.include,
     });
     return userData ? this.createUser(userData) : null;
   }
@@ -52,6 +96,7 @@ export default class PrismaUserRepository implements IUserRepository {
     const userData = await this.prisma.client.user.update({
       where: { id },
       data,
+      include: this.include,
     });
     return this.createUser(userData);
   }

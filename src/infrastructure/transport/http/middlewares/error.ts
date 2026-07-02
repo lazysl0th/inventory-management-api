@@ -1,19 +1,42 @@
-import type { Request, Response, NextFunction } from "express";
-import type DomainError from "#/domain/errors/DomainError.js";
+import type { ErrorRequestHandler } from "express";
 
-export default (
-  e: DomainError | Error,
-  _: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  console.error(e);
+import { ZodError } from "zod";
 
-  if (res.headersSent) return next(e);
+import DomainError from "#/domain/errors/DomainError.js";
+import ValidationError from "#/domain/errors/ValidationError.js";
+import HttpStatusCode from "../constants/httpStatusCode.js";
+import httpResponseMap from "../constants/responses.js";
 
-  const statusCode = 500;
+const errorsHandler: ErrorRequestHandler = (e, _, res, next) => {
+  console.log(e);
 
-  const message = e.message || "INTERNAL_SERVER_ERROR.TEXT";
+  if (res.headersSent) {
+    next(e);
+    return;
+  }
 
-  res.status(statusCode).json({ message });
+  if (e instanceof ZodError) {
+    return res
+      .status(HttpStatusCode.BadRequest)
+      .json(new ValidationError(e.issues));
+  }
+
+  if (e instanceof DomainError) {
+    const meta = httpResponseMap[e.code];
+
+    if (meta) {
+      res.status(meta.status).send({
+        error: e.code,
+        i18nKey: meta.i18nKey,
+      });
+      return;
+    }
+  }
+
+  res.status(HttpStatusCode.InternalServerError).send({
+    error: "INTERNAL_SERVER_ERROR",
+    i18nKey: "errors.system.internal",
+  });
 };
+
+export default errorsHandler;

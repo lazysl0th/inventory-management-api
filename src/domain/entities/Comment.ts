@@ -3,10 +3,10 @@ import User, { userSchema } from "./User.js";
 import { v7 } from "uuid";
 
 export const commentSchema = z.object({
-  id: z.uuid(),
+  id: z.uuid({ version: "v7" }),
   content: z.string().trim().min(1),
-  user: z.uuid().or(userSchema),
-  inventoryId: z.uuid(),
+  user: z.uuid({ version: "v7" }).or(userSchema),
+  inventoryId: z.uuid({ version: "v7" }),
   createdAt: z.date(),
 });
 

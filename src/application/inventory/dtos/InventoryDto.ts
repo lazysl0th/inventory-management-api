@@ -29,7 +29,7 @@ export const getInventorySchema = z.object({
 
 export const getInventoryByTokenSchema = z.object({
   params: z.object({
-    token: inventorySchema.shape.token.unwrap(),
+    token: inventorySchema.shape.token.unwrap().unwrap(),
   }),
 });
 
@@ -45,9 +45,11 @@ export const createInventoryBodySchema = z.object({
 
 export const updateInventorySchema = z.object({
   params: getInventorySchema.shape.params,
-  body: createInventoryBodySchema.shape.body.extend({
-    token: z.jwt().nullable(),
-    owner: z.uuid(),
+  body: inventorySchema.omit({
+    id: true,
+    owner: true,
+    createdAt: true,
+    updatedAt: true,
   }),
 });
 

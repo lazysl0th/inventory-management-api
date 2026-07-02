@@ -10,7 +10,7 @@ const fieldTypeSchema = z.enum([
 ]);
 
 export const inventoryFieldSchema = z.object({
-  id: z.uuid(),
+  id: z.uuid({ version: "v7" }),
   title: z.string(),
   description: z.string().nullable(),
   type: fieldTypeSchema,

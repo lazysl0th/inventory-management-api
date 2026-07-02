@@ -19,6 +19,7 @@ const inventoryRoutes = (
     inventoryValidations.searchInventories,
     inventoryController.searchInventories,
   );
+  router.get("/categories", inventoryController.getInventoryCategories);
   router.get(
     "/:inventoryId",
     inventoryValidations.getInventory,
@@ -31,10 +32,7 @@ const inventoryRoutes = (
     inventoryController.getInventoryByToken,
   );
 
-  router.get("/categories", inventoryController.getInventoryCategories);
-
-  authService.passport.authenticate("jwt", { session: false });
-  //this.router.use(Passport.authorize("jwt"));
+  router.use(authService.jwtAuth);
   router.post(
     "/",
     inventoryValidations.createInventory,
