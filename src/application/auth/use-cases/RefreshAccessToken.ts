@@ -29,7 +29,7 @@ export default class RefreshAccessToken {
     const jwtRefreshPayload = jwtRefreshPayloadSchema.parse(tokenInfo);
     const user = await this.userRepository.getById(jwtRefreshPayload.userId);
     if (!user) throw new NotFoundError("User");
-    if (user.equialRefreshToken(refreshToken)) throw new ForbiddenError();
+    if (!user.equialRefreshToken(refreshToken)) throw new ForbiddenError();
     return this.tokenGenerateService.generate(
       {
         userId: user.id,

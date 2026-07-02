@@ -17,21 +17,18 @@ import AllowedUser, {
 const categorySchema = z.enum(["Equipment", "Furniture", "Book", "Other"]);
 
 export const inventorySchema = z.object({
-  id: z.uuid(),
+  id: z.uuid({ version: "v7" }),
   title: z.string(),
   category: categorySchema,
   description: z.string().nullable(),
   image: z.string().nullable(),
   tags: z.array(z.string().or(tagSchema)),
-  isPublic: z.stringbool({
-    truthy: ["true"],
-    falsy: ["false"],
-  }),
+  isPublic: z.boolean(),
   allowedUsers: z.array(z.uuid().or(allowedUserSchema)),
   customIdFormat: customIdFormatSchema,
   fields: inventoryFieldSchema.array(),
-  owner: z.uuid().or(userSchema),
-  token: z.jwt().nullable(),
+  owner: z.uuid({ version: "v7" }).or(userSchema),
+  token: z.jwt().nullable().optional(),
   version: z.number(),
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -57,7 +54,7 @@ export type TCreateInventoryProps = Pick<
 >;
 
 export type TUpdateInventoryProps = Partial<
-  Omit<TInventoryProps, "id | createdAt | owner">
+  Omit<TInventoryProps, "id | createdAt | updatedAt | owner">
 > &
   Required<Pick<TInventoryProps, "id">>;
 
@@ -97,7 +94,7 @@ export default class Inventory {
     this.owner =
       typeof props.owner === "string"
         ? { id: props.owner }
-        : User.restore(props.owner);
+        : User.restore({ ...props.owner, roles: [] });
     this.version = props.version;
     this.description = props.description ?? null;
     this.image = props.image ?? null;

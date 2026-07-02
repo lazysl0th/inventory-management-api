@@ -9,10 +9,10 @@ import ItemValue, {
 } from "./ItemValue.js";
 
 export const itemSchema = z.object({
-  id: z.uuid(),
+  id: z.uuid({ version: "v7" }),
   customId: z.string(),
-  inventory: z.uuid().or(inventorySchema),
-  owner: z.uuid().or(userSchema),
+  inventory: z.uuid({ version: "v7" }).or(inventorySchema),
+  owner: z.uuid({ version: "v7" }).or(userSchema),
   createdAt: z.date(),
   updatedAt: z.date(),
   values: z.array(itemValueSchema),

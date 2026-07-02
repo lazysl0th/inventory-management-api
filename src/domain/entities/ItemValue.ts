@@ -3,9 +3,9 @@ import InventoryField, { inventoryFieldSchema } from "./InventoryField.js";
 import { v7 } from "uuid";
 
 export const itemValueSchema = z.object({
-  id: z.uuid(),
+  id: z.uuid({ version: "v7" }),
   value: z.string(),
-  field: z.uuid().or(inventoryFieldSchema),
+  field: z.uuid({ version: "v7" }).or(inventoryFieldSchema),
 });
 
 export type TItemValueProps = z.infer<typeof itemValueSchema>;

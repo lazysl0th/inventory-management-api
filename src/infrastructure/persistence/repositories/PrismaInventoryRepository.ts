@@ -145,7 +145,11 @@ export default class PrismaInventoryRepository implements IInventoryRepository {
           })),
         },
         tags: {
-          connect: data.tags.map((tag) => ({ name: tag.name })),
+          set: [],
+          connectOrCreate: data.tags.map((tag) => ({
+            where: { name: tag.name },
+            create: { name: tag.name },
+          })),
         },
         fields: {
           connectOrCreate: data.fields.map((field) => ({

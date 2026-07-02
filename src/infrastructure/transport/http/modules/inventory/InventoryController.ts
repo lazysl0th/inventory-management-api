@@ -101,14 +101,14 @@ export default class InventoryController {
 
   createInventory: RequestHandler<never, Inventory, TCreateInventoryBodyDto> =
     async (req, res) => {
-      /*if (!req.isAuthenticated()) {
+      if (!req.isAuthenticated()) {
         throw new UnauthorizedError();
-      }*/
+      }
       const inventoryData = req.body;
       const userId = req.user?.id;
       const inventory = await this.create.execute({
         ...inventoryData,
-        owner: userId || "019efd6f-7555-7053-b1ca-3381791381cd",
+        owner: userId,
       });
       res.status(HttpStatusCode.Ok).json(inventory);
     };
@@ -118,9 +118,6 @@ export default class InventoryController {
     Inventory,
     TUpdateInventoryBodyDto
   > = async (req, res) => {
-    /*if (!req.isAuthenticated()) {
-      throw new UnauthorizedError();
-    }*/
     const { inventoryId } = req.params;
     const inventoryData = req.body;
     const inventory = await this.update.execute({

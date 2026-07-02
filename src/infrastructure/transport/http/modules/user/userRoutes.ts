@@ -9,18 +9,12 @@ const userRoutes = (
   authService: PassportService,
 ): Router => {
   const router = Router();
-  router.get(
-    "/me",
-    authService.passport.authenticate("jwt", { session: false }),
-    //Passport.authorize("jwt"),
-    userController.getUserProfile,
-  );
+  router.get("/me", authService.jwtAuth, userController.getUserProfile);
   router.get("/:userId", userValidations.getUser, userController.getUser);
   router.patch(
     "/:userId",
     userValidations.updateUser,
     authService.passport.authenticate("jwt", { session: false }),
-    //Passport.authorize("jwt"),
     userController.updateUser,
   );
   //this.router.use(Passport.authorize("jwt", ["Admin"]));

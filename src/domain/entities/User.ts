@@ -3,8 +3,17 @@ import LocalCredentials from "../value-objects/LocalCredentials.js";
 import type { SocialAccount } from "./SocialAccount.js";
 import { v7 } from "uuid";
 
+const roleNameSchema = z.enum(["User", "Admin"]);
+
+const roleSchema = z.object({
+  role: z.object({
+    id: z.string(),
+    name: roleNameSchema,
+  }),
+});
+
 export const userSchema = z.object({
-  id: z.string(),
+  id: z.uuid({ version: "v7" }),
   email: z.string(),
   name: z.string(),
   status: z.enum(["Active", "Blocked"]),
@@ -12,9 +21,12 @@ export const userSchema = z.object({
   refreshToken: z.string().nullable().optional(),
   resetPasswordToken: z.string().nullable().optional(),
   password: z.string().nullable().optional(),
+  roles: z.array(roleNameSchema.or(roleSchema)).optional(),
 });
 
 type TUserProps = z.infer<typeof userSchema>;
+
+type TUserRoleName = z.infer<typeof roleNameSchema>;
 
 type TStatus = z.infer<typeof userSchema>["status"];
 
@@ -30,6 +42,7 @@ export default class User {
   #createdAt: Date;
   #refreshToken: string | null;
   #resetPasswordToken: string | null;
+  #roles: Set<TUserRoleName>;
 
   #localCredentials: LocalCredentials | null;
 
@@ -43,6 +56,11 @@ export default class User {
     this.#createdAt = props.createdAt;
     this.#refreshToken = props.refreshToken ?? null;
     this.#resetPasswordToken = props.resetPasswordToken ?? null;
+    this.#roles = new Set(
+      props.roles?.map((userRole) =>
+        typeof userRole === "string" ? userRole : userRole.role.name,
+      ) ?? [],
+    );
     this.#localCredentials = props.password
       ? LocalCredentials.restore({ password: props.password })
       : null;
@@ -57,6 +75,7 @@ export default class User {
       resetPasswordToken: null,
       createdAt: new Date(),
       password: null,
+      roles: ["User"],
     });
   }
 
@@ -122,12 +141,18 @@ export default class User {
           socialAccount.providerId,
         ]),
       ),
+      roles: this.roles,
     };
   }
 
   get status(): TStatus {
     return this.#status;
   }
+
+  get roles(): TUserRoleName[] {
+    return Array.from(this.#roles);
+  }
+
   get email(): string {
     return this.#email;
   }
@@ -157,6 +182,7 @@ export default class User {
       name: this.name,
       status: this.status,
       createdAt: this.createdAt,
+      roles: this.roles,
     };
   }
 }
